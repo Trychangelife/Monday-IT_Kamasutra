@@ -4,7 +4,7 @@ const fs = require('fs');
 const url = require('url');
 
 let requestsCount = 0
-var FAVICON = path.join(__dirname, 'public', 'favicon.ico');
+var FAVICON = path.join(__dirname, 'public', 'favicon1.ico');
 
 const server = http.createServer((request, response) => {
     
