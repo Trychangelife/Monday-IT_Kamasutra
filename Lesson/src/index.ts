@@ -41,8 +41,7 @@ app.get('/videos/:videoId', (req: Request, res: Response) => {
 app.post('/videos', (req: Request, res: Response) => {
   // Проверяем, является ли Title 
   const el = req.body.title
-  if ((typeof el) !== "string") { return res.send(400) }
-  //.send({ errorMessages: [{ message: string, field: "title" }], resultCode: 1 })}
+  if ((typeof el) !== "string" && el.length <= 40) { return res.status(400).send({ errorsMessages: [{ message: "string", field: "title" }], resultCode: 1 })}
 
   const newVideo = {
     id: +(new Date()),
