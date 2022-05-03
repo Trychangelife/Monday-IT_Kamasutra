@@ -3,7 +3,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 
 const app = express()
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 app.use(cors())
 app.use(bodyParser.json())
 
@@ -53,8 +53,15 @@ app.post('/videos', (req: Request, res: Response) => {
 })
 // Удаляем запрошенный ID видео из массива Videos (фильтруем)
 app.delete('/videos/:id',(req: Request, res: Response)=>{
+      const beforeFilter = [...videos].length
       videos = videos.filter((v) => v.id !== +req.params.id)
+      if(beforeFilter === videos.length) 
+      {
+        res.send(404)
+      }
+      else {
       res.send(204)
+    }
 })
 app.put('/videos/:id',(req: Request, res: Response)=>{
   const video = videos.find((v) => {
