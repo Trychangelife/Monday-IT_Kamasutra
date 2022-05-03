@@ -37,10 +37,6 @@ app.get('/videos/:videoId', (req: Request, res: Response) => {
     res.send(404)
   }
 })
-// Попытка любой ошибочный URL вывести в ошибку.
-app.get('*', function(req, res){
-  res.send('You have some troubles');
-});
 // Позволяет по кнопке "Create" - создать видео где ID = Дата создания IRL, Title - Поле ввода (после перезагрузки сервера данные пропадут)
 app.post('/videos', (req: Request, res: Response) => {
   const newVideo = {
@@ -48,8 +44,13 @@ app.post('/videos', (req: Request, res: Response) => {
       title: req.body.title,
       author: 'it-incubator.eu'
   }
-  videos.push(newVideo)
-  res.status(201).send(newVideo)
+  if ((typeof newVideo.title) !== undefined) {
+    videos.push(newVideo)
+    res.status(201).send(newVideo)
+  }
+  else {
+  res.status(400)
+}
 })
 // Удаляем запрошенный ID видео из массива Videos (фильтруем)
 app.delete('/videos/:id',(req: Request, res: Response)=>{
@@ -72,7 +73,7 @@ app.put('/videos/:id',(req: Request, res: Response)=>{
   // Возврат запрошенного видео
   if (video !== undefined) {
     video.title = req.body.title
-    res.send(video)
+    res.status(204).send(video)
   }
   // Возврат ошибки, если Video не найдено (false)
   else {
