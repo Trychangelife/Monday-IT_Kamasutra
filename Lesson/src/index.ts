@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
+import { title } from 'process';
 
 const app = express()
 const port = process.env.PORT || 3000;
@@ -8,17 +9,17 @@ app.use(cors())
 app.use(bodyParser.json())
 
 let videos = [
-  {id: 1, title: 'About JS - 01', author: 'it-incubator.eu'},
-  {id: 2, title: 'About JS - 02', author: 'it-incubator.eu'},
-  {id: 3, title: 'About JS - 03', author: 'it-incubator.eu'},
-  {id: 4, title: 'About JS - 04', author: 'it-incubator.eu'},
-  {id: 5, title: 'About JS - 05', author: 'it-incubator.eu'},
+  { id: 1, title: 'About JS - 01', author: 'it-incubator.eu' },
+  { id: 2, title: 'About JS - 02', author: 'it-incubator.eu' },
+  { id: 3, title: 'About JS - 03', author: 'it-incubator.eu' },
+  { id: 4, title: 'About JS - 04', author: 'it-incubator.eu' },
+  { id: 5, title: 'About JS - 05', author: 'it-incubator.eu' },
 ]
 
-app.get('/', (req: Request, res: Response ) => {
-    res.send('Hello: World!!!!!!')
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello: World!!!!!!')
 })
-app.get('/videos', (req: Request, res: Response ) => {
+app.get('/videos', (req: Request, res: Response) => {
   res.send(videos)
 })
 app.get('/videos/:videoId', (req: Request, res: Response) => {
@@ -40,31 +41,29 @@ app.get('/videos/:videoId', (req: Request, res: Response) => {
 // Позволяет по кнопке "Create" - создать видео где ID = Дата создания IRL, Title - Поле ввода (после перезагрузки сервера данные пропадут)
 app.post('/videos', (req: Request, res: Response) => {
   const newVideo = {
-      id: +(new Date()),
-      title: req.body.title,
-      author: 'it-incubator.eu'
+    id: +(new Date()),
+    title: req.body.title,
+    author: 'it-incubator.eu'
   }
-  if ((typeof newVideo.title) !== undefined) {
+  if (typeof (newVideo.title) != 'undefined' && newVideo.title != null) {
     videos.push(newVideo)
     res.status(201).send(newVideo)
   }
   else {
-  res.status(400)
-}
-})
+    res.status(400)}
+  })
 // Удаляем запрошенный ID видео из массива Videos (фильтруем)
-app.delete('/videos/:id',(req: Request, res: Response)=>{
-      const beforeFilter = [...videos].length
-      videos = videos.filter((v) => v.id !== +req.params.id)
-      if(beforeFilter === videos.length) 
-      {
-        res.send(404)
-      }
-      else {
-      res.send(204)
-    }
+app.delete('/videos/:id', (req: Request, res: Response) => {
+  const beforeFilter = [...videos].length
+  videos = videos.filter((v) => v.id !== +req.params.id)
+  if (beforeFilter === videos.length) {
+    res.send(404)
+  }
+  else {
+    res.send(204)
+  }
 })
-app.put('/videos/:id',(req: Request, res: Response)=>{
+app.put('/videos/:id', (req: Request, res: Response) => {
   const video = videos.find((v) => {
     const id = +req.params.id;
     if (v.id === id) return true;
@@ -81,5 +80,5 @@ app.put('/videos/:id',(req: Request, res: Response)=>{
   }
 })
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+  console.log(`Example app listening on port ${port}`)
 })
