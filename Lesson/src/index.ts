@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-import { title } from 'process';
 
 const app = express()
 const port = process.env.PORT || 3000;
@@ -40,18 +39,19 @@ app.get('/videos/:videoId', (req: Request, res: Response) => {
 })
 // Позволяет по кнопке "Create" - создать видео где ID = Дата создания IRL, Title - Поле ввода (после перезагрузки сервера данные пропадут)
 app.post('/videos', (req: Request, res: Response) => {
+  // Проверяем, является ли Title 
   const el = req.body.title
-  if ((typeof el) !== "string") 
-  {return res.status(400).send({ errorMessages: [{ message: "string", field: "title" }], resultCode: 1 })}
-  
+  if ((typeof el) !== "string") { return res.send(400) }
+  //.send({ errorMessages: [{ message: string, field: "title" }], resultCode: 1 })}
+
   const newVideo = {
     id: +(new Date()),
     title: req.body.title,
     author: 'it-incubator.eu'
   }
-    videos.push(newVideo)
-    res.status(201).send(newVideo)
-  })
+  videos.push(newVideo)
+  res.status(201).send(newVideo)
+})
 // Удаляем запрошенный ID видео из массива Videos (фильтруем)
 app.delete('/videos/:id', (req: Request, res: Response) => {
   const beforeFilter = [...videos].length
