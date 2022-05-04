@@ -16,7 +16,7 @@ let videos = [
 ]
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello: World!!!!!!')
+  res.send('Проект с пройденными тестами :D ')
 })
 app.get('/videos', (req: Request, res: Response) => {
   res.send(videos)
@@ -41,7 +41,9 @@ app.get('/videos/:videoId', (req: Request, res: Response) => {
 app.post('/videos', (req: Request, res: Response) => {
   // Проверяем, является ли Title 
   const el = req.body.title
-  if ((typeof el) !== "string" && el.length <= 40) { return res.status(400).send({ errorsMessages: [{ message: "string", field: "title" }], resultCode: 1 })}
+  if ((typeof el) !== "string" || req.body.title.length >= 40) {
+     return res.status(400).send({ errorsMessages: [{ message: "string", field: "title" }], resultCode: 1 })
+    }
 
   const newVideo = {
     id: +(new Date()),
@@ -63,19 +65,23 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
   }
 })
 app.put('/videos/:id', (req: Request, res: Response) => {
+  const el = req.body.title;
   const video = videos.find((v) => {
     const id = +req.params.id;
     if (v.id === id) return true;
     else return false
   })
   // Возврат запрошенного видео
-  if (video !== undefined) {
+  if (video !== undefined && (typeof el) == "string" && req.body.title.length <= 40) {
     video.title = req.body.title
     res.status(204).send(video)
   }
+  else if ((typeof el) !== "string" || req.body.title.length >= 40) {
+    res.status(400).send({ errorsMessages: [{ message: "string", field: "title" }], resultCode: 1 })
+  }
   // Возврат ошибки, если Video не найдено (false)
   else {
-    res.send(404)
+    res.status(404).send()
   }
 })
 app.listen(port, () => {
