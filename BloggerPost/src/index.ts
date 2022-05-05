@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-import { send } from 'process';
 
 const app = express()
 const port = process.env.PORT || 5000;
@@ -60,26 +59,35 @@ app.get('/bloggers/:id', (req: Request, res: Response) => {
 
 //POST Bloggers
 app.post('/bloggers', (req: Request, res: Response) => {
-  
-  // let validName:any = req.body.name
-  // function TestLogin2(validName:any){
-  //   if(/^[a-zA-z]{1}[a-zA-Z1-9]{3,20}$/.test(validName) === false)
-  //     {return false;}
-  //    return true;
-  //   }
-  // let nameAfterCheck = TestLogin2(validName)
-  
-  // || /^[a-zA-Z]+$/.test(req.body.name) === false
-  
+
   const newBlogger = {
     id: +(new Date()),
     name: req.body.name,
     youtubeUrl: req.body.youtubeUrl
   }
 
+
+  const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
+  const str: any = newBlogger.youtubeUrl;
+  function isURL(str: any) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return pattern.test(str);
+  }
+
+  if (isURL(str) !== true || newBlogger.name == undefined) {
+    res.status(400).send(setErrors)
+    return;
+  }
+
+  const checkName = newBlogger.name.replaceAll(' ', '').length
 //  /^[a-z0-9A-Z]+$/.test(newBlogger.name) === false
 // Возможно в этом выражении трабла - нужно смотреть
-  if (req.body.name == undefined ) {
+  if (req.body.name == undefined || checkName === 0) {
     res.status(400).send({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
   }
 
@@ -99,6 +107,7 @@ app.put('/bloggers/:id', (req: Request, res: Response) => {
     if (i.id === id) return true
     else return false
   })
+  // const checkName = (blogger == undefined || blogger.name == undefined)
   // const regex = new RegExp(`^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$`)
   const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
   const str: any = blogger?.youtubeUrl;
@@ -161,7 +170,7 @@ app.get('/posts/:id', (req: Request, res: Response) => {
   }
 })
 
-//POST Posts
+//POST Posts (Здесь обработчик ошибок под вопросом)
 app.post('/posts', (req: Request, res: Response) => {
   let newPosts = {
     id: +(new Date()),
@@ -171,7 +180,10 @@ app.post('/posts', (req: Request, res: Response) => {
     bloggerId: +req.body.bloggerId,
     bloggerName: doSomeString()
   }
-  if (newPosts.title.length > 30 || newPosts.shortDescription.length > 100 || newPosts.content.length > 1000) {
+  if (newPosts.title.length > 30 && newPosts.content.length > 1000) {
+    return res.status(400).send({ errorsMessages: [{ message: "string", field: "title" }, { message: "string", field: "content" }], resultCode: 1 })
+  }
+  else if (newPosts.title.length > 30 || newPosts.shortDescription.length > 100 || newPosts.content.length > 1000) {
     return res.status(400).send({ errorsMessages: [{ message: "string", field: "shortDescription" }, { message: "string", field: "title" }], resultCode: 1 })
   }
   else {
