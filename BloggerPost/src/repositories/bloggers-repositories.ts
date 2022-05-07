@@ -7,6 +7,10 @@ let bloggers = [
 ]
 
 export const bloggerRepository = {
+    allBloggers() {
+        return bloggers
+    },
+
     targetBloggers(id: number) {
 
         const blogger = bloggers.find((b) => {
@@ -25,12 +29,7 @@ export const bloggerRepository = {
         const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
         const str: any = newBlogger.youtubeUrl;
         function isURL(str: any) {
-            var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+            var pattern = new RegExp('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$');
             return pattern.test(str);
         }
         if (isURL(str) !== true || newBlogger.name == undefined) {
@@ -43,11 +42,48 @@ export const bloggerRepository = {
         }
         else if (newBlogger.name.length > 15 || newBlogger.youtubeUrl.length > 100) {
             return 3
-          }
+        }
         else {
             bloggers.push(newBlogger)
             return newBlogger
         }
 
+    },
+
+    changeBlogger(id: number, name: any, youtubeUrl: string) {
+        const blogger = bloggers.find((i) => {
+            const findId = id;
+            if (i.id === findId) return true
+            else return false
+        })
+        const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
+        const str: string = youtubeUrl
+        function isURL(str: any) {
+            var pattern = new RegExp('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$');
+            return pattern.test(str);
+        }
+
+        if (isURL(str) !== true) {
+            return "error"
+        }
+        if (blogger !== undefined) {
+            blogger.name = name
+            blogger.youtubeUrl = youtubeUrl
+            return "update";
+        }
+        else {
+            return "404"
+        }
+    },
+    deleteBlogger(id: number) {
+        const beforeFilter = [...bloggers].length
+        bloggers = bloggers.filter((v) => v.id !== id)
+        if (beforeFilter === bloggers.length) {
+            return "404"
+        }
+        else {
+            return "204"
+        }
     }
+
 }
