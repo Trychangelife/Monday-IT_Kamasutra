@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { body, param, validationResult, ValidationError } from "express-validator";
 import { bloggerRepository } from "../repositories/bloggers-repositories";
 import { inputValidationMiddleware, schemaPostBlogger } from "../validation/input-validation-middleware";
 
@@ -24,31 +23,14 @@ export const bloggersRouter = Router()
   bloggersRouter.post('/', schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
 
     const createrPerson = bloggerRepository.createBlogger(req.body.name, req.body.youtubeUrl)
-    const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
-    if (createrPerson === 'invalide format' ) {
-      res.status(400).send(setErrors)
-      return;
-    }
-    if (createrPerson === 2) {
-      res.status(400).send({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
-    }
-    if (createrPerson === 3) {
-      return res.status(400).send(setErrors) 
-    }
-    else {
       res.status(201).send(createrPerson)
-    }
+
   })
   
   bloggersRouter.put('/:id', schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
 
     const alreadyChanges = bloggerRepository.changeBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
-    const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
   
-    if (alreadyChanges === "error") {
-      res.status(400).send(setErrors)
-      return;
-    }
     if (alreadyChanges === 'update') {
       res.status(204).send(alreadyChanges)
       return;
