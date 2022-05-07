@@ -94,7 +94,7 @@ postRouter.put('/:id', (req: Request, res: Response) => {
 })
 
 // DELETE
-postRouter.delete('/posts/:id', (req: Request, res: Response) => {
+postRouter.delete('/:id', (req: Request, res: Response) => {
     const beforeFilter = [...posts].length
     posts = posts.filter((v) => v.id !== +req.params.id)
     if (beforeFilter === posts.length) {
