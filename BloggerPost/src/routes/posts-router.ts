@@ -39,8 +39,6 @@ postRouter.get('/:id', (req: Request, res: Response) => {
         res.send(404)
     }
 })
-
-//POST Posts (Здесь обработчик ошибок под вопросом)
 postRouter.post('/', (req: Request, res: Response) => {
     let newPosts = {
         id: +(new Date()),
@@ -61,7 +59,6 @@ postRouter.post('/', (req: Request, res: Response) => {
         res.status(201).send(newPosts)
     }
 })
-// PUT Posts
 postRouter.put('/:id', (req: Request, res: Response) => {
     const post = posts.find((i) => {
         const id = +req.params.id;
@@ -93,7 +90,6 @@ postRouter.put('/:id', (req: Request, res: Response) => {
     }
 })
 
-// DELETE
 postRouter.delete('/:id', (req: Request, res: Response) => {
     const beforeFilter = [...posts].length
     posts = posts.filter((v) => v.id !== +req.params.id)
