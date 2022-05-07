@@ -1,5 +1,8 @@
 import { Request, Response, Router } from "express";
+import { body, param, validationResult, ValidationError } from "express-validator";
 import { bloggerRepository } from "../repositories/bloggers-repositories";
+import { inputValidationMiddleware, schemaPostBlogger } from "../validation/input-validation-middleware";
+
 
 
 export const bloggersRouter = Router()
@@ -18,7 +21,8 @@ export const bloggersRouter = Router()
     }
   })
   
-  bloggersRouter.post('/', (req: Request, res: Response) => {
+  bloggersRouter.post('/', schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
+
     const createrPerson = bloggerRepository.createBlogger(req.body.name, req.body.youtubeUrl)
     const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
     if (createrPerson === 'invalide format' ) {
@@ -36,7 +40,7 @@ export const bloggersRouter = Router()
     }
   })
   
-  bloggersRouter.put('/:id', (req: Request, res: Response) => {
+  bloggersRouter.put('/:id', schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
 
     const alreadyChanges = bloggerRepository.changeBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
     const setErrors = ({ errorsMessages: [{ message: "string", field: "youtubeUrl" }, { message: "string", field: "name" }], resultCode: 1 })
