@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import { validationResult } from "express-validator";
-import { bloggers } from "../repositories/bloggers-repositories";
 import { posts, postsRepository } from "../repositories/posts-repositories";
 import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
 
@@ -38,6 +37,7 @@ postRouter.post('/', schemaPosts, inputValidationMiddleware, (req: Request, res:
      res.status(201).send(giveMePost)}
 })
 postRouter.put('/:id', schemaPosts, inputValidationMiddleware, (req: Request, res: Response) => {
+    // Уточнить, как сделать проверку на несуществующий пост, в рамках валидатора (сейчас выдает 404 костылями)
     const findTargetPost = posts.find(b => b.id === +req.params.id)
     if (findTargetPost == undefined) {
         res.send(404)
