@@ -1,6 +1,5 @@
 import e, { NextFunction, Request, Response } from "express";
 import { body, param, validationResult, ValidationError, header } from "express-validator";
-import { isInt16Array } from "util/types";
 
 
 export const schemaPostBlogger = [
@@ -19,7 +18,7 @@ export const schemaPosts = [
 
 
 
-const errorFormatter = ({ location, msg, param, value, nestedErrors }: ValidationError) => {
+export const errorFormatter = ({ location, msg, param, value, nestedErrors }: ValidationError) => {
     return {
         message: msg,
         field: param

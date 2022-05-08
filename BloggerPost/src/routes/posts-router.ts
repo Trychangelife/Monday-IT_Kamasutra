@@ -1,7 +1,8 @@
 import { Request, Response, Router } from "express";
+import { validationResult } from "express-validator";
 import { bloggers } from "../repositories/bloggers-repositories";
-import { postsRepository } from "../repositories/posts-repositories";
-import { inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
+import { posts, postsRepository } from "../repositories/posts-repositories";
+import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
 
 export const postRouter = Router()
 
@@ -28,20 +29,26 @@ postRouter.get('/:id', (req: Request, res: Response) => {
     }
 })
 postRouter.post('/', schemaPosts, inputValidationMiddleware, (req: Request, res: Response) => {
-
     const giveMePost = postsRepository.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId)
-
-    if (giveMePost !== undefined) {
-    res.status(201).send(giveMePost)}
-    else {
-        res.status(400)
+    const errors = validationResult(req.body.bloggerId).formatWith(errorFormatter)
+    if (giveMePost === '400') {
+        res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 } )
     }
+    else {
+     res.status(201).send(giveMePost)}
 })
 postRouter.put('/:id', schemaPosts, inputValidationMiddleware, (req: Request, res: Response) => {
-    console.log(req.params, req.body)
+    const findTargetPost = posts.find(b => b.id === +req.params.id)
+    if (findTargetPost == undefined) {
+        res.send(404)
+        return
+    }
     const afterChanged = postsRepository.changePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId)
-    if (afterChanged !== undefined) {
+    if (afterChanged !== undefined && afterChanged !== '400') {
     res.status(204).send(afterChanged)  }
+    else if (afterChanged === "400") {
+        res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 } )
+    }
     else {
         res.send(404)
     }

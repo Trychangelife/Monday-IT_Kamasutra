@@ -1,9 +1,9 @@
 export let bloggers = [
-    { id: 1, name: 'Alex', youtubeUrl: 'Alex_TV' },
-    { id: 2, name: 'Bob', youtubeUrl: 'Bob_TV' },
-    { id: 3, name: 'Jon', youtubeUrl: 'Jon_TV' },
-    { id: 4, name: 'Trevis', youtubeUrl: 'Trevis_TV' },
-    { id: 5, name: 'Michael', youtubeUrl: 'Michael_TV' },
+    { id: 1, name: 'Alex', youtubeUrl: 'https://youtube-alex-tv.com' },
+    { id: 2, name: 'Bob', youtubeUrl: 'https://youtube-bob-tv.com' },
+    { id: 3, name: 'Jon', youtubeUrl: 'https://youtube-jon-tv.com' },
+    { id: 4, name: 'Trevis', youtubeUrl: 'https://youtube-trevis-tv.com' },
+    { id: 5, name: 'Michael', youtubeUrl: 'https://youtube-michael-tv.com' },
 ]
 
 export const bloggerRepository = {
