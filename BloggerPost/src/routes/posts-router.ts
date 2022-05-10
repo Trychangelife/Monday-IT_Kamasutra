@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { validationResult } from "express-validator";
 import { posts, postsRepository } from "../repositories/posts-repositories";
+import { authMiddleware } from "../validation/authorization-middlewear";
 import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
 
 export const postRouter = Router()
@@ -27,7 +28,7 @@ postRouter.get('/:id', (req: Request, res: Response) => {
         res.send(404)
     }
 })
-postRouter.post('/', schemaPosts, inputValidationMiddleware, (req: Request, res: Response) => {
+postRouter.post('/',authMiddleware,schemaPosts, inputValidationMiddleware, (req: Request, res: Response) => {
     const giveMePost = postsRepository.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId)
     const errors = validationResult(req.body.bloggerId).formatWith(errorFormatter)
     if (giveMePost === '400') {
@@ -36,7 +37,7 @@ postRouter.post('/', schemaPosts, inputValidationMiddleware, (req: Request, res:
     else {
      res.status(201).send(giveMePost)}
 })
-postRouter.put('/:id', schemaPosts, inputValidationMiddleware, (req: Request, res: Response) => {
+postRouter.put('/:id',authMiddleware,schemaPosts, inputValidationMiddleware, (req: Request, res: Response) => {
     // Уточнить, как сделать проверку на несуществующий пост, в рамках валидатора (сейчас выдает 404 костылями)
     const findTargetPost = posts.find(b => b.id === +req.params.id)
     if (findTargetPost == undefined) {
@@ -55,7 +56,7 @@ postRouter.put('/:id', schemaPosts, inputValidationMiddleware, (req: Request, re
 
 })
 
-postRouter.delete('/:id', (req: Request, res: Response) => {
+postRouter.delete('/:id',authMiddleware, (req: Request, res: Response) => {
     const deleteObj = postsRepository.deletePost(+req.params.id)
     // const beforeFilter = [...posts].length
     // posts = posts.filter((v) => v.id !== +req.params.id)

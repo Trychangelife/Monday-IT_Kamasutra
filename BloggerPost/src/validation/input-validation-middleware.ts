@@ -1,5 +1,7 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
+import { bloggers } from "../repositories/bloggers-repositories";
+import { posts } from "../repositories/posts-repositories";
 
 
 export const schemaPostBlogger = [
@@ -8,10 +10,17 @@ export const schemaPostBlogger = [
     
 ]
 
+// function check (bloggerId: number) {
+// const post = bloggers.find((i) => {i.id === +bloggerId})?.id
+// if post 
+// }
+
+
 export const schemaPosts = [
     body('title').isLength({min:1, max:30}).trim().not().isEmpty(),
     body('content').isLength({min: 1, max: 1000}).trim().not().isEmpty(),
-    body('shortDescription').isLength({min: 3, max: 100})
+    body('shortDescription').isLength({min: 3, max: 100}),
+    // param('bloggerId').exists().custom(a => check(a))
 ]
 
 

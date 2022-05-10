@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { bloggerRepository } from "../repositories/bloggers-repositories";
+import { authMiddleware } from "../validation/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger } from "../validation/input-validation-middleware";
 
 
@@ -20,14 +21,14 @@ export const bloggersRouter = Router()
     }
   })
   
-  bloggersRouter.post('/', schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
+  bloggersRouter.post('/',authMiddleware, schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
 
     const createrPerson = bloggerRepository.createBlogger(req.body.name, req.body.youtubeUrl)
       res.status(201).send(createrPerson)
 
   })
   
-  bloggersRouter.put('/:id', schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
+  bloggersRouter.put('/:id',authMiddleware, schemaPostBlogger ,inputValidationMiddleware, (req: Request, res: Response) => {
 
     const alreadyChanges = bloggerRepository.changeBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
   
@@ -40,7 +41,7 @@ export const bloggersRouter = Router()
     }
   })
   
-  bloggersRouter.delete('/:id', (req: Request, res: Response) => {
+  bloggersRouter.delete('/:id',authMiddleware, (req: Request, res: Response) => {
     const afterDelete = bloggerRepository.deleteBlogger(+req.params.id)
     if (afterDelete === "404") {
       res.send(404)
