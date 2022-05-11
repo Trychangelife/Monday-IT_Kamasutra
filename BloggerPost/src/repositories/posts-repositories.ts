@@ -1,7 +1,7 @@
 import { bloggers } from "../repositories/bloggers-repositories";
 
 
-type PostsType = {
+export type PostsType = {
     id: number,
     title: string,
     shortDescription: string,
@@ -27,11 +27,11 @@ function doSomeString() {
     return text;
 }
 export const postsRepository = {
-    allPosts() {
+    async allPosts(): Promise<PostsType[]> {
         return posts
     },
 
-    targetPosts(postId: number){
+    async targetPosts(postId: number): Promise<object | undefined>{
         const id = postId
         const targetPost = posts.find((b) => {
             if (b.id === id) return true;
@@ -41,7 +41,7 @@ export const postsRepository = {
 
     },
 
-    releasePost(title: string, content: string, shortDescription: string, bloggerId: number) {
+    async releasePost(title: string, content: string, shortDescription: string, bloggerId: number): Promise<object | string> {
         const findBlogger = bloggers.find(b => b.id === bloggerId)?.id
         
         if (findBlogger !== bloggerId) {
@@ -59,7 +59,7 @@ export const postsRepository = {
         return newPosts
     },
 
-    changePost(postId: number, title: string, shortDescription: string, content: string, bloggerId: number) {
+    async changePost(postId: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<string | object> {
 
         const post = posts.find((i) => {
             const id = postId;
@@ -81,7 +81,7 @@ export const postsRepository = {
             return "404"
         }
     },
-    deletePost(deleteId: number) {
+    async deletePost(deleteId: number): Promise<boolean> {
         const beforeFilter = [...posts].length
         posts = posts.filter((v) => v.id !== deleteId)
         return beforeFilter === posts.length
