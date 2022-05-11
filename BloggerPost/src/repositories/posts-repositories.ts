@@ -1,5 +1,15 @@
 import { bloggers } from "../repositories/bloggers-repositories";
-export let posts = [
+
+
+type PostsType = {
+    id: number,
+    title: string,
+    shortDescription: string,
+    content: string,
+    bloggerId: number,
+    bloggerName: string
+}
+export let posts: PostsType[] = [
     { id: 1, title: "string1", shortDescription: "str1", content: "JS", bloggerId: 1, bloggerName: "Alex" },
     { id: 2, title: "string2", shortDescription: "str2", content: "Python", bloggerId: 2, bloggerName: "Bob" },
     { id: 3, title: "string3", shortDescription: "str3", content: "Nest", bloggerId: 3, bloggerName: "Jon" },
@@ -21,7 +31,7 @@ export const postsRepository = {
         return posts
     },
 
-    targetPosts(postId: number) {
+    targetPosts(postId: number){
         const id = postId
         const targetPost = posts.find((b) => {
             if (b.id === id) return true;

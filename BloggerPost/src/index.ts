@@ -15,15 +15,15 @@ app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
 app.use('/books', booksRouter)
 
-// app.listen(port, () => {
-//   console.log(`Example app listening on port ${port}`)
-// })
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
 
-const startApp = async () => {
-  await runDb()
-  app.listen(port, () => {
-    console.log(`Server listening on post: ${port}`)
-  })
-}
+// const startApp = async () => {
+//   await runDb()
+//   app.listen(port, () => {
+//     console.log(`Server listening on post: ${port}`)
+//   })
+// }
 
-startApp()
+// startApp()

@@ -1,4 +1,10 @@
-export let bloggers = [
+export type BloggersType = {
+    id: number,
+    name: string,
+    youtubeUrl: string
+}
+
+export let bloggers: BloggersType[] = [
     { id: 1, name: 'Alex', youtubeUrl: 'https://youtube-alex-tv.com' },
     { id: 2, name: 'Bob', youtubeUrl: 'https://youtube-bob-tv.com' },
     { id: 3, name: 'Jon', youtubeUrl: 'https://youtube-jon-tv.com' },
@@ -6,21 +12,27 @@ export let bloggers = [
     { id: 5, name: 'Michael', youtubeUrl: 'https://youtube-michael-tv.com' },
 ]
 
+
 export const bloggerRepository = {
-    allBloggers() {
+    async allBloggers(): Promise<BloggersType[]> {
         return bloggers
     },
 
-    targetBloggers(id: number) {
+    async targetBloggers(id: number): Promise<object | undefined> {
 
         const blogger = bloggers.find((b) => {
             if (b.id === id) return true;
             else return false;
         })
-        return blogger
+        if (blogger !== undefined) {
+            return blogger
+        }
+        else {
+            return
+        }
     },
 
-    createBlogger(name: any, youtubeUrl: string) {
+    async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType> {
         const newBlogger = {
             id: +(new Date()),
             name: name,
@@ -30,7 +42,7 @@ export const bloggerRepository = {
             return newBlogger
     },
 
-    changeBlogger(id: number, name: any, youtubeUrl: string) {
+    async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<string> {
         const blogger = bloggers.find((i) => {
             const findId = id;
             if (i.id === findId) return true
@@ -45,7 +57,7 @@ export const bloggerRepository = {
             return "404"
         }
     },
-    deleteBlogger(id: number) {
+    async deleteBlogger(id: number): Promise<string> {
         const beforeFilter = [...bloggers].length
         bloggers = bloggers.filter((v) => v.id !== id)
         if (beforeFilter === bloggers.length) {
