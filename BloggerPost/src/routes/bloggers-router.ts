@@ -21,7 +21,7 @@ export const bloggersRouter = Router()
     }
   })
   
-  bloggersRouter.post('/',authMiddleware, schemaPostBlogger ,inputValidationMiddleware, async (req: Request, res: Response) => {
+  bloggersRouter.post('/', authMiddleware, schemaPostBlogger ,inputValidationMiddleware, async (req: Request, res: Response) => {
 
     const createrPerson: BloggersType = await bloggerRepository.createBlogger(req.body.name, req.body.youtubeUrl)
       res.status(201).send(createrPerson)
