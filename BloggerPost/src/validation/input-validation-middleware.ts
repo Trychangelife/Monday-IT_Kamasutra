@@ -10,11 +10,6 @@ export const schemaPostBlogger = [
     
 ]
 
-// function check (bloggerId: number) {
-// const post = bloggers.find((i) => {i.id === +bloggerId})?.id
-// if post 
-// }
-
 
 export const schemaPosts = [
     body('title').isLength({min:1, max:30}).trim().not().isEmpty(),

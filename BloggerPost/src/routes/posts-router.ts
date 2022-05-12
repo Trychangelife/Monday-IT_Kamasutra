@@ -15,12 +15,6 @@ postRouter.get('/', async (req: Request, res: Response) => {
 })
 postRouter.get('/:id', async (req: Request, res: Response) => {
     const takePost: object | undefined = await postsRepository.targetPosts(+req.params.id)
-    // const id = +req.params.id
-    // const targetPost = posts.find((b) => {
-    //     if (b.id === id) return true;
-    //     else return false;
-    // })
-
     if (takePost !== undefined) {
         res.status(200).send(takePost)
     }
@@ -38,7 +32,6 @@ postRouter.post('/',authMiddleware,schemaPosts, inputValidationMiddleware, async
      res.status(201).send(giveMePost)}
 })
 postRouter.put('/:id',authMiddleware,schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
-    // Уточнить, как сделать проверку на несуществующий пост, в рамках валидатора (сейчас выдает 404 костылями)
     const findTargetPost = posts.find(b => b.id === +req.params.id)
     if (findTargetPost == undefined) {
         res.send(404)
