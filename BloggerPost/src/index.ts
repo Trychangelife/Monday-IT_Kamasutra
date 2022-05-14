@@ -3,7 +3,6 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import { bloggersRouter } from './routes/bloggers-router';
 import { postRouter } from './routes/posts-router';
-import { booksRouter } from './routes/books-routes';
 import { runDb } from './repositories/db';
 
 const app = express()
@@ -13,7 +12,6 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
-app.use('/books', booksRouter)
 
 
 // app.listen(port, () => {
