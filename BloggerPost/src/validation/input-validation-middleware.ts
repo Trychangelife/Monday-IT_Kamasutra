@@ -1,39 +1,7 @@
-import { count } from "console";
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
-import { type } from "os";
 import { bloggers } from "../repositories/bloggers-repositories";
 import { posts } from "../repositories/posts-repositories";
-
-// const blackListIp = ["172.120.200.200", "172.84.214.2"]
-// let counter: number = 0;
-// export const CheckListIp = (req: Request, res: Response, next: NextFunction) => {
-//     var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-//     const checkIp = blackListIp.find((a) => ip === a)
-//     if (checkIp) {
-//         res.status(403).send('Ip address added in black list')
-//         return
-//     }
-//         next()
-   
-// }
-
-// export const headersCounter = (req: Request, res: Response, next: NextFunction) => {
-//     counter++
-//     res.header('counter', counter.toString())
-//     next()
-   
-// }
-// export const checkContentType = (typeContent: string) => (req: Request, res: Response, next: NextFunction) => {
-//     const checkContent = req.headers["content-type"]
-//     if (checkContent === typeContent) {
-//         next()
-//     }
-//     else {
-//         res.status(400).send('bad request')
-//     }
-   
-// }
 
 
 
