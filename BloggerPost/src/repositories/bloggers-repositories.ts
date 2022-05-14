@@ -1,30 +1,20 @@
+import { bloggersCollection } from "./db"
+
 export type BloggersType = {
     id: number,
     name: string,
     youtubeUrl: string
 }
 
-export let bloggers: BloggersType[] = [
-    { id: 1, name: 'Alex', youtubeUrl: 'https://youtube-alex-tv.com' },
-    { id: 2, name: 'Bob', youtubeUrl: 'https://youtube-bob-tv.com' },
-    { id: 3, name: 'Jon', youtubeUrl: 'https://youtube-jon-tv.com' },
-    { id: 4, name: 'Trevis', youtubeUrl: 'https://youtube-trevis-tv.com' },
-    { id: 5, name: 'Michael', youtubeUrl: 'https://youtube-michael-tv.com' },
-]
-
-
 export const bloggerRepository = {
     async allBloggers(): Promise<BloggersType[]> {
-        return bloggers
+        return bloggersCollection.find({}).toArray()
     },
 
     async targetBloggers(id: number): Promise<object | undefined> {
 
-        const blogger = bloggers.find((b) => {
-            if (b.id === id) return true;
-            else return false;
-        })
-        if (blogger !== undefined) {
+        const blogger: BloggersType | null = await bloggersCollection.findOne({id: id})
+        if (blogger !== null) {
             return blogger
         }
         else {
@@ -38,19 +28,14 @@ export const bloggerRepository = {
             name: name,
             youtubeUrl: youtubeUrl
         }
-            bloggers.push(newBlogger)
+            await bloggersCollection.insertOne(newBlogger)
             return newBlogger
     },
 
     async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<string> {
-        const blogger = bloggers.find((i) => {
-            const findId = id;
-            if (i.id === findId) return true
-            else return false
-        })
-        if (blogger !== undefined) {
-            blogger.name = name
-            blogger.youtubeUrl = youtubeUrl
+        const result = await bloggersCollection.updateOne({id: id}, {$set: {name: name, youtubeUrl: youtubeUrl}})
+        result.matchedCount === 1
+        if (result !== undefined) {
             return "update";
         }
         else {
@@ -58,9 +43,8 @@ export const bloggerRepository = {
         }
     },
     async deleteBlogger(id: number): Promise<string> {
-        const beforeFilter = [...bloggers].length
-        bloggers = bloggers.filter((v) => v.id !== id)
-        if (beforeFilter === bloggers.length) {
+        const result = await bloggersCollection.deleteOne({id: id})
+        if (result.deletedCount !== 1) {
             return "404"
         }
         else {

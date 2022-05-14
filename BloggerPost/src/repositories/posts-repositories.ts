@@ -1,4 +1,4 @@
-import { bloggers } from "../repositories/bloggers-repositories";
+import { bloggersCollection, postsCollection } from "./db";
 
 
 export type PostsType = {
@@ -9,13 +9,6 @@ export type PostsType = {
     bloggerId: number,
     bloggerName: string
 }
-export let posts: PostsType[] = [
-    { id: 1, title: "string1", shortDescription: "str1", content: "JS", bloggerId: 1, bloggerName: "Alex" },
-    { id: 2, title: "string2", shortDescription: "str2", content: "Python", bloggerId: 2, bloggerName: "Bob" },
-    { id: 3, title: "string3", shortDescription: "str3", content: "Nest", bloggerId: 3, bloggerName: "Jon" },
-    { id: 4, title: "string4", shortDescription: "str4", content: "Express", bloggerId: 4, bloggerName: "Trevis" },
-    { id: 5, title: "string5", shortDescription: "str5", content: "NodeJS", bloggerId: 5, bloggerName: "Michael" }
-]
 
 function doSomeString() {
     var text = "";
@@ -28,53 +21,46 @@ function doSomeString() {
 }
 export const postsRepository = {
     async allPosts(): Promise<PostsType[]> {
-        return posts
+        return postsCollection.find({}).toArray()
     },
 
     async targetPosts(postId: number): Promise<object | undefined>{
-        const id = postId
-        const targetPost = posts.find((b) => {
-            if (b.id === id) return true;
-            else return false;
-        })
-        return targetPost;
-
+        const targetPost: PostsType | null = await postsCollection.findOne({id: postId})
+        if (targetPost == null) {
+            return undefined
+        }
+        else {
+        return targetPost;}
     },
 
     async releasePost(title: string, content: string, shortDescription: string, bloggerId: number): Promise<object | string> {
-        const findBlogger = bloggers.find(b => b.id === bloggerId)?.id
+        const findBlogger = await bloggersCollection.findOne({id: bloggerId})
         
-        if (findBlogger !== bloggerId) {
+        if (findBlogger == null) {
             return '400'
         }
+        else {
         let newPosts = {
             id: +(new Date()),
             title: title,
             content: content,
             shortDescription: shortDescription,
-            bloggerId: findBlogger,
+            bloggerId: findBlogger.id,
             bloggerName: doSomeString()
         }
-        posts.push(newPosts)
-        return newPosts
+        await postsCollection.insertOne(newPosts)
+        return newPosts}
     },
 
     async changePost(postId: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<string | object> {
 
-        const post = posts.find((i) => {
-            const id = postId;
-            if (i.id === id) return true
-            else return false
-        })
-        const findBlogger = bloggers.find(b => b.id === bloggerId)?.id
-        if (post !== undefined && findBlogger == bloggerId) {
-            post.title = title
-            post.shortDescription = shortDescription
-            post.content = content
-            post.bloggerId
+        const post = await postsCollection.findOne({id: postId})
+        const findBlogger = await bloggersCollection.findOne({id: bloggerId})
+        if (post !== null && findBlogger !== null) {
+            await postsCollection.updateOne({id: postId}, {$set: {title: title, shortDescription: shortDescription, content: content, }})
             return post
         }
-        else if (findBlogger !== bloggerId) {
+        else if (findBlogger !== null) {
             return '400'
         }
         else {
@@ -82,8 +68,11 @@ export const postsRepository = {
         }
     },
     async deletePost(deleteId: number): Promise<boolean> {
-        const beforeFilter = [...posts].length
-        posts = posts.filter((v) => v.id !== deleteId)
-        return beforeFilter === posts.length
+        const result = await postsCollection.deleteOne({id: deleteId})
+        if(result.deletedCount === 1) {
+        return true}
+        else {
+            return false
+        }
     }
 }

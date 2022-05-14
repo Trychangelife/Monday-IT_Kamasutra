@@ -1,20 +1,25 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
+import { BloggersType } from "./bloggers-repositories";
+import { PostsType } from "./posts-repositories";
 
-const mongoUri = process.env.mongoURI || "mongodb://0.0.0.0:27017";
 
-export const client = new MongoClient(mongoUri);
+const options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+};
 
-export async function runDb() {
-    try {
-        //Connect the client to the server
-        await client.connect();
-        // Establish (Создавать) and verify connection
-        await client.db("bloggers").command({ ping: 1});
-        console.log("Connected successfully to mongo server");
-    }
-    catch {
-        console.log("can't connect to DB")
-        //Ensures that the client will close when you finish/error
-        await client.close()
-    }
-}
+const uri = process.env.mongoURI || "mongodb+srv://konstantinovEvgeniy:admin@cluster0.5vzfn.mongodb.net/social_network?retryWrites=true&w=majority"
+const client = new MongoClient(uri, options)
+export const db = client.db("social_network")
+export const bloggersCollection = db.collection<BloggersType>("bloggers")
+export const postsCollection = db.collection<PostsType>("posts") 
+export async function runDb () {
+try {
+    await client.connect() 
+    console.log("Connected successfully to mongo server")
+    // await listDatabases(client)
+} catch (e) {
+    console.error(e);
+}}
+

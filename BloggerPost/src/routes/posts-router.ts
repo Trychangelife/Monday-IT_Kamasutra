@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { validationResult } from "express-validator";
-import { posts, postsRepository, PostsType } from "../repositories/posts-repositories";
+import { postsRepository, PostsType } from "../repositories/posts-repositories";
 import { authMiddleware } from "../validation/authorization-middlewear";
 import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
 
@@ -32,11 +32,6 @@ postRouter.post('/',authMiddleware,schemaPosts, inputValidationMiddleware, async
      res.status(201).send(giveMePost)}
 })
 postRouter.put('/:id',authMiddleware,schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const findTargetPost = posts.find(b => b.id === +req.params.id)
-    if (findTargetPost == undefined) {
-        res.send(404)
-        return
-    }
     const afterChanged: object | string = await postsRepository.changePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId)
     if (afterChanged !== undefined && afterChanged !== '400') {
     res.status(204).send(afterChanged)  }
@@ -51,12 +46,10 @@ postRouter.put('/:id',authMiddleware,schemaPosts, inputValidationMiddleware, asy
 
 postRouter.delete('/:id',authMiddleware, async (req: Request, res: Response) => {
     const deleteObj: boolean = await postsRepository.deletePost(+req.params.id)
-    // const beforeFilter = [...posts].length
-    // posts = posts.filter((v) => v.id !== +req.params.id)
     if (deleteObj === true) {
-        res.send(404)
+        res.send(204)
     }
     else {
-        res.send(204)
+        res.send(404)
     }
 })

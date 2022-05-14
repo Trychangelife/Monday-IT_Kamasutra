@@ -1,7 +1,5 @@
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
-import { bloggers } from "../repositories/bloggers-repositories";
-import { posts } from "../repositories/posts-repositories";
 
 
 
