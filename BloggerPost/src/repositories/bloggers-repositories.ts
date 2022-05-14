@@ -22,34 +22,18 @@ export const bloggerRepository = {
         }
     },
 
-    async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType> {
-        const newBlogger = {
-            id: +(new Date()),
-            name: name,
-            youtubeUrl: youtubeUrl
-        }
+    async createBlogger(newBlogger: BloggersType): Promise<BloggersType> {
             await bloggersCollection.insertOne(newBlogger)
             return newBlogger
     },
 
-    async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<string> {
+    async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<boolean> {
         const result = await bloggersCollection.updateOne({id: id}, {$set: {name: name, youtubeUrl: youtubeUrl}})
-        result.matchedCount === 1
-        if (result !== undefined) {
-            return "update";
-        }
-        else {
-            return "404"
-        }
+        return result.matchedCount === 1
     },
-    async deleteBlogger(id: number): Promise<string> {
+    async deleteBlogger(id: number): Promise<boolean> {
         const result = await bloggersCollection.deleteOne({id: id})
-        if (result.deletedCount !== 1) {
-            return "404"
-        }
-        else {
-            return "204"
-        }
+        return result.deletedCount === 1
     }
 
 }

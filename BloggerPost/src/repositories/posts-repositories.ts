@@ -10,15 +10,6 @@ export type PostsType = {
     bloggerName: string
 }
 
-function doSomeString() {
-    var text = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz";
-
-    for (var i = 0; i < 5; i++)
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return text;
-}
 export const postsRepository = {
     async allPosts(): Promise<PostsType[]> {
         return postsCollection.find({}).toArray()
@@ -33,21 +24,13 @@ export const postsRepository = {
         return targetPost;}
     },
 
-    async releasePost(title: string, content: string, shortDescription: string, bloggerId: number): Promise<object | string> {
+    async releasePost(newPosts: PostsType, bloggerId: number): Promise<object | string> {
         const findBlogger = await bloggersCollection.findOne({id: bloggerId})
-        
+
         if (findBlogger == null) {
-            return '400'
+            return "400"
         }
         else {
-        let newPosts = {
-            id: +(new Date()),
-            title: title,
-            content: content,
-            shortDescription: shortDescription,
-            bloggerId: findBlogger.id,
-            bloggerName: doSomeString()
-        }
         await postsCollection.insertOne(newPosts)
         return newPosts}
     },
@@ -69,10 +52,6 @@ export const postsRepository = {
     },
     async deletePost(deleteId: number): Promise<boolean> {
         const result = await postsCollection.deleteOne({id: deleteId})
-        if(result.deletedCount === 1) {
-        return true}
-        else {
-            return false
-        }
+        return result.deletedCount === 1
     }
 }

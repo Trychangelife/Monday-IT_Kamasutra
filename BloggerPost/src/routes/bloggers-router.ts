@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { bloggerRepository, BloggersType } from "../repositories/bloggers-repositories";
+import { bloggerService, BloggersType } from "../domain/bloggers-service";
 import { authMiddleware } from "../validation/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger } from "../validation/input-validation-middleware";
 
@@ -8,11 +8,11 @@ import { inputValidationMiddleware, schemaPostBlogger } from "../validation/inpu
 export const bloggersRouter = Router()
 
   bloggersRouter.get('/', async (req: Request, res: Response) => {
-    const full: BloggersType[] = await bloggerRepository.allBloggers()
+    const full: BloggersType[] = await bloggerService.allBloggers()
     res.status(200).send(full)
   })
   bloggersRouter.get('/:id', async (req: Request, res: Response) => {
-    const findBlogger: object | undefined =  await bloggerRepository.targetBloggers(+req.params.id)
+    const findBlogger: object | undefined =  await bloggerService.targetBloggers(+req.params.id)
     if (findBlogger !== undefined) {
       res.status(200).send(findBlogger)
     }
@@ -23,14 +23,14 @@ export const bloggersRouter = Router()
   
   bloggersRouter.post('/', authMiddleware, schemaPostBlogger ,inputValidationMiddleware, async (req: Request, res: Response) => {
 
-    const createrPerson: BloggersType = await bloggerRepository.createBlogger(req.body.name, req.body.youtubeUrl)
+    const createrPerson: BloggersType = await bloggerService.createBlogger(req.body.name, req.body.youtubeUrl)
       res.status(201).send(createrPerson)
 
   })
   
   bloggersRouter.put('/:id',authMiddleware, schemaPostBlogger ,inputValidationMiddleware, async (req: Request, res: Response) => {
 
-    const alreadyChanges: string = await bloggerRepository.changeBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
+    const alreadyChanges: string = await bloggerService.changeBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
   
     if (alreadyChanges === 'update') {
       res.status(204).send(alreadyChanges)
@@ -42,7 +42,7 @@ export const bloggersRouter = Router()
   })
   
   bloggersRouter.delete('/:id',authMiddleware, async (req: Request, res: Response) => {
-    const afterDelete: string = await bloggerRepository.deleteBlogger(+req.params.id)
+    const afterDelete: string = await bloggerService.deleteBlogger(+req.params.id)
     if (afterDelete === "404") {
       res.send(404)
     }
