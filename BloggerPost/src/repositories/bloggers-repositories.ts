@@ -5,22 +5,29 @@ export type BloggersType = {
     name: string,
     youtubeUrl: string
 }
+const modelViewBloggers = {
+    projection: {
+        _id: 0,
+        id: 1,
+        name: 1,
+        youtubeUrl: 1
+    }
+}
 
 export const bloggerRepository = {
-    async allBloggers(skip?: number, limit?: number, searchNameTerm?: string): Promise<object> {
-        const options = {
-            projection: {
-                _id: 0,
-                id: 1,
-                name: 1,
-                youtubeUrl: 1
-            }
-        }
+    async allBloggers(skip?: number, limit?: number, searchNameTerm?: string | null): Promise<object> {
+        
+        
         if (skip !== undefined && limit !== undefined) {
-            const cursor = await bloggersCollection.find({}).skip(skip).limit(limit).toArray()
+            const cursor = await bloggersCollection.find({}, modelViewBloggers).skip(skip).limit(limit).toArray()
             const totalCount = await (await bloggersCollection.find({}).toArray()).length
             const pagesCount = Math.ceil(totalCount / limit)
-            const fullData = await bloggersCollection.find({}).toArray()
+            const fullData = await bloggersCollection.find({}, modelViewBloggers).toArray()
+            
+            if (searchNameTerm !== null) {
+                const cursorWithRegEx = await bloggersCollection.find({name: {$regex: searchNameTerm}}, modelViewBloggers).skip(skip).limit(limit).toArray()
+                return { pagesCount: 0, page: skip, pageSize: limit, totalCount, items: cursorWithRegEx }
+            }
             if (skip > 0 || limit > 0) {
                 return { pagesCount, page: skip, pageSize: limit, totalCount, items: cursor }
             }
@@ -28,7 +35,7 @@ export const bloggerRepository = {
         }
         else {
             return await bloggersCollection.find({}).toArray()
-        }
+        } 
 
     },
 

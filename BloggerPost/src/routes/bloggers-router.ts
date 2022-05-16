@@ -13,11 +13,10 @@ export const bloggersRouter = Router()
   })  
 
   bloggersRouter.get('/', async (req: Request, res: Response) => {
-    const searchNameTerm = req.query.searchNameTerm
-    // let allBloggers = await bloggersCollection.find({name: {$regex: searhNameTerm}}).toArray()
+    const searchNameTerm = typeof req.query.searchNameTerm === 'string'? req.query.searchNameTerm:null
     const page = Number(req.query.page) || 0
     const pageSize = Number(req.query.pageSize) || 0
-    const full: object = await bloggerService.allBloggers({page, pageSize}, searchNameTerm?.toString())
+    const full: object = await bloggerService.allBloggers({page, pageSize}, searchNameTerm)
  
     res.status(200).send(full)
   })

@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { validationResult } from "express-validator";
 import { postsService } from "../domain/posts-service";
+import { postsCollection } from "../repositories/db";
 import { postsRepository, PostsType } from "../repositories/posts-repositories";
 import { authMiddleware } from "../validation/authorization-middlewear";
 import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
@@ -9,7 +10,10 @@ export const postRouter = Router()
 
 
 
-
+postRouter.delete('/del', async (req: Request, res: Response) => {
+    const afterDelete = await postsCollection.deleteMany({})
+    res.send(afterDelete)
+    })  
 postRouter.get('/', async (req: Request, res: Response) => {
     const getAllPosts: PostsType[] = await postsService.allPosts()
     res.status(200).send(getAllPosts)

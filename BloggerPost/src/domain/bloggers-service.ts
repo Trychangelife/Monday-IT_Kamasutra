@@ -8,7 +8,7 @@ export type BloggersType = {
 }
 
 export const bloggerService = {
-    async allBloggers(params?: { pageSize: number, page: number }, searchNameTerm?: string): Promise<object> {
+    async allBloggers(params?: { pageSize: number, page: number }, searchNameTerm?: string | null): Promise<object> {
         let skip = 0
         if (params) {
             skip = (params.page - 1) * params.pageSize
