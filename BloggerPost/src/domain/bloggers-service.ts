@@ -1,4 +1,5 @@
 import { bloggerRepository } from "../repositories/bloggers-repositories"
+import { bloggersCollection } from "../repositories/db"
 
 export type BloggersType = {
     id: number,
@@ -7,10 +8,23 @@ export type BloggersType = {
 }
 
 export const bloggerService = {
-    async allBloggers(): Promise<BloggersType[]> {
-        return bloggerRepository.allBloggers()
+    async allBloggers(params?: {pageSize: number, page: number}): Promise<BloggersType[]> {
+        let skip = 0
+        if(params) {
+        skip = (params.page - 1) * params.pageSize
+        // const totalCount = await bloggersCollection.find({}).toArray()
+        // const pagesCount = Math.ceil(totalCount.length / params?.pageSize)  
+    }
+    const bloggers = await bloggerRepository.allBloggers(skip, params?.pageSize)
+    // const totalCount = await bloggersCollection.find({}).toArray()
+    // const pagesCount = Math.ceil(totalCount.length / params?.pageSize)
+    // return {
+    //     items: bloggers,
+    //     totalCount, pagesCount
+    // }
+    return bloggers
     },
-
+   
     async targetBloggers(id: number): Promise<object | undefined> {
 
        return bloggerRepository.targetBloggers(id)

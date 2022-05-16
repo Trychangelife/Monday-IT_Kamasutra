@@ -1,14 +1,33 @@
-import { Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { bloggerService, BloggersType } from "../domain/bloggers-service";
+import { bloggersCollection, db } from "../repositories/db";
 import { authMiddleware } from "../validation/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger } from "../validation/input-validation-middleware";
 
 
 
 export const bloggersRouter = Router()
+  bloggersRouter.delete('/del', async (req: Request, res: Response) => {
+  const afterDelete = await bloggersCollection.deleteMany({})
+  res.send(afterDelete)
+  })  
 
   bloggersRouter.get('/', async (req: Request, res: Response) => {
-    const full: BloggersType[] = await bloggerService.allBloggers()
+    // const searhNameTerm = req.query.searhNameTerm as string
+    // let allBloggers = await bloggersCollection.find({name: {$regex: searhNameTerm}}).toArray()
+    const page = Number(req.query.page) || 1
+    const pageSize = Number(req.query.pageSize) || 5
+    // const pageCount = Math.ceil(allBloggers.length / pageSize)
+    
+    // if (searhNameTerm) {
+    //   allBloggers = await 
+    //   bloggersCollection.find({name: {$regex: searhNameTerm}}).toArray()
+    // }
+    // else {
+    //   allBloggers = await bloggersCollection.find({}).toArray()
+    // }
+    const full: BloggersType[] = await bloggerService.allBloggers({page, pageSize})
+ 
     res.status(200).send(full)
   })
   bloggersRouter.get('/:id', async (req: Request, res: Response) => {
@@ -41,6 +60,8 @@ export const bloggersRouter = Router()
     }
   })
   
+
+
   bloggersRouter.delete('/:id',authMiddleware, async (req: Request, res: Response) => {
     const afterDelete: string = await bloggerService.deleteBlogger(+req.params.id)
     if (afterDelete === "404") {
@@ -50,3 +71,37 @@ export const bloggersRouter = Router()
       res.send(204)
     }
   })
+
+
+  // function paginatedResults(model:any) {
+  //   return async (req:Request, res:Response, next:NextFunction) => {
+  //     const page:any = parseInt(req.query.page)
+  //     const limit:any = parseInt(req.query.limit)
+  
+  //     const startIndex = (page - 1) * limit
+  //     const endIndex = page * limit
+  
+  //     const results = {}
+  
+  //     if (endIndex < await model.countDocuments().exec()) {
+  //       results.next = {
+  //         page: page + 1,
+  //         limit: limit
+  //       }
+  //     }
+      
+  //     if (startIndex > 0) {
+  //       results.previous = {
+  //         page: page - 1,
+  //         limit: limit
+  //       }
+  //     }
+  //     try {
+  //       results.results = await model.find().limit(limit).skip(startIndex).exec()
+  //       res.paginatedResults = results
+  //       next()
+  //     } catch (e) {
+  //       res.status(500).json({ message: e.message })
+  //     }
+  //   }
+  // }

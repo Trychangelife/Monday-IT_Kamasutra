@@ -7,8 +7,14 @@ export type BloggersType = {
 }
 
 export const bloggerRepository = {
-    async allBloggers(): Promise<BloggersType[]> {
-        return bloggersCollection.find({}).toArray()
+    async allBloggers(skip?: number, limit?: number): Promise<BloggersType[]> {
+        const cursor =  bloggersCollection.find({
+        })
+        if(skip) cursor.skip(skip)
+        if(limit) cursor.limit(limit)
+        
+        return cursor.toArray()
+
     },
 
     async targetBloggers(id: number): Promise<object | undefined> {
