@@ -8,10 +8,11 @@ export type BloggersType = {
 }
 
 export const bloggerService = {
-    async allBloggers(params?: {pageSize: number, page: number}): Promise<BloggersType[]> {
+    async allBloggers(params?: {pageSize: number, page: number}): Promise<object> {
         let skip = 0
         if(params) {
         skip = (params.page - 1) * params.pageSize
+
         // const totalCount = await bloggersCollection.find({}).toArray()
         // const pagesCount = Math.ceil(totalCount.length / params?.pageSize)  
     }

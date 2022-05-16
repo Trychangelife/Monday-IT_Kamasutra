@@ -13,11 +13,6 @@ const port = process.env.PORT
 
 app.use(cors())
 app.use(bodyParser.json())
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(req.url);
-  next()
-  
-})
 app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
 

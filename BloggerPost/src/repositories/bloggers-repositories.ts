@@ -7,13 +7,17 @@ export type BloggersType = {
 }
 
 export const bloggerRepository = {
-    async allBloggers(skip?: number, limit?: number): Promise<BloggersType[]> {
-        const cursor =  bloggersCollection.find({
-        })
-        if(skip) cursor.skip(skip)
-        if(limit) cursor.limit(limit)
-        
-        return cursor.toArray()
+    async allBloggers(skip?: number, limit?: number): Promise<object> {
+    
+        if (skip !== undefined && limit !== undefined) {
+            const cursor = await bloggersCollection.find({}).skip(skip).limit(limit).toArray()
+            const totalCount = await (await bloggersCollection.find({}).toArray()).length
+            const pagesCount = Math.ceil(totalCount / limit)
+            return {pagesCount, page: skip, pageSize: limit, totalCount, items: cursor}
+        }
+        else { 
+            return await bloggersCollection.find({}).toArray()
+        }
 
     },
 
@@ -43,3 +47,20 @@ export const bloggerRepository = {
     }
 
 }
+
+
+
+
+
+
+    // const totalCount = await (await bloggersCollection.find({}).toArray()).length
+        // const cursor =  bloggersCollection.find({
+        // })
+        // if(skip) cursor.skip(skip)
+        // if(limit) {cursor.limit(limit)
+        // // const items:any = cursor.toArray()
+        // const pagesCount = Math.ceil(totalCount / limit)
+        // return {
+        //     items: cursor,
+        //     totalCount, pagesCount
+        // }}

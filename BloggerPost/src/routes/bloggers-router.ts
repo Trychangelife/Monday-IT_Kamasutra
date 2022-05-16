@@ -26,7 +26,7 @@ export const bloggersRouter = Router()
     // else {
     //   allBloggers = await bloggersCollection.find({}).toArray()
     // }
-    const full: BloggersType[] = await bloggerService.allBloggers({page, pageSize})
+    const full: object = await bloggerService.allBloggers({page, pageSize})
  
     res.status(200).send(full)
   })
