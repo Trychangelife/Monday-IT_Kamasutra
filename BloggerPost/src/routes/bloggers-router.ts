@@ -13,20 +13,11 @@ export const bloggersRouter = Router()
   })  
 
   bloggersRouter.get('/', async (req: Request, res: Response) => {
-    // const searhNameTerm = req.query.searhNameTerm as string
+    const searchNameTerm = req.query.searchNameTerm
     // let allBloggers = await bloggersCollection.find({name: {$regex: searhNameTerm}}).toArray()
-    const page = Number(req.query.page) || 1
-    const pageSize = Number(req.query.pageSize) || 5
-    // const pageCount = Math.ceil(allBloggers.length / pageSize)
-    
-    // if (searhNameTerm) {
-    //   allBloggers = await 
-    //   bloggersCollection.find({name: {$regex: searhNameTerm}}).toArray()
-    // }
-    // else {
-    //   allBloggers = await bloggersCollection.find({}).toArray()
-    // }
-    const full: object = await bloggerService.allBloggers({page, pageSize})
+    const page = Number(req.query.page) || 0
+    const pageSize = Number(req.query.pageSize) || 0
+    const full: object = await bloggerService.allBloggers({page, pageSize}, searchNameTerm?.toString())
  
     res.status(200).send(full)
   })

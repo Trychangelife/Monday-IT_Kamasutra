@@ -7,15 +7,26 @@ export type BloggersType = {
 }
 
 export const bloggerRepository = {
-    async allBloggers(skip?: number, limit?: number): Promise<object> {
-    
+    async allBloggers(skip?: number, limit?: number, searchNameTerm?: string): Promise<object> {
+        const options = {
+            projection: {
+                _id: 0,
+                id: 1,
+                name: 1,
+                youtubeUrl: 1
+            }
+        }
         if (skip !== undefined && limit !== undefined) {
             const cursor = await bloggersCollection.find({}).skip(skip).limit(limit).toArray()
             const totalCount = await (await bloggersCollection.find({}).toArray()).length
             const pagesCount = Math.ceil(totalCount / limit)
-            return {pagesCount, page: skip, pageSize: limit, totalCount, items: cursor}
+            const fullData = await bloggersCollection.find({}).toArray()
+            if (skip > 0 || limit > 0) {
+                return { pagesCount, page: skip, pageSize: limit, totalCount, items: cursor }
+            }
+            else return { pagesCount: 0, page: skip, pageSize: limit, totalCount, items: fullData }
         }
-        else { 
+        else {
             return await bloggersCollection.find({}).toArray()
         }
 
@@ -23,7 +34,7 @@ export const bloggerRepository = {
 
     async targetBloggers(id: number): Promise<object | undefined> {
 
-        const blogger: BloggersType | null = await bloggersCollection.findOne({id: id})
+        const blogger: BloggersType | null = await bloggersCollection.findOne({ id: id })
         if (blogger !== null) {
             return blogger
         }
@@ -33,16 +44,16 @@ export const bloggerRepository = {
     },
 
     async createBlogger(newBlogger: BloggersType): Promise<BloggersType> {
-            await bloggersCollection.insertOne(newBlogger)
-            return newBlogger
+        await bloggersCollection.insertOne(newBlogger)
+        return newBlogger
     },
 
     async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<boolean> {
-        const result = await bloggersCollection.updateOne({id: id}, {$set: {name: name, youtubeUrl: youtubeUrl}})
+        const result = await bloggersCollection.updateOne({ id: id }, { $set: { name: name, youtubeUrl: youtubeUrl } })
         return result.matchedCount === 1
     },
     async deleteBlogger(id: number): Promise<boolean> {
-        const result = await bloggersCollection.deleteOne({id: id})
+        const result = await bloggersCollection.deleteOne({ id: id })
         return result.deletedCount === 1
     }
 

@@ -8,27 +8,18 @@ export type BloggersType = {
 }
 
 export const bloggerService = {
-    async allBloggers(params?: {pageSize: number, page: number}): Promise<object> {
+    async allBloggers(params?: { pageSize: number, page: number }, searchNameTerm?: string): Promise<object> {
         let skip = 0
-        if(params) {
-        skip = (params.page - 1) * params.pageSize
-
-        // const totalCount = await bloggersCollection.find({}).toArray()
-        // const pagesCount = Math.ceil(totalCount.length / params?.pageSize)  
-    }
-    const bloggers = await bloggerRepository.allBloggers(skip, params?.pageSize)
-    // const totalCount = await bloggersCollection.find({}).toArray()
-    // const pagesCount = Math.ceil(totalCount.length / params?.pageSize)
-    // return {
-    //     items: bloggers,
-    //     totalCount, pagesCount
-    // }
-    return bloggers
+        if (params) {
+            skip = (params.page - 1) * params.pageSize
+        }
+        const bloggers = await bloggerRepository.allBloggers(skip, params?.pageSize, searchNameTerm)
+        return bloggers
     },
-   
+
     async targetBloggers(id: number): Promise<object | undefined> {
 
-       return bloggerRepository.targetBloggers(id)
+        return bloggerRepository.targetBloggers(id)
     },
 
     async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType> {
@@ -37,8 +28,8 @@ export const bloggerService = {
             name: name,
             youtubeUrl: youtubeUrl
         }
-            const createdBlogger = await bloggerRepository.createBlogger(newBlogger)
-            return createdBlogger
+        const createdBlogger = await bloggerRepository.createBlogger(newBlogger)
+        return createdBlogger
     },
 
     async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<string> {
