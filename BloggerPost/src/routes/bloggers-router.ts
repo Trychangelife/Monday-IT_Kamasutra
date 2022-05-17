@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { bloggerService, BloggersType } from "../domain/bloggers-service";
+import { postsService } from "../domain/posts-service";
 import { bloggersCollection, db } from "../repositories/db";
 import { authMiddleware } from "../validation/authorization-middlewear";
-import { inputValidationMiddleware, schemaPostBlogger } from "../validation/input-validation-middleware";
+import { inputValidationMiddleware, schemaPostBlogger, schemaPosts } from "../validation/input-validation-middleware";
 
 
 
@@ -12,10 +13,20 @@ export const bloggersRouter = Router()
   res.send(afterDelete)
   })  
 
+export type ConstructorPaginationType = { pageNumber: number, pageSize: number};
+
+function constructorPagination( pageNumber: string | undefined, pageSize: string | undefined): ConstructorPaginationType {
+   let result: ConstructorPaginationType = { pageNumber: 1, pageSize: 10}
+   if (pageNumber) result.pageNumber = +pageNumber
+   if (pageSize) result.pageSize = +pageSize
+   return result }
+
+
   bloggersRouter.get('/', async (req: Request, res: Response) => {
     const searchNameTerm = typeof req.query.searchNameTerm === 'string'? req.query.searchNameTerm:null
-    const page = Number(req.query.page) || 0
-    const pageSize = Number(req.query.pageSize) || 0
+    const page = Number(req.query.pageNumber) || 1
+    const pageSize = Number(req.query.pageSize) || 10
+    const paginationData = constructorPagination(req.query.pageNumber as string, req.query.pageSize as string) // Доработать с конструктором!
     const full: object = await bloggerService.allBloggers({page, pageSize}, searchNameTerm)
  
     res.status(200).send(full)
@@ -29,13 +40,34 @@ export const bloggersRouter = Router()
       res.send(404)
     }
   })
+  bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
+    const page = Number(req.query.page) || 0
+    const pageSize = Number(req.query.pageSize) || 0
+    const findBlogger: object | undefined =  await postsService.allPostsSpecificBlogger(+req.params.bloggerId, page, pageSize)
+    if (findBlogger !== undefined) {
+      res.status(200).send(findBlogger)
+    }
+    else {
+      res.send(404)
+    }
+  })
   
   bloggersRouter.post('/', authMiddleware, schemaPostBlogger ,inputValidationMiddleware, async (req: Request, res: Response) => {
 
-    const createrPerson: BloggersType = await bloggerService.createBlogger(req.body.name, req.body.youtubeUrl)
+    const createrPerson: BloggersType | null = await bloggerService.createBlogger(req.body.name, req.body.youtubeUrl)
       res.status(201).send(createrPerson)
 
   })
+
+  bloggersRouter.post('/:bloggerId/posts', authMiddleware, schemaPosts ,inputValidationMiddleware, async (req: Request, res: Response) => {
+    const blogger = await bloggersCollection.count({ id: +req.params.bloggerId})
+    console.log(req.body, req.params)
+    if (blogger < 1) {return res.send(404)}
+
+    const createPostForSpecificBlogger: string | object = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId, +req.params.bloggerId)
+      res.status(201).send(createPostForSpecificBlogger)
+
+  }) 
   
   bloggersRouter.put('/:id',authMiddleware, schemaPostBlogger ,inputValidationMiddleware, async (req: Request, res: Response) => {
 

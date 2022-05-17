@@ -27,8 +27,17 @@ export const postsService = {
     async targetPosts(postId: number): Promise<object | undefined>{
         return await postsRepository.targetPosts(postId)
     },
+    
+    async allPostsSpecificBlogger(bloggerId: number, page?:number, pageSize?:number): Promise<object | undefined>{
+        let skip = 0
+        if (page && pageSize){
+            skip = (page - 1) * pageSize
+        }
 
-    async releasePost(title: string, content: string, shortDescription: string, bloggerId: number): Promise<object | string | object> {
+        return await postsRepository.allPostsSpecificBlogger(bloggerId, skip, pageSize)
+    },
+
+    async releasePost(title: string, content: string, shortDescription: string, bloggerId: number, bloggerIdUrl?: number): Promise<object | string | object> {
         let newPosts: PostsType = {
             id: +(new Date()),
             title: title,

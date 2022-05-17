@@ -8,12 +8,12 @@ export type BloggersType = {
 }
 
 export const bloggerService = {
-    async allBloggers(params?: { pageSize: number, page: number }, searchNameTerm?: string | null): Promise<object> {
+    async allBloggers(params?: { page: number, pageSize: number }, searchNameTerm?: string | null): Promise<object> {
         let skip = 0
         if (params) {
             skip = (params.page - 1) * params.pageSize
         }
-        const bloggers = await bloggerRepository.allBloggers(skip, params?.pageSize, searchNameTerm)
+        const bloggers = await bloggerRepository.allBloggers(skip, params?.pageSize, searchNameTerm, params?.page)
         return bloggers
     },
 
@@ -22,7 +22,7 @@ export const bloggerService = {
         return bloggerRepository.targetBloggers(id)
     },
 
-    async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType> {
+    async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType | null> {
         const newBlogger = {
             id: +(new Date()),
             name: name,

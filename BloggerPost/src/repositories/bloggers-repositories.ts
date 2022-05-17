@@ -15,33 +15,33 @@ const modelViewBloggers = {
 }
 
 export const bloggerRepository = {
-    async allBloggers(skip?: number, limit?: number, searchNameTerm?: string | null): Promise<object> {
+    async allBloggers(skip: number, limit?: number, searchNameTerm?: string | null, page?: number): Promise<object> {
         
         
-        if (skip !== undefined && limit !== undefined) {
+        if (page !== undefined && limit !== undefined) {
             const cursor = await bloggersCollection.find({}, modelViewBloggers).skip(skip).limit(limit).toArray()
-            const totalCount = await (await bloggersCollection.find({}).toArray()).length
+            const totalCount = await bloggersCollection.count({}) //Возможно нужно изменить на COUNT (чтобы не вытягивать всю базу данных)
             const pagesCount = Math.ceil(totalCount / limit)
             const fullData = await bloggersCollection.find({}, modelViewBloggers).toArray()
             
             if (searchNameTerm !== null) {
                 const cursorWithRegEx = await bloggersCollection.find({name: {$regex: searchNameTerm}}, modelViewBloggers).skip(skip).limit(limit).toArray()
-                return { pagesCount: 0, page: skip, pageSize: limit, totalCount, items: cursorWithRegEx }
+                return { pagesCount: 0, page: page, pageSize: limit, totalCount, items: cursorWithRegEx }
             }
             if (skip > 0 || limit > 0) {
-                return { pagesCount, page: skip, pageSize: limit, totalCount, items: cursor }
+                return { pagesCount, page: page, pageSize: limit, totalCount, items: cursor }
             }
-            else return { pagesCount: 0, page: skip, pageSize: limit, totalCount, items: fullData }
+            else return { pagesCount: 0, page: page, pageSize: limit, totalCount, items: fullData }
         }
         else {
-            return await bloggersCollection.find({}).toArray()
+            return await bloggersCollection.find({}, modelViewBloggers).toArray()
         } 
 
     },
 
     async targetBloggers(id: number): Promise<object | undefined> {
 
-        const blogger: BloggersType | null = await bloggersCollection.findOne({ id: id })
+        const blogger: BloggersType | null = await bloggersCollection.findOne({ id: id }, modelViewBloggers)
         if (blogger !== null) {
             return blogger
         }
@@ -50,9 +50,9 @@ export const bloggerRepository = {
         }
     },
 
-    async createBlogger(newBlogger: BloggersType): Promise<BloggersType> {
+    async createBlogger(newBlogger: BloggersType): Promise<BloggersType | null> {
         await bloggersCollection.insertOne(newBlogger)
-        return newBlogger
+        return await bloggersCollection.findOne({id: newBlogger.id}, modelViewBloggers)
     },
 
     async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<boolean> {
