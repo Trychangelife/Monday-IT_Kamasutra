@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
-import { validationResult } from "express-validator";
+import { check, param, validationResult } from "express-validator";
 import { postsService } from "../domain/posts-service";
 import { postsCollection } from "../repositories/db";
 import { postsRepository, PostsType } from "../repositories/posts-repositories";
 import { authMiddleware } from "../validation/authorization-middlewear";
-import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
+import { checkParams, errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
 import { constructorPagination, ConstructorPaginationType } from "./bloggers-router";
 
 export const postRouter = Router()
@@ -30,6 +30,7 @@ postRouter.get('/:id', async (req: Request, res: Response) => {
     }
 })
 postRouter.post('/',authMiddleware,schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
+    console.log(req.body, req.params)
     const giveMePost: string | object = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId)
     const errors = validationResult(req.body.bloggerId).formatWith(errorFormatter)
     if (giveMePost === '400') {
@@ -40,7 +41,7 @@ postRouter.post('/',authMiddleware,schemaPosts, inputValidationMiddleware, async
 })
 postRouter.put('/:id',authMiddleware,schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
     const afterChanged: object | string = await postsService.changePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId)
-    if (afterChanged !== undefined && afterChanged !== '400') {
+    if (afterChanged !== "404" && afterChanged !== '400') {
     res.status(204).send(afterChanged)  }
     else if (afterChanged === "400") {
         res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 } )

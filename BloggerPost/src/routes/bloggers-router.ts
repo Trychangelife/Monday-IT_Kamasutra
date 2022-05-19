@@ -62,7 +62,6 @@ export function constructorPagination( pageSize: string | undefined, pageNumber:
 
   bloggersRouter.post('/:bloggerId/posts', authMiddleware, schemaPosts ,inputValidationMiddleware, async (req: Request, res: Response) => {
     const blogger = await bloggersCollection.count({ id: +req.params.bloggerId})
-    console.log(req.body, req.params)
     if (blogger < 1) {return res.send(404)}
 
     const createPostForSpecificBlogger: string | object = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId, +req.params.bloggerId)

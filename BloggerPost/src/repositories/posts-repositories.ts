@@ -60,9 +60,9 @@ export const postsRepository = {
     },
 
 
-    async releasePost(newPosts: PostsType, bloggerId: number): Promise<object | string> {
-        const findBlogger = await bloggersCollection.findOne({id: bloggerId}, postViewModel)
-        if (findBlogger == null) {return "400"}
+    async releasePost(newPosts: PostsType, bloggerId: number, bloggerIdUrl?: number): Promise<object | string> {
+        const findBlogger = await bloggersCollection.count({id: bloggerId})
+        if (findBlogger < 1) {return "400"}
         await postsCollection.insertOne(newPosts)
         const result: PostsType | null = await postsCollection.findOne({id: newPosts.id}, postViewModel)
         if (result !== null) {return result}
@@ -71,14 +71,13 @@ export const postsRepository = {
 
     async changePost(postId: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<string | object> {
 
-        const post = await postsCollection.findOne({id: postId}, postViewModel)
-        const findBlogger = await bloggersCollection.findOne({id: bloggerId})
-        if (post !== null && findBlogger !== null) {
+        const foundPost = await postsCollection.findOne({id: postId}, postViewModel)
+        const foundBlogger = await bloggersCollection.findOne({id: bloggerId})
+        if (foundPost !== null && foundBlogger !== null) {
             await postsCollection.updateOne({id: postId}, {$set: {title: title, shortDescription: shortDescription, content: content, }})
-            
-            return post
+            return foundPost
         }
-        else if (findBlogger !== null) {
+        else if (foundBlogger == null) {
             return '400'
         }
         else {

@@ -43,22 +43,28 @@ export const postsService = {
     },
 
     async releasePost(title: string, content: string, shortDescription: string, bloggerId: number, bloggerIdUrl?: number): Promise<object | string | object> {
-        const findBlogger = await bloggersCollection.find({}) // Почекай тут!!
+        const foundBlogger = await bloggersCollection.findOne({id: bloggerId})
+        if (foundBlogger !== null) {
         let newPosts: PostsType = {
             id: +(new Date()),
             title: title,
             content: content,
             shortDescription: shortDescription,
             bloggerId: bloggerId,
-            bloggerName: doSomeString()
+            bloggerName: foundBlogger.name
         }
-        const createPost = await postsRepository.releasePost(newPosts, bloggerId)
-        if (createPost == "400") {
-            return "400"
-        }
-        else {
-            return createPost
-        }
+        return await postsRepository.releasePost(newPosts, bloggerId, bloggerIdUrl)
+    }
+    else {
+        return "400"
+    }
+        
+        // if (createPost == "400") {
+        //     return "400"
+        // }
+        // else {
+        //     return createPost
+        // }
 
         
     },
