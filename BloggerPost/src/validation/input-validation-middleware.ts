@@ -38,11 +38,11 @@ export const errorFormatter = ({ location, msg, param, value, nestedErrors }: Va
     }
 }
 
-export const checkParams = (req: Request, res: Response, next:NextFunction) => {
-    param('id').notEmpty().exists
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        res.send(400)
-    }
-    else {next()}
-}
+// export const checkParams = (req: Request, res: Response, next:NextFunction) => {
+//     param('id').notEmpty().exists
+//     const errors = validationResult(req)
+//     if (!errors.isEmpty()) {
+//         res.send(400)
+//     }
+//     else {next()}
+// }

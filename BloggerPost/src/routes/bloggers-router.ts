@@ -24,8 +24,6 @@ export function constructorPagination( pageSize: string | undefined, pageNumber:
 
   bloggersRouter.get('/', async (req: Request, res: Response) => {
     const searchNameTerm = typeof req.query.SearchNameTerm === 'string'? req.query.SearchNameTerm:null
-    // const page = Number(req.query.pageNumber) || 1
-    // const pageSize = Number(req.query.pageSize) || 10
     const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string) // Доработать с конструктором!
     const full: object = await bloggerService.allBloggers(paginationData.pageSize, paginationData.pageNumber, searchNameTerm)
  
@@ -41,8 +39,7 @@ export function constructorPagination( pageSize: string | undefined, pageNumber:
     }
   })
   bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
-    // const page = Number(req.query.page) || 0
-    // const pageSize = Number(req.query.pageSize) || 0
+    console.log(req.body, req.params, req.query)
     const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
     const findBlogger: object | undefined =  await postsService.allPostsSpecificBlogger(+req.params.bloggerId, paginationData.pageNumber, paginationData.pageSize)
     if (findBlogger !== undefined) {
@@ -64,7 +61,7 @@ export function constructorPagination( pageSize: string | undefined, pageNumber:
     const blogger = await bloggersCollection.count({ id: +req.params.bloggerId})
     if (blogger < 1) {return res.send(404)}
 
-    const createPostForSpecificBlogger: string | object = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId, +req.params.bloggerId)
+    const createPostForSpecificBlogger: string | object | null = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId, +req.params.bloggerId)
       res.status(201).send(createPostForSpecificBlogger)
 
   }) 

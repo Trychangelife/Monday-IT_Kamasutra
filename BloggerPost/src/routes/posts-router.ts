@@ -4,7 +4,7 @@ import { postsService } from "../domain/posts-service";
 import { postsCollection } from "../repositories/db";
 import { postsRepository, PostsType } from "../repositories/posts-repositories";
 import { authMiddleware } from "../validation/authorization-middlewear";
-import { checkParams, errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
+import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
 import { constructorPagination, ConstructorPaginationType } from "./bloggers-router";
 
 export const postRouter = Router()
@@ -30,10 +30,10 @@ postRouter.get('/:id', async (req: Request, res: Response) => {
     }
 })
 postRouter.post('/',authMiddleware,schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
-    console.log(req.body, req.params)
-    const giveMePost: string | object = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId)
+    
+    const giveMePost: string | object | null = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId)
     const errors = validationResult(req.body.bloggerId).formatWith(errorFormatter)
-    if (giveMePost === '400') {
+    if (giveMePost == null) {
         res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 } )
     }
     else {

@@ -42,9 +42,21 @@ export const postsService = {
         return await postsRepository.allPostsSpecificBlogger(bloggerId, skip, pageSize, page)
     },
 
-    async releasePost(title: string, content: string, shortDescription: string, bloggerId: number, bloggerIdUrl?: number): Promise<object | string | object> {
+    async releasePost(title: string, content: string, shortDescription: string, bloggerId?: number, bloggerIdUrl?: number): Promise<object | string | null> {
         const foundBlogger = await bloggersCollection.findOne({id: bloggerId})
-        if (foundBlogger !== null) {
+        const foundBloggerW = await bloggersCollection.findOne({id: bloggerIdUrl})
+        if (bloggerIdUrl && foundBloggerW !== null) {
+            let newPosts: PostsType = {
+                id: +(new Date()),
+                title: title,
+                content: content,
+                shortDescription: shortDescription,
+                bloggerId: bloggerIdUrl,
+                bloggerName: foundBloggerW.name
+            }
+            return await postsRepository.releasePost(newPosts, bloggerIdUrl)
+        }
+        else if (foundBlogger !== null && bloggerId) {
         let newPosts: PostsType = {
             id: +(new Date()),
             title: title,
@@ -56,7 +68,7 @@ export const postsService = {
         return await postsRepository.releasePost(newPosts, bloggerId, bloggerIdUrl)
     }
     else {
-        return "400"
+        return null
     }
         
         // if (createPost == "400") {
