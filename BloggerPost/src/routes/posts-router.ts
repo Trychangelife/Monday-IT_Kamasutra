@@ -5,17 +5,19 @@ import { postsCollection } from "../repositories/db";
 import { postsRepository, PostsType } from "../repositories/posts-repositories";
 import { authMiddleware } from "../validation/authorization-middlewear";
 import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
+import { constructorPagination, ConstructorPaginationType } from "./bloggers-router";
 
 export const postRouter = Router()
 
 
 
-postRouter.delete('/del', async (req: Request, res: Response) => {
-    const afterDelete = await postsCollection.deleteMany({})
-    res.send(afterDelete)
-    })  
+// postRouter.delete('/del', async (req: Request, res: Response) => {
+//     const afterDelete = await postsCollection.deleteMany({})
+//     res.send(afterDelete)
+//     })  
 postRouter.get('/', async (req: Request, res: Response) => {
-    const getAllPosts: PostsType[] = await postsService.allPosts()
+    const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
+    const getAllPosts: object = await postsService.allPosts(paginationData.pageSize, paginationData.pageNumber)
     res.status(200).send(getAllPosts)
 })
 postRouter.get('/:id', async (req: Request, res: Response) => {

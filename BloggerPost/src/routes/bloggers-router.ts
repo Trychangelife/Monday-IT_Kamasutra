@@ -8,26 +8,26 @@ import { inputValidationMiddleware, schemaPostBlogger, schemaPosts } from "../va
 
 
 export const bloggersRouter = Router()
-  bloggersRouter.delete('/del', async (req: Request, res: Response) => {
-  const afterDelete = await bloggersCollection.deleteMany({})
-  res.send(afterDelete)
-  })  
+  // bloggersRouter.delete('/del', async (req: Request, res: Response) => {
+  // const afterDelete = await bloggersCollection.deleteMany({})
+  // res.send(afterDelete)
+  // })  
 
 export type ConstructorPaginationType = { pageNumber: number, pageSize: number};
 
-function constructorPagination( pageNumber: string | undefined, pageSize: string | undefined): ConstructorPaginationType {
-   let result: ConstructorPaginationType = { pageNumber: 1, pageSize: 10}
-   if (pageNumber) result.pageNumber = +pageNumber
+export function constructorPagination( pageSize: string | undefined, pageNumber: string | undefined): ConstructorPaginationType {
+   let result: ConstructorPaginationType = {pageSize: 10, pageNumber: 1}
    if (pageSize) result.pageSize = +pageSize
+   if (pageNumber) result.pageNumber = +pageNumber
    return result }
 
 
   bloggersRouter.get('/', async (req: Request, res: Response) => {
-    const searchNameTerm = typeof req.query.searchNameTerm === 'string'? req.query.searchNameTerm:null
-    const page = Number(req.query.pageNumber) || 1
-    const pageSize = Number(req.query.pageSize) || 10
-    const paginationData = constructorPagination(req.query.pageNumber as string, req.query.pageSize as string) // Доработать с конструктором!
-    const full: object = await bloggerService.allBloggers({page, pageSize}, searchNameTerm)
+    const searchNameTerm = typeof req.query.SearchNameTerm === 'string'? req.query.SearchNameTerm:null
+    // const page = Number(req.query.pageNumber) || 1
+    // const pageSize = Number(req.query.pageSize) || 10
+    const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string) // Доработать с конструктором!
+    const full: object = await bloggerService.allBloggers(paginationData.pageSize, paginationData.pageNumber, searchNameTerm)
  
     res.status(200).send(full)
   })
@@ -41,9 +41,10 @@ function constructorPagination( pageNumber: string | undefined, pageSize: string
     }
   })
   bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
-    const page = Number(req.query.page) || 0
-    const pageSize = Number(req.query.pageSize) || 0
-    const findBlogger: object | undefined =  await postsService.allPostsSpecificBlogger(+req.params.bloggerId, page, pageSize)
+    // const page = Number(req.query.page) || 0
+    // const pageSize = Number(req.query.pageSize) || 0
+    const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
+    const findBlogger: object | undefined =  await postsService.allPostsSpecificBlogger(+req.params.bloggerId, paginationData.pageNumber, paginationData.pageSize)
     if (findBlogger !== undefined) {
       res.status(200).send(findBlogger)
     }

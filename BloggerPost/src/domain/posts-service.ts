@@ -1,3 +1,4 @@
+import { bloggersCollection, postsCollection } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 
 
@@ -20,8 +21,12 @@ function doSomeString() {
     return text;
 }
 export const postsService = {
-    async allPosts(): Promise<PostsType[]> {
-        return postsRepository.allPosts()
+    async allPosts(pageSize:number, pageNumber: number,): Promise<object> {
+        let skip = 0
+        if (pageNumber && pageSize) {
+            skip = (pageNumber - 1) * pageSize
+        }
+        return postsRepository.allPosts(skip, pageSize, pageNumber)
     },
 
     async targetPosts(postId: number): Promise<object | undefined>{
@@ -34,10 +39,11 @@ export const postsService = {
             skip = (page - 1) * pageSize
         }
 
-        return await postsRepository.allPostsSpecificBlogger(bloggerId, skip, pageSize)
+        return await postsRepository.allPostsSpecificBlogger(bloggerId, skip, pageSize, page)
     },
 
     async releasePost(title: string, content: string, shortDescription: string, bloggerId: number, bloggerIdUrl?: number): Promise<object | string | object> {
+        const findBlogger = await bloggersCollection.find({}) // Почекай тут!!
         let newPosts: PostsType = {
             id: +(new Date()),
             title: title,

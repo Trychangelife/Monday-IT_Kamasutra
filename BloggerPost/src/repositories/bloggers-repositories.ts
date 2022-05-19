@@ -25,8 +25,10 @@ export const bloggerRepository = {
             const fullData = await bloggersCollection.find({}, modelViewBloggers).toArray()
             
             if (searchNameTerm !== null) {
-                const cursorWithRegEx = await bloggersCollection.find({name: {$regex: searchNameTerm}}, modelViewBloggers).skip(skip).limit(limit).toArray()
-                return { pagesCount: 0, page: page, pageSize: limit, totalCount, items: cursorWithRegEx }
+                const cursorWithRegEx = await bloggersCollection.find({name: {$regex: searchNameTerm, $options: 'i'}}, modelViewBloggers).skip(skip).limit(limit).toArray()
+                const totalCountWithRegex = cursorWithRegEx.length
+                const pagesCountWithRegex = Math.ceil(totalCountWithRegex / limit)
+                return { pagesCount: pagesCountWithRegex, page: page, pageSize: limit, totalCount: totalCountWithRegex, items: cursorWithRegEx }
             }
             if (skip > 0 || limit > 0) {
                 return { pagesCount, page: page, pageSize: limit, totalCount, items: cursor }

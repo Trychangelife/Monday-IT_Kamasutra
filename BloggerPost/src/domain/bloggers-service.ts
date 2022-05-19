@@ -8,12 +8,12 @@ export type BloggersType = {
 }
 
 export const bloggerService = {
-    async allBloggers(params?: { page: number, pageSize: number }, searchNameTerm?: string | null): Promise<object> {
+    async allBloggers(pageSize:number, pageNumber: number,  searchNameTerm?: string | null): Promise<object> {
         let skip = 0
-        if (params) {
-            skip = (params.page - 1) * params.pageSize
+        if (pageNumber && pageSize) {
+            skip = (pageNumber - 1) * pageSize
         }
-        const bloggers = await bloggerRepository.allBloggers(skip, params?.pageSize, searchNameTerm, params?.page)
+        const bloggers = await bloggerRepository.allBloggers(skip, pageSize, searchNameTerm, pageNumber)
         return bloggers
     },
 
