@@ -2,6 +2,7 @@ import dotenv from "dotenv"
 dotenv.config()
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { BloggersType } from "./bloggers-repositories";
+import { CommentsType } from "./comments-repository";
 import { PostsType } from "./posts-repositories";
 import { UsersType } from "./users-repository";
 
@@ -20,6 +21,7 @@ export const db = client.db("social_network")
 export const bloggersCollection = db.collection<BloggersType>("bloggers")
 export const postsCollection = db.collection<PostsType>("posts") 
 export const usersCollection = db.collection<UsersType>("users")
+export const commentsCollection = db.collection<CommentsType>("comments")
 export async function runDb () {
 try {
     await client.connect() 

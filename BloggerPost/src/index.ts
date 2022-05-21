@@ -7,6 +7,8 @@ import { bloggersRouter } from './routes/bloggers-router';
 import { postRouter } from './routes/posts-router';
 import { runDb } from './repositories/db';
 import { usersRouter } from "./routes/users-router"
+import { authRouter } from "./routes/auth-router"
+import { commentsRouter } from "./routes/comments-router"
 
 const app = express()
 const port = process.env.PORT
@@ -16,6 +18,8 @@ app.use(bodyParser.json())
 app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
 app.use('/users', usersRouter)
+app.use('/auth', authRouter)
+app.use('/comments', commentsRouter)
 
 
 // app.listen(port, () => {

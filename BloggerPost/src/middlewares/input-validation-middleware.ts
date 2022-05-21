@@ -24,6 +24,10 @@ export const errorFormatter = ({ location, msg, param, value, nestedErrors }: Va
         field: param
     }
 }
+export const LoginInputModel = [
+    body('login').isString().trim().exists(),
+    body('password').isString().trim().exists(),
+]
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
 

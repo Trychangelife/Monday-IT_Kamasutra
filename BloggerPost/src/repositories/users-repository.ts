@@ -4,13 +4,17 @@ export type UsersType = {
     _id: ObjectId
     id: string
     login: string
+    passwordHash: string
+    passwordSalt: string
     password: string
 }
 
 const userViewModel = {
     projection: {
         _id: 0,
-        password: 0
+        password: 0,
+        passwordHash: 0,
+        passwordSalt: 0
     }
 }
 
@@ -38,6 +42,14 @@ export const usersRepository = {
     async deleteUser (id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
+    },
+    async findUserById (id: string): Promise<UsersType | null> {
+        const result = await usersCollection.findOne({id: id})
+        return result
+    },
+    async findUserByLogin (login: string): Promise<UsersType | null> {
+        const foundUser = await usersCollection.findOne({login: login})
+        return foundUser
     }
 }
 
