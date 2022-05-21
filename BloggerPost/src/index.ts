@@ -6,7 +6,7 @@ import bodyParser from 'body-parser'
 import { bloggersRouter } from './routes/bloggers-router';
 import { postRouter } from './routes/posts-router';
 import { runDb } from './repositories/db';
-import { nextTick } from "process"
+import { usersRouter } from "./routes/users-router"
 
 const app = express()
 const port = process.env.PORT
@@ -15,6 +15,7 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
+app.use('/users', usersRouter)
 
 
 // app.listen(port, () => {

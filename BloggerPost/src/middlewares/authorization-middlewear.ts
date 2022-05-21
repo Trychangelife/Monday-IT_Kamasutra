@@ -9,10 +9,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     var bytes = utf8.encode(userNamePassword)
     var encoded = 'Basic ' + base64.encode(bytes)
     if (!headerAuth || headerAuth.indexOf('Basic ') === - 1) {
-        res.status(401).json({Message: 'Missing Authorization Header'})
+        res.status(401).json({ Message: 'Missing Authorization Header' })
     }
     else if (encoded !== headerAuth) {
-        res.status(401).json({Message: 'Incorrect password/login'})
+        res.status(401).json({ Message: 'Incorrect password/login' })
     }
     else {
         next()

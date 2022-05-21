@@ -1,14 +1,15 @@
 import { bloggerRepository } from "../repositories/bloggers-repositories"
 import { bloggersCollection } from "../repositories/db"
+import { v4 as uuidv4 } from "uuid"
 
 export type BloggersType = {
-    id: number,
+    id: string,
     name: string,
     youtubeUrl: string
 }
 
 export const bloggerService = {
-    async allBloggers(pageSize:number, pageNumber: number,  searchNameTerm?: string | null): Promise<object> {
+    async allBloggers(pageSize: number, pageNumber: number, searchNameTerm?: string | null): Promise<object> {
         let skip = 0
         if (pageNumber && pageSize) {
             skip = (pageNumber - 1) * pageSize
@@ -17,14 +18,14 @@ export const bloggerService = {
         return bloggers
     },
 
-    async targetBloggers(id: number): Promise<object | undefined> {
+    async targetBloggers(id: string): Promise<object | undefined> {
 
         return bloggerRepository.targetBloggers(id)
     },
 
     async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType | null> {
         const newBlogger = {
-            id: +(new Date()),
+            id: uuidv4(),
             name: name,
             youtubeUrl: youtubeUrl
         }
@@ -32,7 +33,7 @@ export const bloggerService = {
         return createdBlogger
     },
 
-    async changeBlogger(id: number, name: any, youtubeUrl: string): Promise<string> {
+    async changeBlogger(id: string, name: any, youtubeUrl: string): Promise<string> {
         const afterUpdate = await bloggerRepository.changeBlogger(id, name, youtubeUrl)
         if (afterUpdate == true) {
             return "update";
@@ -41,7 +42,7 @@ export const bloggerService = {
             return "404"
         }
     },
-    async deleteBlogger(id: number): Promise<string> {
+    async deleteBlogger(id: string): Promise<string> {
         const result = await bloggerRepository.deleteBlogger(id)
         if (result == true) {
             return "204"

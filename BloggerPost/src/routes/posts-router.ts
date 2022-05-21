@@ -3,25 +3,25 @@ import { check, param, validationResult } from "express-validator";
 import { postsService } from "../domain/posts-service";
 import { postsCollection } from "../repositories/db";
 import { postsRepository, PostsType } from "../repositories/posts-repositories";
-import { authMiddleware } from "../validation/authorization-middlewear";
-import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../validation/input-validation-middleware";
+import { authMiddleware } from "../middlewares/authorization-middlewear";
+import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../middlewares/input-validation-middleware";
 import { constructorPagination, ConstructorPaginationType } from "./bloggers-router";
 
 export const postRouter = Router()
 
 
 
-// postRouter.delete('/del', async (req: Request, res: Response) => {
-//     const afterDelete = await postsCollection.deleteMany({})
-//     res.send(afterDelete)
-//     })  
+postRouter.delete('/del', async (req: Request, res: Response) => {
+    const afterDelete = await postsCollection.deleteMany({})
+    res.send(afterDelete)
+    })  
 postRouter.get('/', async (req: Request, res: Response) => {
     const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
     const getAllPosts: object = await postsService.allPosts(paginationData.pageSize, paginationData.pageNumber)
     res.status(200).send(getAllPosts)
 })
 postRouter.get('/:id', async (req: Request, res: Response) => {
-    const takePost: object | undefined = await postsService.targetPosts(+req.params.id)
+    const takePost: object | undefined = await postsService.targetPosts(req.params.id)
     if (takePost !== undefined) {
         res.status(200).send(takePost)
     }
@@ -29,22 +29,23 @@ postRouter.get('/:id', async (req: Request, res: Response) => {
         res.send(404)
     }
 })
-postRouter.post('/',authMiddleware,schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
-    
-    const giveMePost: string | object | null = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, +req.body.bloggerId)
-    const errors = validationResult(req.body.bloggerId).formatWith(errorFormatter)
+postRouter.post('/', authMiddleware, schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
+
+    const giveMePost: string | object | null = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, req.body.bloggerId)
     if (giveMePost == null) {
-        res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 } )
+        res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 })
     }
     else {
-     res.status(201).send(giveMePost)}
+        res.status(201).send(giveMePost)
+    }
 })
-postRouter.put('/:id',authMiddleware,schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const afterChanged: object | string = await postsService.changePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId)
+postRouter.put('/:id', authMiddleware, schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
+    const afterChanged: object | string = await postsService.changePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
     if (afterChanged !== "404" && afterChanged !== '400') {
-    res.status(204).send(afterChanged)  }
+        res.status(204).send(afterChanged)
+    }
     else if (afterChanged === "400") {
-        res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 } )
+        res.status(400).json({ errorsMessages: [{ message: "blogger not found", field: "bloggerId" }], resultCode: 1 })
     }
     else {
         res.send(404)
@@ -52,8 +53,8 @@ postRouter.put('/:id',authMiddleware,schemaPosts, inputValidationMiddleware, asy
 
 })
 
-postRouter.delete('/:id',authMiddleware, async (req: Request, res: Response) => {
-    const deleteObj: boolean = await postsService.deletePost(+req.params.id)
+postRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
+    const deleteObj: boolean = await postsService.deletePost(req.params.id)
     if (deleteObj === true) {
         res.send(204)
     }
