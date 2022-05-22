@@ -8,7 +8,7 @@ export interface IGetUserAuthInfoRequest extends Request {
 }
 
 
-export const authMiddleware = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+export const authMiddlewareWithJWT = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
         res.send(401)
         return
@@ -18,8 +18,13 @@ export const authMiddleware = async (req: IGetUserAuthInfoRequest, res: Response
     const userId = await jwtService.getUserByToken(token)
 
     if (userId) {
-        req.user = await usersService.findUserById(userId.id)
-        next() 
+        const user =  await usersService.findUserById(userId)
+        if(user !== null) {
+        req.user = user
+        next() }
     }
-    res.send(401)
-}
+    else {
+        res.send(401)
+    }
+    
+} 

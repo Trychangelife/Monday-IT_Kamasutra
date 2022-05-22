@@ -1,4 +1,6 @@
-import { bloggersCollection, postsCollection } from "./db";
+
+import { CommentsType } from "./comments-repository";
+import { bloggersCollection, commentsCollection, postsCollection } from "./db";
 
 
 export type PostsType = {
@@ -19,6 +21,13 @@ export const postViewModel = {
         content: 1,
         bloggerId: 1,
         bloggerName: 1
+    }
+}
+
+export const commentsVievModel = {
+    projection: {
+        _id: 0,
+        postId: 0
     }
 }
 
@@ -88,5 +97,27 @@ export const postsRepository = {
     async deletePost(deleteId: string): Promise<boolean> {
         const result = await postsCollection.deleteOne({ id: deleteId })
         return result.deletedCount === 1
+    },
+    async createCommentForSpecificPost(createdComment: CommentsType): Promise<CommentsType | boolean> {
+
+        await commentsCollection.insertOne(createdComment)
+        const foundNewPost = await commentsCollection.findOne({id: createdComment.id}, commentsVievModel)
+        if (foundNewPost !== null) {
+        return foundNewPost}
+        else {return false}
+    },
+    async takeCommentByIdPost (postId: string, skip: number, limit: number, page: number): Promise<object | boolean> {
+        const findPosts = await postsCollection.findOne({id: postId})
+        const totalCount = await commentsCollection.count({postId: postId})
+        const pagesCount = Math.ceil(totalCount / limit)
+        if (findPosts !== null) {
+        const findComments = await commentsCollection.find({postId: postId}, commentsVievModel).skip(skip).limit(limit).toArray()
+        return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: findComments }}
+        else { return false}
     }
 }
+
+// const totalCount = await postsCollection.count({})
+//         const pagesCount = Math.ceil(totalCount / limit)
+//         const cursor = await postsCollection.find({}, postViewModel).skip(skip).limit(limit).toArray()
+//         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: cursor }

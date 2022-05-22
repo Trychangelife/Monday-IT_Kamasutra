@@ -22,4 +22,4 @@ authRouter.post('/login',LoginInputModel,inputValidationMiddleware, async (req: 
     else {
         res.sendStatus(400)
     }
-})
+}) 

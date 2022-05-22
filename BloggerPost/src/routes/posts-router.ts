@@ -4,8 +4,9 @@ import { postsService } from "../domain/posts-service";
 import { postsCollection } from "../repositories/db";
 import { postsRepository, PostsType } from "../repositories/posts-repositories";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
-import { errorFormatter, inputValidationMiddleware, schemaPosts } from "../middlewares/input-validation-middleware";
+import { commentInputModel, errorFormatter, inputValidationMiddleware, schemaPosts } from "../middlewares/input-validation-middleware";
 import { constructorPagination, ConstructorPaginationType } from "./bloggers-router";
+import { authMiddlewareWithJWT, IGetUserAuthInfoRequest } from "../middlewares/auth-middleware";
 
 export const postRouter = Router()
 
@@ -62,3 +63,23 @@ postRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) =>
         res.send(404)
     }
 })
+
+postRouter.post('/:postId/comments',authMiddlewareWithJWT, commentInputModel, inputValidationMiddleware, async (req: Request , res: Response) => {
+    const newComment = await postsService.createCommentForSpecificPost(req.params.postId, req.body.content, req.user!.id, req.user!.login)
+    if (newComment){
+    res.status(201).send(newComment)}
+    else {
+        res.status(401).send("Post doesn't exists")
+    }
+
+}) 
+postRouter.get('/:postId/comments', async (req: Request , res: Response) => {
+    const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
+    const newComment = await postsService.takeCommentByIdPost(req.params.postId, paginationData.pageNumber, paginationData.pageSize)
+    if (newComment){
+    res.status(200).send(newComment)}
+    else {
+    res.status(404).send("Post doesn't exists")
+    }
+
+}) 

@@ -32,7 +32,6 @@ export const usersService = {
     },
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
-        console.log('hash ' + hash)
         return hash
     },
     async checkCredentials(login: string, password: string) {
@@ -46,5 +45,5 @@ export const usersService = {
     },
     async findUserById (id: string): Promise <UsersType | null> {
         return await usersRepository.findUserById(id)
-    }
+    } 
 } 

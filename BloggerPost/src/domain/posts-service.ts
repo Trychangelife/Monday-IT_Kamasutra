@@ -1,6 +1,7 @@
-import { bloggersCollection, postsCollection } from "../repositories/db";
+import { bloggersCollection, commentsCollection, postsCollection, usersCollection } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
+import { CommentsType } from "../repositories/comments-repository";
 
 export type PostsType = {
     id: string,
@@ -10,6 +11,8 @@ export type PostsType = {
     bloggerId: string,
     bloggerName: string
 }
+
+
 
 export const postsService = {
     async allPosts(pageSize: number, pageNumber: number,): Promise<object> {
@@ -68,5 +71,32 @@ export const postsService = {
     async deletePost(deleteId: string): Promise<boolean> {
         return await postsRepository.deletePost(deleteId)
 
+    },
+    async createCommentForSpecificPost(postId: string, content: string, userId: string, userLogin: string): Promise<CommentsType | boolean> {
+        const foundPost = await postsCollection.findOne({ id: postId })
+        // const foundUser = await usersCollection.findOne({id: userId})
+        if(foundPost) {
+        let createdComment: CommentsType = {
+            id: uuidv4(),
+            content: content,
+            userId: userId,
+            userLogin: userLogin,
+            addedAt: (new Date()).toString(),
+            postId: postId
+        }
+        return postsRepository.createCommentForSpecificPost(createdComment)
+    }
+        if (foundPost == null) {
+            return false}
+            else {
+                return false
+            }
+    },
+    async takeCommentByIdPost (postId: string, page: number, pageSize: number): Promise<object | boolean> {
+        let skip = 0
+        if (page && pageSize) {
+            skip = (page - 1) * pageSize
+        }
+        return await postsRepository.takeCommentByIdPost(postId, skip, pageSize, page,)
     }
 }

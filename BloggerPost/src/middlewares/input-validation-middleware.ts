@@ -28,6 +28,9 @@ export const LoginInputModel = [
     body('login').isString().trim().exists(),
     body('password').isString().trim().exists(),
 ]
+export const commentInputModel = [
+    body('content').isLength({ min: 20, max: 300 }).trim().not().isEmpty()
+]
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
 
