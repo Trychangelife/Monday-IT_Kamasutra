@@ -38,7 +38,7 @@ export const postsRepository = {
         const cursor = await postsCollection.find({}, postViewModel).skip(skip).limit(limit).toArray()
         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: cursor }
     },
-
+ 
     async targetPosts(postId: string): Promise<object | undefined> {
         const targetPost: PostsType | null = await postsCollection.findOne({ id: postId }, postViewModel)
         if (targetPost == null) {

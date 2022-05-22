@@ -69,7 +69,7 @@ postRouter.post('/:postId/comments',authMiddlewareWithJWT, commentInputModel, in
     if (newComment){
     res.status(201).send(newComment)}
     else {
-        res.status(401).send("Post doesn't exists")
+        res.status(404).send("Post doesn't exists")
     }
 
 }) 

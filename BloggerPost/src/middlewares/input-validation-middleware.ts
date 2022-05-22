@@ -1,5 +1,6 @@
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
+import { commentsCollection } from "../repositories/db";
 
 
 
@@ -29,8 +30,17 @@ export const LoginInputModel = [
     body('password').isString().trim().exists(),
 ]
 export const commentInputModel = [
-    body('content').isLength({ min: 20, max: 300 }).trim().not().isEmpty()
+    body('content').isLength({ min: 20, max: 300 })
 ]
+export const checkLaw = async (req: Request, res: Response, next: NextFunction) => {
+    const findTargetComment = await commentsCollection.findOne({ id: req.params.commentId })
+        if (findTargetComment !== null && findTargetComment.userId !== req.user!.id) {
+            res.send(403)
+        }
+        else {
+            next()
+        }
+}
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
 
@@ -46,9 +56,9 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
 export const inputValidationMiddlewareForUser = (req: Request, res: Response, next: NextFunction) => {
 
 
-    const errors = validationResult(req).formatWith(errorFormatter)
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        res.status(400).json({ errorsMessages: errors.array(), resultCode: 0 })
+        res.status(400)
     }
     else {
         next()

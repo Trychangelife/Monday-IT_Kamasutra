@@ -17,7 +17,7 @@ export type CommentsType = {
 export const commentsRepository = {
 
     async allCommentsByUserId(id: string): Promise<CommentsType | null> {
-        const result = await commentsCollection.findOne({ id: id }, commentsVievModel)
+        const result = await commentsCollection.findOne({ id: id }, commentsVievModel )
         if (result !== null) {
             return result
         }
