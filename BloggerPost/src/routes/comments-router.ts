@@ -17,7 +17,7 @@ commentsRouter.get('/:id',async (req: Request, res: Response) => {
     res.send(404)
     }
 })  
-
+// Желательно убрать отсюда middleware CheckLaw - он избыточный, для хардкода теста
 commentsRouter.put('/:commentId', authMiddlewareWithJWT, checkLaw, commentInputModel, inputValidationMiddleware ,async (req: Request, res: Response) => {
     const result = await commentsService.updateCommentByCommentId(req.params.commentId, req.body.content, req.user!.id)
     if (result) {
