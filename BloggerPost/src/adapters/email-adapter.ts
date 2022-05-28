@@ -5,7 +5,7 @@ export const emailAdapter = {
         service: 'gmail',
         auth: {
           user: "developerjuniorevgeniy@gmail.com",
-          pass: "umbzrnxajzjjirul"
+          pass: process.env.PASSWORD_GMAIL
         },
       })
         let info = await transport.sendMail({
@@ -14,11 +14,6 @@ export const emailAdapter = {
         subject: subject,
         html: message
     })
-        console.log(info)
-        return ({
-        "email": email,
-        "message": message,
-        "subject": subject
-    })
+     return info
     }
 }
