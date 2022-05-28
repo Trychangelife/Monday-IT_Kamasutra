@@ -9,6 +9,7 @@ import { runDb } from './repositories/db';
 import { usersRouter } from "./routes/users-router"
 import { authRouter } from "./routes/auth-router"
 import { commentsRouter } from "./routes/comments-router"
+import { emailRouter } from "./routes/email-router"
 
 const app = express()
 const port = process.env.PORT
@@ -20,6 +21,7 @@ app.use('/posts', postRouter)
 app.use('/users', usersRouter)
 app.use('/auth', authRouter)
 app.use('/comments', commentsRouter)
+app.use('/email', emailRouter)
 
 
 // app.listen(port, () => {
