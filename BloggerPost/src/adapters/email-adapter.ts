@@ -4,12 +4,12 @@ export const emailAdapter = {
         let transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: "developerjuniorevgeniy@gmail.com",
+          user: "jenbka999@gmail.com",
           pass: process.env.PASSWORD_GMAIL
         },
       })
         let info = await transport.sendMail({
-        from: 'Evgeniy <developerjuniorevgeniy@gmail.com>',
+        from: 'Evgeniy <jenbka999@gmail.com>',
         to: email,
         subject: subject,
         html: message
