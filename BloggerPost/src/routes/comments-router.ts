@@ -1,13 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { commentsService } from "../domain/comments-service";
 import { authMiddlewareWithJWT } from "../middlewares/auth-middleware";
-import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { checkLaw, commentInputModel, inputValidationMiddleware } from "../middlewares/input-validation-middleware";
 
 
 export const commentsRouter = Router({}) 
-
-
 
 commentsRouter.get('/:id',async (req: Request, res: Response) => {
     const result = await commentsService.getCommentsById(req.params.id)

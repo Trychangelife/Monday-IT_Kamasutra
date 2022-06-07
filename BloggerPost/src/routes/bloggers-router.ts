@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { bloggerService, BloggersType } from "../domain/bloggers-service";
 import { postsService } from "../domain/posts-service";
 import { bloggersCollection, db } from "../repositories/db";
@@ -90,44 +90,3 @@ export function constructorPagination( pageSize: string | undefined, pageNumber:
       res.send(204)
     }
   })
-
-
-  // function paginatedResults(model:any) {
-  //   return async (req:Request, res:Response, next:NextFunction) => {
-  //     const page:any = parseInt(req.query.page)
-  //     const limit:any = parseInt(req.query.limit)
-  
-  //     const startIndex = (page - 1) * limit
-  //     const endIndex = page * limit
-  
-  //     const results = {}
-  
-  //     if (endIndex < await model.countDocuments().exec()) {
-  //       results.next = {
-  //         page: page + 1,
-  //         limit: limit
-  //       }
-  //     }
-      
-  //     if (startIndex > 0) {
-  //       results.previous = {
-  //         page: page - 1,
-  //         limit: limit
-  //       }
-  //     }
-  //     try {
-  //       results.results = await model.find().limit(limit).skip(startIndex).exec()
-  //       res.paginatedResults = results
-  //       next()
-  //     } catch (e) {
-  //       res.status(500).json({ message: e.message })
-  //     }
-  //   }
-  // }
-
-
-
-    // bloggersRouter.delete('/del', async (req: Request, res: Response) => {
-  // const afterDelete = await bloggersCollection.deleteMany({})
-  // res.send(afterDelete)
-  // })  
