@@ -22,4 +22,20 @@ authRouter.post('/login',LoginInputModel,inputValidationMiddleware, async (req: 
     else {
         res.sendStatus(400)
     }
-}) 
+})
+
+authRouter.post('/registration-confirmation',LoginInputModel,inputValidationMiddleware, async (req: Request, res: Response) => {
+    const user = await usersService.checkCredentials(req.body.login, req.body.password)
+
+})
+
+
+authRouter.post('/registration',LoginInputModel,inputValidationMiddleware, async (req: Request, res: Response) => {
+    const user = await usersService.checkCredentials(req.body.login, req.body.password)
+
+})
+
+authRouter.post('/registration-email-resending',LoginInputModel,inputValidationMiddleware, async (req: Request, res: Response) => {
+    const user = await usersService.checkCredentials(req.body.login, req.body.password)
+
+})

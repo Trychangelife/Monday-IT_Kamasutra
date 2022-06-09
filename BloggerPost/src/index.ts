@@ -10,6 +10,7 @@ import { usersRouter } from "./routes/users-router"
 import { authRouter } from "./routes/auth-router"
 import { commentsRouter } from "./routes/comments-router"
 import { emailRouter } from "./routes/email-router"
+import { testingRouter } from "./routes/testing-router"
 
 const app = express()
 const port = process.env.PORT
@@ -22,7 +23,7 @@ app.use('/users', usersRouter)
 app.use('/auth', authRouter)
 app.use('/comments', commentsRouter)
 app.use('/email', emailRouter)
-
+app.use('/testing', testingRouter)
 
 // app.listen(port, () => {
 //   console.log(`why did you call me to the port ${port} ?`)
