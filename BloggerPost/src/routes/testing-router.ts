@@ -9,5 +9,5 @@ testingRouter.delete('/all-data', async (req: Request, res: Response) => {
     await bloggersCollection.deleteMany({})
     await usersCollection.deleteMany({})
     await commentsCollection.deleteMany({})
-    res.status(204)
+    res.status(204).send()
     }) 

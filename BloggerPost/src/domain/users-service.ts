@@ -14,7 +14,7 @@ export const usersService = {
         }
         return await usersRepository.allUsers(skip, pageSize, pageNumber)
     },
-    async createUser(login: string, password: string): Promise<UsersType | null | boolean> {
+    async createUser(login: string, password: string, email: string): Promise<UsersType | null | boolean> {
         
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt) 
@@ -24,7 +24,9 @@ export const usersService = {
             login,
             passwordHash,
             passwordSalt,
-            password
+            email,
+            codeForActivated: uuidv4(),
+            activatedStatus: false
         }
         return await usersRepository.createUser(newUser)
     },
@@ -46,5 +48,15 @@ export const usersService = {
     },
     async findUserById (id: string): Promise <UsersType | null> {
         return await usersRepository.findUserById(id)
+    },
+    async confirmationEmail (code: string): Promise <boolean> {
+        let user = await usersRepository.findUserByConfirmationCode(code)
+        if (user) {
+            return await usersRepository.confirmationEmail(user)
+        } 
+        else {
+            return false
+        }
+        
     } 
 } 

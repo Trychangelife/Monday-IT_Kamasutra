@@ -20,15 +20,15 @@ usersRouter.get('/', async (req: Request, res: Response) => {
 })
 
 usersRouter.post('/', authMiddleware, userInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password)
+    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email)
     if (result == false) {
-        res.status(400).send("Login already use")
+        res.status(400).send("Login or email already use")
     }
     else {
-        res.status(201).send(result)
+        res.status(204).send()
     }
-
 })
+
 usersRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
     const afterDelete = await usersService.deleteUser(req.params.id as string)
     if (afterDelete == true) {

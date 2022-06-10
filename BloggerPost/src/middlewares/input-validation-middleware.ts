@@ -9,6 +9,7 @@ export const schemaPostBlogger = [
     body('name').trim().isLength({ min: 3, max: 15 }).withMessage('You have bad name')
 
 ]
+
 export const schemaPosts = [
     body('title').isLength({ min: 1, max: 30 }).trim().not().isEmpty(),
     body('content').isLength({ min: 1, max: 1000 }).trim().not().isEmpty(),
@@ -17,7 +18,9 @@ export const schemaPosts = [
 
 export const userInputModel = [
     body('login').exists().withMessage('login is required').isLength({min: 3, max: 10}).trim().withMessage('wrong login length'),
-    body('password').exists().withMessage('password is required').isLength({min: 6, max: 20}).trim().withMessage('wrong password length')
+    body('password').exists().withMessage('password is required').isLength({min: 6, max: 20}).trim().withMessage('wrong password length'),
+    body('email').isEmail().withMessage('Its not Email, check again')
+    // body('email').matches('^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').withMessage('Its not Email, check again')
 ]
 export const errorFormatter = ({ location, msg, param, value, nestedErrors }: ValidationError) => {
     return {

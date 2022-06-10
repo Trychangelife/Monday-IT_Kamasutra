@@ -6,5 +6,7 @@ export type UsersType = {
     login: string;
     passwordHash: string;
     passwordSalt: string;
-    password: string;
+    email: string
+    codeForActivated: string
+    activatedStatus: boolean
 };
