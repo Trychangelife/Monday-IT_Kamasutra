@@ -1,12 +1,6 @@
 import { bloggerRepository } from "../repositories/bloggers-repositories"
-import { bloggersCollection } from "../repositories/db"
 import { v4 as uuidv4 } from "uuid"
-
-export type BloggersType = {
-    id: string,
-    name: string,
-    youtubeUrl: string
-}
+import { BloggersType } from "../types/BloggersType"
 
 export const bloggerService = {
     async allBloggers(pageSize: number, pageNumber: number, searchNameTerm?: string | null): Promise<object> {

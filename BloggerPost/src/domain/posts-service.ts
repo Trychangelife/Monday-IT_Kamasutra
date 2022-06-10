@@ -1,16 +1,8 @@
 import { bloggersCollection, commentsCollection, postsCollection, usersCollection } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
-import { CommentsType } from "../repositories/comments-repository";
-
-export type PostsType = {
-    id: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    bloggerId: string,
-    bloggerName: string
-}
+import { CommentsType } from "../types/CommentsType";
+import { PostsType } from "../types/PostsType";
 
 
 

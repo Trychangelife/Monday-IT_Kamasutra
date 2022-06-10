@@ -1,4 +1,4 @@
-import { UsersType } from "../repositories/users-repository";
+import { UsersType } from "../types/UsersType";
 import jwt from "jsonwebtoken";
 import { settings } from "../settings";
 

@@ -1,16 +1,8 @@
 
-import { CommentsType } from "./comments-repository";
+import { CommentsType } from "../types/CommentsType";
 import { bloggersCollection, commentsCollection, postsCollection } from "./db";
+import { PostsType } from "../types/PostsType";
 
-
-export type PostsType = {
-    id: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    bloggerId: string,
-    bloggerName: string
-}
 
 export const postViewModel = {
     projection: {

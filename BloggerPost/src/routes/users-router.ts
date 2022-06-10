@@ -3,7 +3,7 @@ import { usersService } from "../domain/users-service";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, userInputModel } from "../middlewares/input-validation-middleware";
 import { usersCollection } from "../repositories/db";
-import { UsersType } from "../repositories/users-repository";
+import { UsersType } from "../types/UsersType";
 import { constructorPagination } from "./bloggers-router";
 
 

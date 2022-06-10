@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { usersService } from "../domain/users-service";
 import { jwtService } from "../application/jwt-service";
-import { UsersType } from "../repositories/users-repository";
+import { UsersType } from "../types/UsersType";
 
 export interface IGetUserAuthInfoRequest extends Request {
     user: UsersType | null

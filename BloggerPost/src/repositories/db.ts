@@ -1,10 +1,10 @@
 import dotenv from "dotenv"
 dotenv.config()
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { BloggersType } from "./bloggers-repositories";
-import { CommentsType } from "./comments-repository";
-import { PostsType } from "./posts-repositories";
-import { UsersType } from "./users-repository";
+import { BloggersType } from "../types/BloggersType";
+import { CommentsType } from "../types/CommentsType";
+import { PostsType } from "../types/PostsType";
+import { UsersType } from "../types/UsersType";
 
 
 

@@ -31,7 +31,7 @@ authRouter.post('/registration-confirmation',LoginInputModel,inputValidationMidd
 
 
 authRouter.post('/registration',LoginInputModel,inputValidationMiddleware, async (req: Request, res: Response) => {
-    const user = await usersService.checkCredentials(req.body.login, req.body.password)
+    const resultRegistration = await usersService.checkCredentials(req.body.login, req.body.password)
 
 })
 

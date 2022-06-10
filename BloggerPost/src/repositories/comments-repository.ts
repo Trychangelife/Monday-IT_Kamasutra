@@ -1,16 +1,6 @@
+import { CommentsType } from "../types/CommentsType"
 import { commentsCollection } from "./db"
 import { commentsVievModel } from "./posts-repositories"
-
-
-
-export type CommentsType = {
-    id: string
-    content: string
-    userId: string
-    userLogin: string
-    addedAt: string
-    postId: string
-}
 
 
 

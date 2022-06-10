@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
-import { usersRepository, UsersType } from "../repositories/users-repository"
+import { usersRepository } from "../repositories/users-repository"
+import { UsersType } from "../types/UsersType"
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
 

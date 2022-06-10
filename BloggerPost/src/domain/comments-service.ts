@@ -1,5 +1,6 @@
-import { commentsRepository, CommentsType } from "../repositories/comments-repository";
-import { UsersType } from "../repositories/users-repository";
+import { commentsRepository } from "../repositories/comments-repository";
+import { CommentsType } from "../types/CommentsType";
+import { UsersType } from "../types/UsersType";
 
 
 

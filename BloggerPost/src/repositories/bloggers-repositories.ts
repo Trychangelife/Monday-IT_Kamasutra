@@ -1,10 +1,6 @@
+import { BloggersType } from "../types/BloggersType"
 import { bloggersCollection } from "./db"
 
-export type BloggersType = {
-    id: string,
-    name: string,
-    youtubeUrl: string
-}
 const modelViewBloggers = {
     projection: {
         _id: 0,

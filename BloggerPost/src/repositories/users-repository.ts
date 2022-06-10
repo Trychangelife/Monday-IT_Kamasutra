@@ -1,13 +1,5 @@
-import { ObjectId } from "mongodb"
 import { usersCollection } from "./db"
-export type UsersType = {
-    _id: ObjectId
-    id: string
-    login: string
-    passwordHash: string
-    passwordSalt: string
-    password: string
-}
+import { UsersType } from "../types/UsersType"
 
 const userViewModel = {
     projection: {
