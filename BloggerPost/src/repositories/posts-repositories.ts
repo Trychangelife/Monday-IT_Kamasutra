@@ -1,4 +1,3 @@
-
 import { CommentsType } from "../types/CommentsType";
 import { bloggersCollection, commentsCollection, postsCollection } from "./db";
 import { PostsType } from "../types/PostsType";
@@ -53,7 +52,6 @@ export const postsRepository = {
                 return { pagesCount, page: page, pageSize: pageSize, totalCount, items: postsBloggerWithPaginator }
             }
             else {
-                // Вникай в условие, нужно добить этот алгоритм
                 const postsBloggerWithOutPaginator = await postsCollection.find({ bloggerId: bloggerId }).toArray()
                 return { pagesCount: 0, page: page, pageSize: pageSize, totalCount, items: postsBloggerWithOutPaginator }
             }

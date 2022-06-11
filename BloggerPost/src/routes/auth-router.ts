@@ -1,15 +1,13 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { jwtService } from "../application/jwt-service";
+import { emailService } from "../domain/email-service";
 import { usersService } from "../domain/users-service";
-import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, LoginInputModel, userInputModel } from "../middlewares/input-validation-middleware";
 import { usersCollection } from "../repositories/db";
 import { UsersType } from "../types/UsersType";
 
 
 export const authRouter = Router({})
-
-
 
 authRouter.post('/login',LoginInputModel,inputValidationMiddleware, async (req: Request, res: Response) => {
     const user = await usersService.checkCredentials(req.body.login, req.body.password)
@@ -26,6 +24,16 @@ authRouter.post('/login',LoginInputModel,inputValidationMiddleware, async (req: 
     }
 })
 
+authRouter.post('/registration', userInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
+    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email)
+    if (result == false) {
+        res.status(400).send("Login or email already use")
+    }
+    else {
+        res.status(204).send()
+    }
+})
+
 authRouter.post('/registration-confirmation', async (req: Request, res: Response) => {
     const activationResult = await usersService.confirmationEmail(req.body.code)
     if (activationResult) {
@@ -38,18 +46,12 @@ authRouter.post('/registration-confirmation', async (req: Request, res: Response
 
 })
 
-
-authRouter.post('/registration', userInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email)
-    if (result == false) {
-        res.status(400).send("Login or email already use")
+authRouter.post('/registration-email-resending',userInputModel[2],inputValidationMiddleware, async (req: Request, res: Response) => {
+    const emailResending = await emailService.emailConfirmation(req.body.email)
+    if (emailResending) {
+        res.sendStatus(204)
     }
     else {
-        res.status(204).send()
+        res.status(400).send('Oops, Something wrong')
     }
-})
-
-authRouter.post('/registration-email-resending',LoginInputModel,inputValidationMiddleware, async (req: Request, res: Response) => {
-    const user = await usersService.checkCredentials(req.body.login, req.body.password)
-
 })

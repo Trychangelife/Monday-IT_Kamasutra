@@ -66,7 +66,7 @@ postRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) =>
 })
 
 postRouter.post('/:postId/comments',authMiddlewareWithJWT, commentInputModel, inputValidationMiddleware, async (req: Request , res: Response) => {
-    const newComment = await postsService.createCommentForSpecificPost(req.params.postId, req.body.content, req.user!.id, req.user!.login)
+    const newComment = await postsService.createCommentForSpecificPost(req.params.postId, req.body.content, req.user!.id, req.user!.accountData.login)
     if (newComment){
     res.status(201).send(newComment)}
     else {

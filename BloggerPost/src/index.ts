@@ -1,6 +1,6 @@
 import dotenv from "dotenv"
 dotenv.config()
-import express, { NextFunction, Request, Response } from 'express'
+import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import { bloggersRouter } from './routes/bloggers-router';
@@ -25,10 +25,6 @@ app.use('/comments', commentsRouter)
 app.use('/email', emailRouter)
 app.use('/testing', testingRouter)
 
-// app.listen(port, () => {
-//   console.log(`why did you call me to the port ${port} ?`)
-// })
-
 const startApp = async () => {
   await runDb()
   app.listen(port, () => {
@@ -37,3 +33,10 @@ const startApp = async () => {
 }
 
 startApp()
+
+
+
+
+// app.listen(port, () => {
+//   console.log(`why did you call me to the port ${port} ?`)
+// })

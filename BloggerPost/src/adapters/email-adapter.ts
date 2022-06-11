@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer"
+
+
+
 export const emailAdapter = {
-    async sendEmail (email: string, message: string, subject: string): Promise<object> {
+    async sendEmailConfirmation (email: string, message: string, subject: string, expirationDate: object): Promise<object> {
         let transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -8,13 +11,13 @@ export const emailAdapter = {
           pass: process.env.PASSWORD_GMAIL
         },
       })
-        let info = await transport.sendMail({
+        let mail = await transport.sendMail({
         from: 'Evgeniy <jenbka999@gmail.com>',
         to: email,
         subject: subject,
         html: message
     })
-     return info
+     return mail
     }
 }
 
