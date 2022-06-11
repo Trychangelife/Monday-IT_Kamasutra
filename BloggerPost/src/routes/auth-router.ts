@@ -4,6 +4,7 @@ import { emailService } from "../domain/email-service";
 import { usersService } from "../domain/users-service";
 import { inputValidationMiddleware, LoginInputModel, userInputModel } from "../middlewares/input-validation-middleware";
 import { usersCollection } from "../repositories/db";
+import { usersRepository } from "../repositories/users-repository";
 import { UsersType } from "../types/UsersType";
 
 
@@ -25,9 +26,12 @@ authRouter.post('/login',LoginInputModel,inputValidationMiddleware, async (req: 
 })
 
 authRouter.post('/registration', userInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email)
+    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email, req.ip)
     if (result == false) {
         res.status(400).send("Login or email already use")
+    }
+    else if (result == null) {
+        res.sendStatus(429)
     }
     else {
         res.status(204).send()
@@ -54,4 +58,9 @@ authRouter.post('/registration-email-resending',userInputModel[2],inputValidatio
     else {
         res.status(400).send('Oops, Something wrong')
     }
+})
+
+authRouter.get('/get-registration-date', async (req: Request, res: Response) => {
+    const registrationData = await usersRepository.getRegistrationDate()
+    res.send(registrationData)
 })

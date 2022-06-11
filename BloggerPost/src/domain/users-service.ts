@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { usersRepository } from "../repositories/users-repository"
-import { UsersType } from "../types/UsersType"
+import { RegistrationDataType, UsersType } from "../types/UsersType"
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
 import { add } from "date-fns"
@@ -16,7 +16,7 @@ export const usersService = {
         }
         return await usersRepository.allUsers(skip, pageSize, pageNumber)
     },
-    async createUser(login: string, password: string, email: string): Promise<UsersType | null | boolean> {
+    async createUser(login: string, password: string, email: string, ip: string): Promise<UsersType | null | boolean> {
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
@@ -32,15 +32,25 @@ export const usersService = {
             emailConfirmation: {
                 codeForActivated: uuidv4(),
                 activatedStatus: false,
-                expirationDate: add(new Date(), { 
+                expirationDate: add(new Date(), {
                     hours: 1,
                     minutes: 3
                 })
             }
         }
-        await usersRepository.createUser(newUser)
-        await emailService.emailConfirmation(newUser.accountData.email)
-        return newUser
+        const registrationData: RegistrationDataType = {
+            ip,
+            dateRegistation: new Date(),
+            email
+        }
+        const checkScam = await usersRepository.ipAddressIsScam(ip)
+        if (checkScam == true) {
+            await usersRepository.informationAboutRegistration(registrationData)
+            await usersRepository.createUser(newUser)
+            await emailService.emailConfirmation(newUser.accountData.email)
+            return newUser
+        }
+        return null
     },
     async deleteUser(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id)

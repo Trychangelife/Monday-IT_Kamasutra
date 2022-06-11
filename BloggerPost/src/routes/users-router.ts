@@ -7,7 +7,7 @@ import { UsersType } from "../types/UsersType";
 import { constructorPagination } from "./bloggers-router";
 
 
-export const usersRouter = Router()
+export const usersRouter = Router({})
 
 usersRouter.delete('/del', async (req: Request, res: Response) => {
     const afterDelete = await usersCollection.deleteMany({})
@@ -20,7 +20,7 @@ usersRouter.get('/', async (req: Request, res: Response) => {
 })
 
 usersRouter.post('/', authMiddleware, userInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email)
+    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email, req.ip)
     if (result == false) {
         res.status(400).send("Login or email already use")
     }

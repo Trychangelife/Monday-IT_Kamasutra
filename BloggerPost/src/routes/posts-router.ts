@@ -9,7 +9,7 @@ import { commentInputModel, errorFormatter, inputValidationMiddleware, schemaPos
 import { constructorPagination, ConstructorPaginationType } from "./bloggers-router";
 import { authMiddlewareWithJWT, IGetUserAuthInfoRequest } from "../middlewares/auth-middleware";
 
-export const postRouter = Router()
+export const postRouter = Router({})
 
 
 

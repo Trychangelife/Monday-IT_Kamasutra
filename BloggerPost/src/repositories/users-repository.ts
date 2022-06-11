@@ -1,5 +1,5 @@
-import { usersCollection } from "./db"
-import { UsersType } from "../types/UsersType"
+import { registrationDataCollection, usersCollection } from "./db"
+import { RegistrationDataType, UsersType } from "../types/UsersType"
 
 const userViewModel = {
     projection: {
@@ -23,8 +23,8 @@ export const usersRepository = {
     },
     async createUser(newUser: UsersType): Promise<UsersType | null | boolean> {
         await usersCollection.insertOne(newUser)
-        const checkUniqueLogin = await usersCollection.count({ login: newUser.accountData.login })
-        const checkUniqueEmail = await usersCollection.count({ email: newUser.accountData.email })
+        const checkUniqueLogin = await usersCollection.count({ "accountData.login": newUser.accountData.login })
+        const checkUniqueEmail = await usersCollection.count({ "accountData.email": newUser.accountData.email })
         if (checkUniqueLogin > 1 || checkUniqueEmail > 1) {
             return false
         }
@@ -58,6 +58,20 @@ export const usersRepository = {
         else {
             return false
         }
+    },
+    async informationAboutRegistration (registrationData: RegistrationDataType): Promise <boolean> {
+        await registrationDataCollection.insertOne(registrationData)
+        return true
+    },
+    async ipAddressIsScam (ip: string): Promise <boolean> {
+        const checkResult = await registrationDataCollection.find({ip: ip}).toArray()
+        if (checkResult.length >= 5) {
+            return false
+        }
+        else {return true}
+    },
+    async getRegistrationDate (): Promise <RegistrationDataType[]> {
+        return await registrationDataCollection.find({}).toArray()
     },
     // async findUserByEmail (email: string): Promise<UsersType | null> {
     //     const foundUser = await usersCollection.findOne({"accountData.email": email})

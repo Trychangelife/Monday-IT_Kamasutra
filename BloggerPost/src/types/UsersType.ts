@@ -16,6 +16,12 @@ export type UsersType = {
     }
 };
 
+export type RegistrationDataType = {
+    ip: string
+    dateRegistation: Date
+    email: string
+}
+
 
 
 // export type UsersType = {

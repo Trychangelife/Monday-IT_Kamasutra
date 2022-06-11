@@ -6,7 +6,7 @@ import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger, schemaPosts } from "../middlewares/input-validation-middleware";
 import { BloggersType } from "../types/BloggersType";
 
-export const bloggersRouter = Router()
+export const bloggersRouter = Router({})
 export type ConstructorPaginationType = { pageNumber: number, pageSize: number};
 
 

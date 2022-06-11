@@ -20,10 +20,12 @@ app.use(bodyParser.json())
 app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
 app.use('/users', usersRouter)
+app.set('trust proxy', true)
 app.use('/auth', authRouter)
 app.use('/comments', commentsRouter)
 app.use('/email', emailRouter)
 app.use('/testing', testingRouter)
+
 
 const startApp = async () => {
   await runDb()
