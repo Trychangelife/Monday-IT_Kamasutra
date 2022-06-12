@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { LoggerOptions, ObjectId } from "mongodb";
 
 export type UsersType = {
     _id: ObjectId;
@@ -22,6 +22,23 @@ export type RegistrationDataType = {
     email: string
 }
 
+export type AuthDataType = {
+    ip: string
+    tryAuthDate: Date
+    login: string
+}
+
+export type EmailSendDataType = {
+    ip: string
+    emailSendDate: Date
+    email: string
+}
+
+export type ConfirmedAttemptDataType = {
+    ip: string
+    tryConfirmDate: Date
+    code: string
+}
 
 
 // export type UsersType = {

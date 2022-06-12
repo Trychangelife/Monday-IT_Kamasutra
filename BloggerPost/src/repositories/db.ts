@@ -4,7 +4,7 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 import { BloggersType } from "../types/BloggersType";
 import { CommentsType } from "../types/CommentsType";
 import { PostsType } from "../types/PostsType";
-import { RegistrationDataType, UsersType } from "../types/UsersType";
+import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RegistrationDataType, UsersType } from "../types/UsersType";
 
 
 
@@ -23,6 +23,9 @@ export const postsCollection = db.collection<PostsType>("posts")
 export const usersCollection = db.collection<UsersType>("users")
 export const commentsCollection = db.collection<CommentsType>("comments")
 export const registrationDataCollection = db.collection<RegistrationDataType>("registrationData")
+export const authDataCollection = db.collection<AuthDataType>("authData")
+export const emailSendCollection = db.collection<EmailSendDataType>("emailSend")
+export const codeConfirmCollection = db.collection<ConfirmedAttemptDataType>("confirmAttemptLog")
 export async function runDb () {
 try {
     await client.connect() 

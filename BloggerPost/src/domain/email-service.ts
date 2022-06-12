@@ -6,7 +6,8 @@ import { usersCollection } from "../repositories/db"
 export const emailService = {
     async emailConfirmation(email: string): Promise<object | boolean> {
         const foundUser = await usersCollection.findOne({ 'accountData.email': email })
-        if (foundUser !== null) {
+        const statusAccount = await usersCollection.findOne({'accountData.email': email, 'emailConfirmation.activatedStatus': false})
+        if (foundUser !== null && statusAccount !== null) {
             return await emailManager.sendEmailConfirmation(foundUser)
         }
         else {

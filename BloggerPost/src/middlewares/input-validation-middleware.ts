@@ -1,6 +1,8 @@
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
-import { commentsCollection } from "../repositories/db";
+import { usersService } from "../domain/users-service";
+import { commentsCollection, usersCollection } from "../repositories/db";
+import { usersRepository } from "../repositories/users-repository";
 
 
 
@@ -15,6 +17,8 @@ export const schemaPosts = [
     body('content').isLength({ min: 1, max: 1000 }).trim().not().isEmpty(),
     body('shortDescription').isLength({ min: 3, max: 100 }),
 ]
+
+
 
 export const userInputModel = [
     body('login').exists().withMessage('login is required').isLength({min: 3, max: 10}).trim().withMessage('wrong login length'),
@@ -44,12 +48,35 @@ export const checkLaw = async (req: Request, res: Response, next: NextFunction) 
             next()
         }
 }
+
+export const checkUniqueData = async (req: Request, res: Response, next: NextFunction) => {
+    const findTargetEmail = await usersCollection.findOne({"accountData.email": req.body.email})
+    const findTargetLogin = await usersCollection.findOne({"accountData.login": req.body.login})
+        if (findTargetEmail !== null) {
+            res.status(400).send({ errorsMessages: [{ message: "email already use", field: "email" }]})
+        }
+        else if (findTargetLogin !== null) {
+            res.status(400).send({ errorsMessages: [{ message: "login already use", field: "login" }]})
+        }
+        else {
+            next()
+        }
+}
+export const checkAvailabilityEmail = async (req: Request, res: Response, next: NextFunction) => {
+    const findTargetEmail = await usersRepository.findUserByEmail(req.body.email)
+        if (findTargetEmail == null) {
+            res.status(400).send({ errorsMessages: [{ message: "Аккаунта не существует, проверьте корректность введеного Email адреса", field: "email" }]})
+        }
+        else {
+            next()
+        }
+}
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
 
     const errors = validationResult(req).formatWith(errorFormatter)
     if (!errors.isEmpty()) {
-        res.status(400).json({ errorsMessages: errors.array(), resultCode: 1 })
+        res.status(400).json({ errorsMessages: errors.array()})
     }
     else {
         next()

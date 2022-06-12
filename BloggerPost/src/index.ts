@@ -17,10 +17,10 @@ const port = process.env.PORT
 
 app.use(cors())
 app.use(bodyParser.json())
+app.set('trust proxy', true)
 app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
 app.use('/users', usersRouter)
-app.set('trust proxy', true)
 app.use('/auth', authRouter)
 app.use('/comments', commentsRouter)
 app.use('/email', emailRouter)

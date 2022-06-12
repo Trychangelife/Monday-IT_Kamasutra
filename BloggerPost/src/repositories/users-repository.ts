@@ -1,5 +1,6 @@
-import { registrationDataCollection, usersCollection } from "./db"
-import { RegistrationDataType, UsersType } from "../types/UsersType"
+import { authDataCollection, codeConfirmCollection, emailSendCollection, registrationDataCollection, usersCollection } from "./db"
+import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RegistrationDataType, UsersType } from "../types/UsersType"
+import { add, addSeconds, sub } from "date-fns"
 
 const userViewModel = {
     projection: {
@@ -37,6 +38,72 @@ export const usersRepository = {
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
+
+
+
+
+
+    // Основная часть закончена, вспомогательные эндпоинты
+    
+    async confirmationEmail (user: UsersType): Promise <boolean> {
+        const activatedUser = await usersCollection.updateOne({ id: user.id }, { $set: { "emailConfirmation.activatedStatus": true } })
+        if (activatedUser.modifiedCount > 0) {
+            return true
+        }
+        else {
+            return false
+        }
+    },
+
+    async ipAddressIsScam (ip: string, login?:string): Promise <boolean> {
+        const dateResult = sub(new Date(), {
+            seconds: 10
+        })
+        const checkResultByIp = await registrationDataCollection.find({$and: [{ip: ip}, {dateRegistation: {$gt: dateResult}}]}).sort({dateRegistration: -1}).toArray()
+        if (checkResultByIp.length >= 5) {
+            return false
+        }
+        else {return true}
+    },
+    // Считаем количество авторизаций с учетом IP и Login за последние 10 секунд
+    async counterAttemptAuth (ip: string, login?:string): Promise <boolean> {
+        const dateResult = sub(new Date(), {
+            seconds: 10
+        })
+        const checkResultByIp = await authDataCollection.find({$and: [{ip: ip}, {tryAuthDate: {$gt: dateResult}}]}).toArray()
+        const checkResultByLogin = await authDataCollection.find({$and: [{login: login}, {tryAuthDate: {$gt: dateResult}}]}).toArray()
+        if (checkResultByIp.length >= 5 || checkResultByLogin.length >= 5) {
+            return false
+        }
+        else {return true}
+    },
+    async counterAttemptConfirm (ip: string, code?:string): Promise <boolean> {
+        const dateResult = sub(new Date(), {
+            seconds: 10
+        })
+        const checkResultByIp = await codeConfirmCollection.find({$and: [{ip: ip}, {tryConfirmDate: {$gt: dateResult}}]}).toArray()
+        if (checkResultByIp.length >= 5) {
+            return false
+        }
+        else {return true}
+    },
+    async counterAttemptEmail (ip: string, email?:string): Promise <boolean> {
+        const dateResult = sub(new Date(), {
+            seconds: 10
+        })
+        const checkResultByIp = await emailSendCollection.find({$and: [{ip: ip}, {emailSendDate: {$gt: dateResult}}]}).toArray()
+        if (checkResultByIp.length >= 5) {
+            return false
+        }
+        else {return true}
+    },
+
+    
+    // Эндпоинты для поиска по определенным условиям
+    async findUserByEmail (email: string): Promise<UsersType | null> {
+        const foundUser = await usersCollection.findOne({"accountData.email": email})
+        return foundUser
+    },
     async findUserById (id: string): Promise<UsersType | null> {
         const result = await usersCollection.findOne({id: id})
         return result
@@ -50,32 +117,40 @@ export const usersRepository = {
         return foundUser
     },
 
-    async confirmationEmail (user: UsersType): Promise <boolean> {
-        const activatedUser = await usersCollection.updateOne({ id: user.id }, { $set: { "emailConfirmation.activatedStatus": true } })
-        if (activatedUser.modifiedCount > 0) {
-            return true
-        }
-        else {
-            return false
-        }
+    // Эндпоинты для выгрузки информации из вспомогательных лог-баз
+    async getRegistrationDate (): Promise <RegistrationDataType[]> {
+        return await registrationDataCollection.find({}).toArray()
     },
+    async getAuthDate (): Promise <AuthDataType[]> {
+        return await authDataCollection.find({}).toArray()
+    },
+    async getEmailSendDate (): Promise <EmailSendDataType[]> {
+        return await emailSendCollection.find({}).toArray()
+    },
+    async getConfirmAttemptDate (): Promise <ConfirmedAttemptDataType[]> {
+        return await codeConfirmCollection.find({}).toArray()
+    },
+
+
+    // Эндпоинты для наполнения информацией вспомогательных лог-баз
+
     async informationAboutRegistration (registrationData: RegistrationDataType): Promise <boolean> {
         await registrationDataCollection.insertOne(registrationData)
         return true
     },
-    async ipAddressIsScam (ip: string): Promise <boolean> {
-        const checkResult = await registrationDataCollection.find({ip: ip}).toArray()
-        if (checkResult.length >= 5) {
-            return false
-        }
-        else {return true}
+    async informationAboutAuth (authData: AuthDataType): Promise <boolean> {
+        await authDataCollection.insertOne(authData)
+        return true
     },
-    async getRegistrationDate (): Promise <RegistrationDataType[]> {
-        return await registrationDataCollection.find({}).toArray()
+
+    async informationAboutEmailSend (emailSendData: EmailSendDataType): Promise <boolean> {
+        await emailSendCollection.insertOne(emailSendData)
+        return true
     },
-    // async findUserByEmail (email: string): Promise<UsersType | null> {
-    //     const foundUser = await usersCollection.findOne({"accountData.email": email})
-    //     return foundUser
-    // },
+    async informationAboutConfirmed (confirmedData: ConfirmedAttemptDataType): Promise <boolean> {
+        await codeConfirmCollection.insertOne(confirmedData)
+        return true
+    },
+
 }
 

@@ -46,9 +46,14 @@ export const usersService = {
         const checkScam = await usersRepository.ipAddressIsScam(ip)
         if (checkScam == true) {
             await usersRepository.informationAboutRegistration(registrationData)
-            await usersRepository.createUser(newUser)
-            await emailService.emailConfirmation(newUser.accountData.email)
-            return newUser
+            if (await usersRepository.findUserByLogin(login) !== null || await usersRepository.findUserByEmail(email) !== null ) {
+                return false
+            }
+            else {
+                await usersRepository.createUser(newUser)
+                await emailService.emailConfirmation(newUser.accountData.email)
+                return newUser
+            }
         }
         return null
     },
