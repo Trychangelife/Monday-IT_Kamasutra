@@ -31,10 +31,6 @@ export const usersService = {
             emailConfirmation: {
                 codeForActivated: uuidv4(),
                 activatedStatus: false,
-                expirationDate: add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                })
             }
         }
         const registrationData: RegistrationDataType = {

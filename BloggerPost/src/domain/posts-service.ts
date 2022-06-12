@@ -1,10 +1,8 @@
-import { bloggersCollection, commentsCollection, postsCollection, usersCollection } from "../repositories/db";
+import { bloggersCollection, postsCollection } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
 import { CommentsType } from "../types/CommentsType";
 import { PostsType } from "../types/PostsType";
-
-
 
 export const postsService = {
     async allPosts(pageSize: number, pageNumber: number,): Promise<object> {
@@ -66,7 +64,6 @@ export const postsService = {
     },
     async createCommentForSpecificPost(postId: string, content: string, userId: string, userLogin: string): Promise<CommentsType | boolean> {
         const foundPost = await postsCollection.findOne({ id: postId })
-        // const foundUser = await usersCollection.findOne({id: userId})
         if(foundPost) {
         let createdComment: CommentsType = {
             id: uuidv4(),

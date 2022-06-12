@@ -4,7 +4,6 @@ import { authService } from "../domain/auth-service";
 import { emailService } from "../domain/email-service";
 import { usersService } from "../domain/users-service";
 import { checkAvailabilityEmail, checkUniqueData, inputValidationMiddleware, LoginInputModel, userInputModel } from "../middlewares/input-validation-middleware";
-import { usersCollection } from "../repositories/db";
 import { usersRepository } from "../repositories/users-repository";
 import { UsersType } from "../types/UsersType";
 
