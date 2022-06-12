@@ -6,7 +6,6 @@ import bcrypt from "bcrypt"
 import { add } from "date-fns"
 import { emailService } from "./email-service"
 
-
 export const usersService = {
 
     async allUsers(pageSize: number, pageNumber: number): Promise<object> {
@@ -43,15 +42,15 @@ export const usersService = {
             dateRegistation: new Date(),
             email
         }
+        await usersRepository.informationAboutRegistration(registrationData)
         const checkScam = await usersRepository.ipAddressIsScam(ip)
         if (checkScam == true) {
-            await usersRepository.informationAboutRegistration(registrationData)
             if (await usersRepository.findUserByLogin(login) !== null || await usersRepository.findUserByEmail(email) !== null ) {
                 return false
             }
             else {
                 await usersRepository.createUser(newUser)
-                await emailService.emailConfirmation(newUser.accountData.email)
+                emailService.emailConfirmation(newUser.accountData.email)
                 return newUser
             }
         }

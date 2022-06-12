@@ -67,6 +67,7 @@ authRouter.post('/registration-email-resending', userInputModel[2], checkAvailab
     await authService.informationAboutEmailSend(req.ip, req.body.email)
     const checkAttemptEmail = await authService.counterAttemptEmail(req.ip, req.body.email)
     if (checkAttemptEmail) {
+        await authService.refreshActivationCode(req.body.email)
         const emailResending = await emailService.emailConfirmation(req.body.email)
         if (emailResending) {
             res.sendStatus(204)

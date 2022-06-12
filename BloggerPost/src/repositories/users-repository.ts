@@ -1,6 +1,7 @@
 import { authDataCollection, codeConfirmCollection, emailSendCollection, registrationDataCollection, usersCollection } from "./db"
 import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RegistrationDataType, UsersType } from "../types/UsersType"
 import { add, addSeconds, sub } from "date-fns"
+import { ModifyResult } from "mongodb"
 
 const userViewModel = {
     projection: {
@@ -34,8 +35,8 @@ export const usersRepository = {
         }
 
     },
-    async deleteUser (id: string): Promise<boolean> {
-        const result = await usersCollection.deleteOne({id: id})
+    async deleteUser(id: string): Promise<boolean> {
+        const result = await usersCollection.deleteOne({ id: id })
         return result.deletedCount === 1
     },
 
@@ -44,8 +45,8 @@ export const usersRepository = {
 
 
     // Основная часть закончена, вспомогательные эндпоинты
-    
-    async confirmationEmail (user: UsersType): Promise <boolean> {
+
+    async confirmationEmail(user: UsersType): Promise<boolean> {
         const activatedUser = await usersCollection.updateOne({ id: user.id }, { $set: { "emailConfirmation.activatedStatus": true } })
         if (activatedUser.modifiedCount > 0) {
             return true
@@ -55,99 +56,105 @@ export const usersRepository = {
         }
     },
 
-    async ipAddressIsScam (ip: string, login?:string): Promise <boolean> {
+    async ipAddressIsScam(ip: string, login?: string): Promise<boolean> {
         const dateResult = sub(new Date(), {
-            seconds: 10
+            seconds: 10 // Задержка которую мы отнимаем от текущего времени
         })
-        const checkResultByIp = await registrationDataCollection.find({$and: [{ip: ip}, {dateRegistation: {$gt: dateResult}}]}).sort({dateRegistration: -1}).toArray()
-        if (checkResultByIp.length >= 5) {
+        const checkResultByIp = await registrationDataCollection.countDocuments({ $and: [{ ip: ip }, { dateRegistation: { $gt: dateResult } }] })
+        if (checkResultByIp > 5) { // Проверяем длинну массива, если больше 5 регистраций, то отдаем false - он дальше отдает 429 ошибку
             return false
         }
-        else {return true}
+        else { return true }
     },
     // Считаем количество авторизаций с учетом IP и Login за последние 10 секунд
-    async counterAttemptAuth (ip: string, login?:string): Promise <boolean> {
+    async counterAttemptAuth(ip: string, login?: string): Promise<boolean> {
         const dateResult = sub(new Date(), {
             seconds: 10
         })
-        const checkResultByIp = await authDataCollection.find({$and: [{ip: ip}, {tryAuthDate: {$gt: dateResult}}]}).toArray()
-        const checkResultByLogin = await authDataCollection.find({$and: [{login: login}, {tryAuthDate: {$gt: dateResult}}]}).toArray()
-        if (checkResultByIp.length >= 5 || checkResultByLogin.length >= 5) {
+        const checkResultByIp = await authDataCollection.countDocuments({ $and: [{ ip: ip }, { tryAuthDate: { $gt: dateResult } }] })
+        const checkResultByLogin = await authDataCollection.countDocuments({ $and: [{ login: login }, { tryAuthDate: { $gt: dateResult } }] })
+        if (checkResultByIp > 5 || checkResultByLogin > 5) {
             return false
         }
-        else {return true}
+        else { return true }
     },
-    async counterAttemptConfirm (ip: string, code?:string): Promise <boolean> {
+    async counterAttemptConfirm(ip: string, code?: string): Promise<boolean> {
         const dateResult = sub(new Date(), {
             seconds: 10
         })
-        const checkResultByIp = await codeConfirmCollection.find({$and: [{ip: ip}, {tryConfirmDate: {$gt: dateResult}}]}).toArray()
-        if (checkResultByIp.length >= 5) {
+        const checkResultByIp = await codeConfirmCollection.countDocuments({ $and: [{ ip: ip }, { tryConfirmDate: { $gt: dateResult } }] })
+        if (checkResultByIp > 5) {
             return false
         }
-        else {return true}
+        else { 
+            return true 
+        }
     },
-    async counterAttemptEmail (ip: string, email?:string): Promise <boolean> {
+    async counterAttemptEmail(ip: string, email?: string): Promise<boolean> {
         const dateResult = sub(new Date(), {
             seconds: 10
         })
-        const checkResultByIp = await emailSendCollection.find({$and: [{ip: ip}, {emailSendDate: {$gt: dateResult}}]}).toArray()
-        if (checkResultByIp.length >= 5) {
+        const checkResultByIp = await emailSendCollection.countDocuments({ $and: [{ ip: ip }, { emailSendDate: { $gt: dateResult } }] })
+        if (checkResultByIp > 5) {
             return false
         }
-        else {return true}
+        else { return true }
     },
 
-    
+
     // Эндпоинты для поиска по определенным условиям
-    async findUserByEmail (email: string): Promise<UsersType | null> {
-        const foundUser = await usersCollection.findOne({"accountData.email": email})
+    async findUserByEmail(email: string): Promise<UsersType | null> {
+        const foundUser = await usersCollection.findOne({ "accountData.email": email })
         return foundUser
     },
-    async findUserById (id: string): Promise<UsersType | null> {
-        const result = await usersCollection.findOne({id: id})
+    async findUserById(id: string): Promise<UsersType | null> {
+        const result = await usersCollection.findOne({ id: id })
         return result
     },
-    async findUserByLogin (login: string): Promise<UsersType | null> {
-        const foundUser = await usersCollection.findOne({"accountData.login": login})
+    async findUserByLogin(login: string): Promise<UsersType | null> {
+        const foundUser = await usersCollection.findOne({ "accountData.login": login })
         return foundUser
     },
-    async findUserByConfirmationCode (code: string): Promise<UsersType | null> {
-        const foundUser = await usersCollection.findOne({"emailConfirmation.codeForActivated": code})
+    async findUserByConfirmationCode(code: string): Promise<UsersType | null> {
+        const foundUser = await usersCollection.findOne({ "emailConfirmation.codeForActivated": code })
         return foundUser
+    },
+    async refreshActivationCode(email: string, code: string): Promise<ModifyResult<UsersType>> {
+        const updateCode = await usersCollection.findOneAndUpdate({ "accountData.email": email }, { $set: { "emailConfirmation.codeForActivated": code } }, { returnDocument: "after" })
+        return updateCode
     },
 
     // Эндпоинты для выгрузки информации из вспомогательных лог-баз
-    async getRegistrationDate (): Promise <RegistrationDataType[]> {
+    async getRegistrationDate(): Promise<RegistrationDataType[]> {
         return await registrationDataCollection.find({}).toArray()
     },
-    async getAuthDate (): Promise <AuthDataType[]> {
+    async getAuthDate(): Promise<AuthDataType[]> {
         return await authDataCollection.find({}).toArray()
     },
-    async getEmailSendDate (): Promise <EmailSendDataType[]> {
+    async getEmailSendDate(): Promise<EmailSendDataType[]> {
         return await emailSendCollection.find({}).toArray()
     },
-    async getConfirmAttemptDate (): Promise <ConfirmedAttemptDataType[]> {
+    async getConfirmAttemptDate(): Promise<ConfirmedAttemptDataType[]> {
         return await codeConfirmCollection.find({}).toArray()
     },
 
 
     // Эндпоинты для наполнения информацией вспомогательных лог-баз
 
-    async informationAboutRegistration (registrationData: RegistrationDataType): Promise <boolean> {
+    async informationAboutRegistration(registrationData: RegistrationDataType): Promise<boolean> {
         await registrationDataCollection.insertOne(registrationData)
         return true
     },
-    async informationAboutAuth (authData: AuthDataType): Promise <boolean> {
+    async informationAboutAuth(authData: AuthDataType): Promise<boolean> {
         await authDataCollection.insertOne(authData)
         return true
     },
 
-    async informationAboutEmailSend (emailSendData: EmailSendDataType): Promise <boolean> {
+    async informationAboutEmailSend(emailSendData: EmailSendDataType): Promise<boolean> {
         await emailSendCollection.insertOne(emailSendData)
         return true
     },
-    async informationAboutConfirmed (confirmedData: ConfirmedAttemptDataType): Promise <boolean> {
+    async informationAboutConfirmed(confirmedData: ConfirmedAttemptDataType): Promise<boolean> {
         await codeConfirmCollection.insertOne(confirmedData)
         return true
     },

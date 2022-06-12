@@ -1,10 +1,17 @@
 import { usersRepository } from "../repositories/users-repository"
-import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType } from "../types/UsersType"
+import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, UsersType } from "../types/UsersType"
+import { ModifyResult } from "mongodb"
+import { uuid } from "uuidv4"
+
 
 export const authService = { 
 
     async ipAddressIsScam (ip: string, login: string): Promise <boolean> {
         return await usersRepository.ipAddressIsScam(ip, login)
+    },
+    async refreshActivationCode (email: string): Promise <ModifyResult<UsersType>> {
+        const refreshCode = uuid()
+        return await usersRepository.refreshActivationCode(email, refreshCode)
     },
     async counterAttemptAuth (ip: string, login: string): Promise <boolean> {
         return await usersRepository.counterAttemptAuth(ip, login)
@@ -39,4 +46,8 @@ export const authService = {
         }
         return await usersRepository.informationAboutEmailSend(emailSendData)
     },
+}
+
+function uuidv4() {
+    throw new Error("Function not implemented.")
 }
