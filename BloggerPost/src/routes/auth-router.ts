@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { nextTick } from "process";
 import { jwtService } from "../application/jwt-service";
 import { authService } from "../domain/auth-service";
 import { emailService } from "../domain/email-service";
@@ -20,8 +21,9 @@ authRouter.post('/login', LoginInputModel, inputValidationMiddleware, async (req
             res.send(401)
         }
         else if (foundUser && user) {
-            const token = await jwtService.createJWT(foundUser)
-            res.status(200).send({ token })
+            const accessToken = await jwtService.accessToken(foundUser)
+            const refreshToken = await jwtService.refreshToken(foundUser)
+            res.status(200).send({ accessToken, refreshToken })
         }
         else {
             res.sendStatus(400)
@@ -29,6 +31,23 @@ authRouter.post('/login', LoginInputModel, inputValidationMiddleware, async (req
     }
     else {
         res.sendStatus(429)
+    }
+})
+authRouter.post('/update-access-token', LoginInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
+    const refreshToken = req.header("x-auth-token")
+    if (!refreshToken) {
+        res.status(401).send('Token not found')
+    }
+    else if (refreshToken) {
+        const newAccessToken = await jwtService.getNewAccessToken(refreshToken)
+        if (newAccessToken !== null) {
+        res.status(200).send({ newAccessToken })}
+        else {
+            res.status(401).send('Refresh Token already not valid, repeat authorization')
+        }
+    }
+    else {
+        res.sendStatus(400)
     }
 })
 

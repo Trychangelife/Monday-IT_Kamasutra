@@ -39,5 +39,9 @@ export type ConfirmedAttemptDataType = {
     code: string
 }
 
+export type RefreshTokenStorageType = {
+    userId: string
+    refreshToken: string
+}
 
 

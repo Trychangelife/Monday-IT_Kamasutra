@@ -46,7 +46,7 @@ export const usersService = {
             }
             else {
                 await usersRepository.createUser(newUser)
-                emailService.emailConfirmation(newUser.accountData.email)
+                // emailService.emailConfirmation(newUser.accountData.email)
                 return newUser
             }
         }
