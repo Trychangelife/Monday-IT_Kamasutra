@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { nextTick } from "process";
 import { jwtService } from "../application/jwt-service";
 import { authService } from "../domain/auth-service";
 import { emailService } from "../domain/email-service";
@@ -36,7 +35,7 @@ authRouter.post('/login', LoginInputModel, inputValidationMiddleware, async (req
 authRouter.post('/update-access-token', LoginInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
     const refreshToken = req.header("x-auth-token")
     if (!refreshToken) {
-        res.status(401).send('Token not found')
+        res.status(401).send('Refresh token not found, where you header?')
     }
     else if (refreshToken) {
         const newAccessToken = await jwtService.getNewAccessToken(refreshToken)
