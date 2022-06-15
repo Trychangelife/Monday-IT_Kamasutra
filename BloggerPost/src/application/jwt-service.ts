@@ -34,7 +34,6 @@ export const jwtService = {
         }
     },
     async getNewAccessToken(rToken: string): Promise<object | null> {
-        //Добавить перевыпуск рефреш токена (старый удалить) для цикличности авторизации
         const checkToken = await refreshTokenCollection.findOne({ refreshToken: rToken })
         if (checkToken !== null) {
             try {

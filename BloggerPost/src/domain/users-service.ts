@@ -3,8 +3,6 @@ import { usersRepository } from "../repositories/users-repository"
 import { RegistrationDataType, UsersType } from "../types/UsersType"
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
-import { add } from "date-fns"
-import { emailService } from "./email-service"
 
 export const usersService = {
 

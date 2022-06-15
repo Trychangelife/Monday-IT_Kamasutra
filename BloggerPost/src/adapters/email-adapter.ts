@@ -20,13 +20,3 @@ export const emailAdapter = {
      return mail
     }
 }
-
-
-
-// Example object for Email
-
-// {
-//   "email": "zkonstantinov@bk.ru",
-//   "message": "<h1>Hello guys</h1><div><a href=\"https://it-incubator.ru\">click me<a/></div>",
-//   "subject": "Back-end lessons"
-// }
