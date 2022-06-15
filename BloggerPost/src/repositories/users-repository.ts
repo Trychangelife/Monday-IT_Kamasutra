@@ -1,5 +1,5 @@
-import { authDataCollection, codeConfirmCollection, emailSendCollection, registrationDataCollection, usersCollection } from "./db"
-import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RegistrationDataType, UsersType } from "../types/UsersType"
+import { authDataCollection, codeConfirmCollection, emailSendCollection, refreshTokenCollection, registrationDataCollection, usersCollection } from "./db"
+import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/UsersType"
 import { add, addSeconds, sub } from "date-fns"
 import { ModifyResult } from "mongodb"
 
@@ -136,6 +136,9 @@ export const usersRepository = {
     },
     async getConfirmAttemptDate(): Promise<ConfirmedAttemptDataType[]> {
         return await codeConfirmCollection.find({}).toArray()
+    },
+    async getTokenDate(): Promise<RefreshTokenStorageType[]> {
+        return await refreshTokenCollection.find({}).toArray()
     },
 
 

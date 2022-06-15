@@ -15,8 +15,15 @@ export const jwtService = {
             userId: user.id,
             refreshToken: refreshToken
         }
-        await refreshTokenCollection.insertOne(newRefreshToken)
-        return refreshToken
+        const foundExistToken = await refreshTokenCollection.findOne({ userId: user.id })
+        if (foundExistToken == null) {
+            await refreshTokenCollection.insertOne(newRefreshToken)
+            return refreshToken
+        }
+        else {
+            await refreshTokenCollection.updateOne({userId: user.id}, {$set: {refreshToken: newRefreshToken.refreshToken}})
+            return refreshToken
+        }
     },
     async getUserByToken(token: string) {
         try {
@@ -26,12 +33,13 @@ export const jwtService = {
             return null
         }
     },
-    async getNewAccessToken(rToken: string): Promise<string | null> {
+    async getNewAccessToken(rToken: string): Promise<object | null> {
+        //Добавить перевыпуск рефреш токена (старый удалить) для цикличности авторизации
         const checkToken = await refreshTokenCollection.findOne({ refreshToken: rToken })
         if (checkToken !== null) {
             try {
                 const result: any = jwt.verify(rToken, settings.JWT_REFRESH_SECRET)
-                return this.accessToken(result)
+                return { newAccessToken: await this.accessToken(result), newRefreshToken: await this.refreshToken(result) }
             } catch (error) {
                 return null
             }

@@ -117,3 +117,7 @@ authRouter.get('/get-email-date', async (req: Request, res: Response) => {
     const emailSendData = await usersRepository.getEmailSendDate()
     res.send(emailSendData)
 })
+authRouter.get('/get-token-date', async (req: Request, res: Response) => {
+    const TokenData = await usersRepository.getTokenDate()
+    res.send(TokenData)
+})
