@@ -1,7 +1,7 @@
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
 import { usersService } from "../domain/users-service";
-import { commentsModel, usersCollection } from "../repositories/db";
+import { commentsModel, usersModel } from "../repositories/db";
 import { usersRepository } from "../repositories/users-repository";
 
 
@@ -50,8 +50,8 @@ export const checkLaw = async (req: Request, res: Response, next: NextFunction) 
 }
 
 export const checkUniqueData = async (req: Request, res: Response, next: NextFunction) => {
-    const findTargetEmail = await usersCollection.findOne({"accountData.email": req.body.email})
-    const findTargetLogin = await usersCollection.findOne({"accountData.login": req.body.login})
+    const findTargetEmail = await usersModel.findOne({"accountData.email": req.body.email})
+    const findTargetLogin = await usersModel.findOne({"accountData.login": req.body.login})
         if (findTargetEmail !== null) {
             res.status(400).send({ errorsMessages: [{ message: "email already use", field: "email" }]})
         }

@@ -1,6 +1,6 @@
 import dotenv from "dotenv"
 dotenv.config()
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { BloggersType } from "../types/BloggersType";
 import { CommentsType } from "../types/CommentsType";
 import { PostsType } from "../types/PostsType";
@@ -15,7 +15,6 @@ const options = {
     serverApi: ServerApiVersion.v1,
 };
 const uri:any = process.env.mongoURI
-const client = new MongoClient(uri, options)
 
 
 const bloggerSchema = new mongoose.Schema<BloggersType>({
@@ -40,24 +39,62 @@ const commentsSchema = new mongoose.Schema<CommentsType>({
     postId: {type:String, required:true}
 })
 
+const usersSchema = new mongoose.Schema<UsersType>({
+    _id: {type: ObjectId, required: true},
+    id: {type: String, required: true},
+    accountData: {
+        login: {type: String, required: true},
+        passwordHash: {type: String, required: true},
+        passwordSalt: {type: String, required: true},
+        email: {type: String, required: true}
+    },
+    emailConfirmation: {
+        codeForActivated: {type: String, required: true},
+        activatedStatus: {type: String, required: true}
+    }
+})
+const registrationDataSchema = new mongoose.Schema<RegistrationDataType>({
+    ip: {type: String, required: true},
+    dateRegistation: {type: Date, required: true},
+    email: {type: String, required: true}
+})
+const authDataSchema = new mongoose.Schema<AuthDataType>({
+    ip: {type: String, required: true},
+    tryAuthDate: {type: Date, required: true},
+    login: {type: String, required: true}
+})
+const emailSendSchema = new mongoose.Schema<EmailSendDataType>({
+    ip: {type: String, required: true},
+    emailSendDate: {type: Date, required: true},
+    email: {type: String, required: true}
+})
+const codeConfirmSchema = new mongoose.Schema<ConfirmedAttemptDataType>({
+    ip: {type: String, required: true},
+    tryConfirmDate: {type: Date, required: true},
+    code: {type: String, required: true}
+})
+const refreshTokenSchema = new mongoose.Schema<RefreshTokenStorageType>({
+    userId: {type: String, required: true},
+    refreshToken: {type: String, required: true},
+})
 
 
-export const db = client.db("social_network")
+
 export const bloggerModel = mongoose.model('bloggers', bloggerSchema)
 export const postsModel = mongoose.model('posts', postSchema)
-export const usersCollection = db.collection<UsersType>("users")
+export const usersModel = mongoose.model('users', usersSchema)
 export const commentsModel = mongoose.model('comments', commentsSchema)
-export const registrationDataCollection = db.collection<RegistrationDataType>("registrationData")
-export const authDataCollection = db.collection<AuthDataType>("authData")
-export const emailSendCollection = db.collection<EmailSendDataType>("emailSend")
-export const codeConfirmCollection = db.collection<ConfirmedAttemptDataType>("confirmAttemptLog")
-export const refreshTokenCollection = db.collection<RefreshTokenStorageType>("refreshToken")
+export const registrationDataModel = mongoose.model('registrationData', registrationDataSchema)
+export const authDataModel = mongoose.model('authData', authDataSchema)
+export const emailSendModel = mongoose.model('emailSend', emailSendSchema)
+export const codeConfirmModel = mongoose.model('confirmAttemptLog', codeConfirmSchema)
+export const refreshTokenModel = mongoose.model('refreshToken', refreshTokenSchema)
+
+
 export async function runDb () {
 try {
-    await client.connect() 
-    await mongoose.connect(uri)
+    await mongoose.connect(uri, options)
     console.log("Connected successfully to mongo server")
-    // await listDatabases(client)
 } catch (e) {
     console.error(e);
     await mongoose.disconnect()

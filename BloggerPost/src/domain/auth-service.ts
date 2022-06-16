@@ -9,7 +9,7 @@ export const authService = {
     async ipAddressIsScam (ip: string, login: string): Promise <boolean> {
         return await usersRepository.ipAddressIsScam(ip, login)
     },
-    async refreshActivationCode (email: string): Promise <ModifyResult<UsersType>> {
+    async refreshActivationCode (email: string): Promise <UsersType | null> {
         const refreshCode = uuid()
         return await usersRepository.refreshActivationCode(email, refreshCode)
     },

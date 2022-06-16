@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { bloggerService } from "../domain/bloggers-service";
 import { postsService } from "../domain/posts-service";
-import { bloggerModel, db } from "../repositories/db";
+import { bloggerModel } from "../repositories/db";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger, schemaPosts } from "../middlewares/input-validation-middleware";
 import { BloggersType } from "../types/BloggersType";

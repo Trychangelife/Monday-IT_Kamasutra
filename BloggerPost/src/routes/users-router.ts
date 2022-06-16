@@ -2,7 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { usersService } from "../domain/users-service";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, userInputModel } from "../middlewares/input-validation-middleware";
-import { usersCollection } from "../repositories/db";
+import { usersModel } from "../repositories/db";
 import { UsersType } from "../types/UsersType";
 import { constructorPagination } from "./bloggers-router";
 
@@ -10,7 +10,7 @@ import { constructorPagination } from "./bloggers-router";
 export const usersRouter = Router({})
 
 usersRouter.delete('/del', async (req: Request, res: Response) => {
-    const afterDelete = await usersCollection.deleteMany({})
+    const afterDelete = await usersModel.deleteMany({})
     res.send(afterDelete)
 })
 usersRouter.get('/', async (req: Request, res: Response) => {
@@ -52,7 +52,7 @@ usersRouter.get('/:id', async (req: Request, res: Response) => {
 
 // usersRouter.get('/login', async (req: Request, res: Response) => {
 //     const user = await usersService.checkCredentials(req.body.login, req.body.password)
-//     const foundUser = await usersCollection.findOne({login: req.body.login})
+//     const foundUser = await usersModel.findOne({login: req.body.login})
 //     if(foundUser && user) {
 //         const token = await jwtService.createJWT(foundUser)
 //         res.status(201).send(token)

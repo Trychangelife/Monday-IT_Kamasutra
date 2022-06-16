@@ -40,7 +40,7 @@ authRouter.post('/update-access-token', LoginInputModel, inputValidationMiddlewa
     else if (refreshToken) {
         const newAccessToken = await jwtService.getNewAccessToken(refreshToken)
         if (newAccessToken !== null) {
-        res.status(200).send({ newAccessToken })}
+        res.status(200).send( newAccessToken )}
         else {
             res.status(401).send('Refresh Token already not valid, repeat authorization')
         }

@@ -1,7 +1,7 @@
 import { RefreshTokenStorageType, UsersType } from "../types/UsersType";
 import jwt from "jsonwebtoken";
 import { settings } from "../settings";
-import { refreshTokenCollection } from "../repositories/db";
+import { refreshTokenModel } from "../repositories/db";
 
 
 export const jwtService = {
@@ -15,13 +15,13 @@ export const jwtService = {
             userId: user.id,
             refreshToken: refreshToken
         }
-        const foundExistToken = await refreshTokenCollection.findOne({ userId: user.id })
+        const foundExistToken = await refreshTokenModel.findOne({ userId: user.id })
         if (foundExistToken == null) {
-            await refreshTokenCollection.insertOne(newRefreshToken)
+            await refreshTokenModel.create(newRefreshToken)
             return refreshToken
         }
         else {
-            await refreshTokenCollection.updateOne({userId: user.id}, {$set: {refreshToken: newRefreshToken.refreshToken}})
+            await refreshTokenModel.updateOne({userId: user.id}, {$set: {refreshToken: newRefreshToken.refreshToken}})
             return refreshToken
         }
     },
@@ -34,7 +34,7 @@ export const jwtService = {
         }
     },
     async getNewAccessToken(rToken: string): Promise<object | null> {
-        const checkToken = await refreshTokenCollection.findOne({ refreshToken: rToken })
+        const checkToken = await refreshTokenModel.findOne({ refreshToken: rToken })
         if (checkToken !== null) {
             try {
                 const result: any = jwt.verify(rToken, settings.JWT_REFRESH_SECRET)

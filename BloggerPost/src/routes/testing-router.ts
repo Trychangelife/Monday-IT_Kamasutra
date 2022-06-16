@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { authDataCollection, bloggerModel, codeConfirmCollection, commentsModel, emailSendCollection, postsModel, refreshTokenCollection, registrationDataCollection, usersCollection } from "../repositories/db";
+import { authDataModel, bloggerModel, codeConfirmModel, commentsModel, emailSendModel, postsModel, refreshTokenModel, registrationDataModel, usersModel } from "../repositories/db";
 
 export const testingRouter = Router({})
 
@@ -7,13 +7,13 @@ export const testingRouter = Router({})
 testingRouter.delete('/all-data', async (req: Request, res: Response) => {
     await postsModel.deleteMany({})
     await bloggerModel.deleteMany({})
-    await usersCollection.deleteMany({})
+    await usersModel.deleteMany({})
     await commentsModel.deleteMany({})
-    await registrationDataCollection.deleteMany({})
-    await authDataCollection.deleteMany({})
-    await codeConfirmCollection.deleteMany({})
-    await emailSendCollection.deleteMany({})
-    await refreshTokenCollection.deleteMany({})
+    await registrationDataModel.deleteMany({})
+    await authDataModel.deleteMany({})
+    await codeConfirmModel.deleteMany({})
+    await emailSendModel.deleteMany({})
+    await refreshTokenModel.deleteMany({})
     res.status(204).send()
     }) 
 

@@ -1,6 +1,6 @@
-import { authDataCollection, codeConfirmCollection, emailSendCollection, refreshTokenCollection, registrationDataCollection, usersCollection } from "./db"
+import { authDataModel, codeConfirmModel, emailSendModel, refreshTokenModel, registrationDataModel, usersModel } from "./db"
 import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/UsersType"
-import { add, addSeconds, sub } from "date-fns"
+import { sub } from "date-fns"
 import { ModifyResult } from "mongodb"
 
 const userViewModel = {
@@ -16,27 +16,27 @@ const userViewModel = {
 export const usersRepository = {
 
     async allUsers(skip: number, limit: number, page?: number): Promise<object> {
-        const fullData = await usersCollection.find({}, userViewModel).skip(skip).limit(limit).toArray()
-        const totalCount = await usersCollection.count({})
+        const fullData = await usersModel.find({}, userViewModel).skip(skip).limit(limit)
+        const totalCount = await usersModel.count({})
         const pagesCount = Math.ceil(totalCount / limit)
 
 
         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: fullData }
     },
     async createUser(newUser: UsersType): Promise<UsersType | null | boolean> {
-        await usersCollection.insertOne(newUser)
-        const checkUniqueLogin = await usersCollection.count({ "accountData.login": newUser.accountData.login })
-        const checkUniqueEmail = await usersCollection.count({ "accountData.email": newUser.accountData.email })
+        await usersModel.create(newUser)
+        const checkUniqueLogin = await usersModel.count({ "accountData.login": newUser.accountData.login })
+        const checkUniqueEmail = await usersModel.count({ "accountData.email": newUser.accountData.email })
         if (checkUniqueLogin > 1 || checkUniqueEmail > 1) {
             return false
         }
         else {
-            return await usersCollection.findOne({ id: newUser.id }, userViewModel)
+            return await usersModel.findOne({ id: newUser.id }, userViewModel)
         }
 
     },
     async deleteUser(id: string): Promise<boolean> {
-        const result = await usersCollection.deleteOne({ id: id })
+        const result = await usersModel.deleteOne({ id: id })
         return result.deletedCount === 1
     },
 
@@ -47,7 +47,7 @@ export const usersRepository = {
     // Основная часть закончена, вспомогательные эндпоинты
 
     async confirmationEmail(user: UsersType): Promise<boolean> {
-        const activatedUser = await usersCollection.updateOne({ id: user.id }, { $set: { "emailConfirmation.activatedStatus": true } })
+        const activatedUser = await usersModel.updateOne({ id: user.id }, { $set: { "emailConfirmation.activatedStatus": true } })
         if (activatedUser.modifiedCount > 0) {
             return true
         }
@@ -60,7 +60,7 @@ export const usersRepository = {
         const dateResult = sub(new Date(), {
             seconds: 10 // Задержка которую мы отнимаем от текущего времени
         })
-        const checkResultByIp = await registrationDataCollection.countDocuments({ $and: [{ ip: ip }, { dateRegistation: { $gt: dateResult } }] })
+        const checkResultByIp = await registrationDataModel.countDocuments({ $and: [{ ip: ip }, { dateRegistation: { $gt: dateResult } }] })
         if (checkResultByIp > 5) { // Проверяем длинну массива, если больше 5 регистраций, то отдаем false - он дальше отдает 429 ошибку
             return false
         }
@@ -71,8 +71,8 @@ export const usersRepository = {
         const dateResult = sub(new Date(), {
             seconds: 10
         })
-        const checkResultByIp = await authDataCollection.countDocuments({ $and: [{ ip: ip }, { tryAuthDate: { $gt: dateResult } }] })
-        const checkResultByLogin = await authDataCollection.countDocuments({ $and: [{ login: login }, { tryAuthDate: { $gt: dateResult } }] })
+        const checkResultByIp = await authDataModel.countDocuments({ $and: [{ ip: ip }, { tryAuthDate: { $gt: dateResult } }] })
+        const checkResultByLogin = await authDataModel.countDocuments({ $and: [{ login: login }, { tryAuthDate: { $gt: dateResult } }] })
         if (checkResultByIp > 5 || checkResultByLogin > 5) {
             return false
         }
@@ -82,7 +82,7 @@ export const usersRepository = {
         const dateResult = sub(new Date(), {
             seconds: 10
         })
-        const checkResultByIp = await codeConfirmCollection.countDocuments({ $and: [{ ip: ip }, { tryConfirmDate: { $gt: dateResult } }] })
+        const checkResultByIp = await codeConfirmModel.countDocuments({ $and: [{ ip: ip }, { tryConfirmDate: { $gt: dateResult } }] })
         if (checkResultByIp > 5) {
             return false
         }
@@ -94,7 +94,7 @@ export const usersRepository = {
         const dateResult = sub(new Date(), {
             seconds: 10
         })
-        const checkResultByIp = await emailSendCollection.countDocuments({ $and: [{ ip: ip }, { emailSendDate: { $gt: dateResult } }] })
+        const checkResultByIp = await emailSendModel.countDocuments({ $and: [{ ip: ip }, { emailSendDate: { $gt: dateResult } }] })
         if (checkResultByIp > 5) {
             return false
         }
@@ -104,61 +104,61 @@ export const usersRepository = {
 
     // Эндпоинты для поиска по определенным условиям
     async findUserByEmail(email: string): Promise<UsersType | null> {
-        const foundUser = await usersCollection.findOne({ "accountData.email": email })
+        const foundUser = await usersModel.findOne({ "accountData.email": email })
         return foundUser
     },
     async findUserById(id: string): Promise<UsersType | null> {
-        const result = await usersCollection.findOne({ id: id })
+        const result = await usersModel.findOne({ id: id })
         return result
     },
     async findUserByLogin(login: string): Promise<UsersType | null> {
-        const foundUser = await usersCollection.findOne({ "accountData.login": login })
+        const foundUser = await usersModel.findOne({ "accountData.login": login })
         return foundUser
     },
     async findUserByConfirmationCode(code: string): Promise<UsersType | null> {
-        const foundUser = await usersCollection.findOne({ "emailConfirmation.codeForActivated": code })
+        const foundUser = await usersModel.findOne({ "emailConfirmation.codeForActivated": code })
         return foundUser
     },
-    async refreshActivationCode(email: string, code: string): Promise<ModifyResult<UsersType>> {
-        const updateCode = await usersCollection.findOneAndUpdate({ "accountData.email": email }, { $set: { "emailConfirmation.codeForActivated": code } }, { returnDocument: "after" })
+    async refreshActivationCode(email: string, code: string): Promise <UsersType | null> {
+        const updateCode = await usersModel.findOneAndUpdate({ "accountData.email": email }, { $set: { "emailConfirmation.codeForActivated": code } }, { new: true })
         return updateCode
     },
 
     // Эндпоинты для выгрузки информации из вспомогательных лог-баз
     async getRegistrationDate(): Promise<RegistrationDataType[]> {
-        return await registrationDataCollection.find({}).toArray()
+        return await registrationDataModel.find({})
     },
     async getAuthDate(): Promise<AuthDataType[]> {
-        return await authDataCollection.find({}).toArray()
+        return await authDataModel.find({})
     },
     async getEmailSendDate(): Promise<EmailSendDataType[]> {
-        return await emailSendCollection.find({}).toArray()
+        return await emailSendModel.find({})
     },
     async getConfirmAttemptDate(): Promise<ConfirmedAttemptDataType[]> {
-        return await codeConfirmCollection.find({}).toArray()
+        return await codeConfirmModel.find({})
     },
     async getTokenDate(): Promise<RefreshTokenStorageType[]> {
-        return await refreshTokenCollection.find({}).toArray()
+        return await refreshTokenModel.find({})
     },
 
 
     // Эндпоинты для наполнения информацией вспомогательных лог-баз
 
     async informationAboutRegistration(registrationData: RegistrationDataType): Promise<boolean> {
-        await registrationDataCollection.insertOne(registrationData)
+        await registrationDataModel.create(registrationData)
         return true
     },
     async informationAboutAuth(authData: AuthDataType): Promise<boolean> {
-        await authDataCollection.insertOne(authData)
+        await authDataModel.create(authData)
         return true
     },
 
     async informationAboutEmailSend(emailSendData: EmailSendDataType): Promise<boolean> {
-        await emailSendCollection.insertOne(emailSendData)
+        await emailSendModel.create(emailSendData)
         return true
     },
     async informationAboutConfirmed(confirmedData: ConfirmedAttemptDataType): Promise<boolean> {
-        await codeConfirmCollection.insertOne(confirmedData)
+        await codeConfirmModel.create(confirmedData)
         return true
     },
 
