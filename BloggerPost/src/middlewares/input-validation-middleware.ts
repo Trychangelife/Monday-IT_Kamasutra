@@ -1,7 +1,7 @@
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
 import { usersService } from "../domain/users-service";
-import { commentsCollection, usersCollection } from "../repositories/db";
+import { commentsModel, usersCollection } from "../repositories/db";
 import { usersRepository } from "../repositories/users-repository";
 
 
@@ -40,7 +40,7 @@ export const commentInputModel = [
     body('content').isLength({ min: 20, max: 300 })
 ]
 export const checkLaw = async (req: Request, res: Response, next: NextFunction) => {
-    const findTargetComment = await commentsCollection.findOne({ id: req.params.commentId })
+    const findTargetComment = await commentsModel.findOne({ commentId: req.params.commentId })
         if (findTargetComment !== null && findTargetComment.userId !== req.user!.id) {
             res.send(403)
         }

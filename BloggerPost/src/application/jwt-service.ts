@@ -6,11 +6,11 @@ import { refreshTokenCollection } from "../repositories/db";
 
 export const jwtService = {
     async accessToken(user: UsersType) {
-        const accessToken = jwt.sign({ id: user.id }, settings.JWT_SECRET, { expiresIn: '1m' })
+        const accessToken = jwt.sign({ id: user.id }, settings.JWT_SECRET, { expiresIn: '1h' })
         return accessToken
     },
     async refreshToken(user: UsersType): Promise<string> {
-        const refreshToken = jwt.sign({ id: user.id }, settings.JWT_REFRESH_SECRET, { expiresIn: '3m' })
+        const refreshToken = jwt.sign({ id: user.id }, settings.JWT_REFRESH_SECRET, { expiresIn: '3h' })
         const newRefreshToken: RefreshTokenStorageType = {
             userId: user.id,
             refreshToken: refreshToken

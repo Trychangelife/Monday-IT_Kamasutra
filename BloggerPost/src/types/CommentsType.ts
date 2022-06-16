@@ -2,7 +2,7 @@
 
 
 export type CommentsType = {
-    id: string;
+    commentId: string;
     content: string;
     userId: string;
     userLogin: string;

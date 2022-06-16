@@ -1,10 +1,9 @@
 import { CommentsType } from "../types/CommentsType";
-import { bloggersCollection, commentsCollection, postsCollection } from "./db";
+import { bloggerModel, commentsModel, postsModel } from "./db";
 import { PostsType } from "../types/PostsType";
 
 
 export const postViewModel = {
-    projection: {
         _id: 0,
         id: 1,
         title: 1,
@@ -12,47 +11,45 @@ export const postViewModel = {
         content: 1,
         bloggerId: 1,
         bloggerName: 1
-    }
 }
 
 export const commentsVievModel = {
-    projection: {
         _id: 0,
-        postId: 0
-    }
+        postId: 0,
+        __v: 0
 }
 
 export const postsRepository = {
     async allPosts(skip: number, limit: number, page?: number): Promise<object> {
-        const totalCount = await postsCollection.count({})
+        const totalCount = await postsModel.count({})
         const pagesCount = Math.ceil(totalCount / limit)
-        const cursor = await postsCollection.find({}, postViewModel).skip(skip).limit(limit).toArray()
+        const cursor = await postsModel.find({}, postViewModel).skip(skip).limit(limit)
         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: cursor }
     },
  
     async targetPosts(postId: string): Promise<object | undefined> {
-        const targetPost: PostsType | null = await postsCollection.findOne({ id: postId }, postViewModel)
+        const targetPost: PostsType | null = await postsModel.findOne({ id: postId }, postViewModel)
         if (targetPost == null) {
             return undefined
         }
         else {
-            return targetPost;
+            return targetPost; 
         }
     },
     async allPostsSpecificBlogger(bloggerId: string, skip: number, pageSize?: number, page?: number): Promise<object | undefined> {
 
 
-        const totalCount = await postsCollection.count({ bloggerId: bloggerId })
-        const checkBloggerExist = await bloggersCollection.count({ id: bloggerId })
+        const totalCount = await postsModel.count({ bloggerId: bloggerId })
+        const checkBloggerExist = await bloggerModel.count({ id: bloggerId })
         if (checkBloggerExist < 1) { return undefined }
         if (page !== undefined && pageSize !== undefined) {
-            const postsBloggerWithPaginator = await postsCollection.find({ bloggerId: bloggerId }, postViewModel).skip(skip).limit(pageSize).toArray()
+            const postsBloggerWithPaginator = await postsModel.find({ bloggerId: bloggerId }, postViewModel).skip(skip).limit(pageSize)
             const pagesCount = Math.ceil(totalCount / pageSize)
             if (page > 0 || pageSize > 0) {
                 return { pagesCount, page: page, pageSize: pageSize, totalCount, items: postsBloggerWithPaginator }
             }
             else {
-                const postsBloggerWithOutPaginator = await postsCollection.find({ bloggerId: bloggerId }).toArray()
+                const postsBloggerWithOutPaginator = await postsModel.find({ bloggerId: bloggerId })
                 return { pagesCount: 0, page: page, pageSize: pageSize, totalCount, items: postsBloggerWithOutPaginator }
             }
 
@@ -61,20 +58,20 @@ export const postsRepository = {
 
 
     async releasePost(newPosts: PostsType, bloggerId: string, bloggerIdUrl?: string): Promise<object | string> {
-        const findBlogger = await bloggersCollection.count({ id: bloggerId })
+        const findBlogger = await bloggerModel.count({ id: bloggerId })
         if (findBlogger < 1) { return "400" }
-        await postsCollection.insertOne(newPosts)
-        const result: PostsType | null = await postsCollection.findOne({ id: newPosts.id }, postViewModel)
+        await postsModel.create(newPosts)
+        const result: PostsType | null = await postsModel.findOne({ id: newPosts.id }, postViewModel)
         if (result !== null) { return result }
         else { return "400" }
     },
 
     async changePost(postId: string, title: string, shortDescription: string, content: string, bloggerId: string): Promise<string | object> {
 
-        const foundPost = await postsCollection.findOne({ id: postId }, postViewModel)
-        const foundBlogger = await bloggersCollection.findOne({ id: bloggerId })
+        const foundPost = await postsModel.findOne({ id: postId }, postViewModel)
+        const foundBlogger = await bloggerModel.findOne({ id: bloggerId })
         if (foundPost !== null && foundBlogger !== null) {
-            await postsCollection.updateOne({ id: postId }, { $set: { title: title, shortDescription: shortDescription, content: content, } })
+            await postsModel.updateOne({ id: postId }, { $set: { title: title, shortDescription: shortDescription, content: content, } })
             return foundPost
         }
         else if (foundBlogger == null) {
@@ -85,29 +82,29 @@ export const postsRepository = {
         }
     },
     async deletePost(deleteId: string): Promise<boolean> {
-        const result = await postsCollection.deleteOne({ id: deleteId })
+        const result = await postsModel.deleteOne({ id: deleteId })
         return result.deletedCount === 1
     },
     async createCommentForSpecificPost(createdComment: CommentsType): Promise<CommentsType | boolean> {
 
-        await commentsCollection.insertOne(createdComment)
-        const foundNewPost = await commentsCollection.findOne({id: createdComment.id}, commentsVievModel)
+        await commentsModel.create(createdComment)
+        const foundNewPost = await commentsModel.findOne({commentId: createdComment.commentId}, commentsVievModel)
         if (foundNewPost !== null) {
         return foundNewPost}
         else {return false}
     },
     async takeCommentByIdPost (postId: string, skip: number, limit: number, page: number): Promise<object | boolean> {
-        const findPosts = await postsCollection.findOne({id: postId})
-        const totalCount = await commentsCollection.count({postId: postId})
+        const findPosts = await postsModel.findOne({id: postId})
+        const totalCount = await commentsModel.count({postId: postId})
         const pagesCount = Math.ceil(totalCount / limit)
         if (findPosts !== null) {
-        const findComments = await commentsCollection.find({postId: postId}, commentsVievModel).skip(skip).limit(limit).toArray()
+        const findComments = await commentsModel.find({postId: postId}, commentsVievModel).skip(skip).limit(limit)
         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: findComments }}
         else { return false}
     }
 }
 
-// const totalCount = await postsCollection.count({})
+// const totalCount = await postsModel.count({})
 //         const pagesCount = Math.ceil(totalCount / limit)
-//         const cursor = await postsCollection.find({}, postViewModel).skip(skip).limit(limit).toArray()
+//         const cursor = await postsModel.find({}, postViewModel).skip(skip).limit(limit).toArray()
 //         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: cursor }

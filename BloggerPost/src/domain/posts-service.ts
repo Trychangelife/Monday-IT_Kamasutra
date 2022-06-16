@@ -1,4 +1,4 @@
-import { bloggersCollection, postsCollection } from "../repositories/db";
+import { bloggerModel, postsModel } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
 import { CommentsType } from "../types/CommentsType";
@@ -27,8 +27,8 @@ export const postsService = {
     },
 
     async releasePost(title: string, content: string, shortDescription: string, bloggerId?: string, bloggerIdUrl?: string): Promise<object | string | null> {
-        const foundBlogger = await bloggersCollection.findOne({ id: bloggerId })
-        const foundBloggerW = await bloggersCollection.findOne({ id: bloggerIdUrl })
+        const foundBlogger = await bloggerModel.findOne({ id: bloggerId })
+        const foundBloggerW = await bloggerModel.findOne({ id: bloggerIdUrl })
         if (bloggerIdUrl && foundBloggerW !== null) {
             let newPosts: PostsType = {
                 id: uuidv4(),
@@ -63,10 +63,10 @@ export const postsService = {
 
     },
     async createCommentForSpecificPost(postId: string, content: string, userId: string, userLogin: string): Promise<CommentsType | boolean> {
-        const foundPost = await postsCollection.findOne({ id: postId })
+        const foundPost = await postsModel.findOne({ id: postId })
         if(foundPost) {
         let createdComment: CommentsType = {
-            id: uuidv4(),
+            commentId: uuidv4(),
             content: content,
             userId: userId,
             userLogin: userLogin,

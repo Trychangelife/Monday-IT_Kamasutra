@@ -2,6 +2,7 @@ import { bloggerRepository } from "../repositories/bloggers-repositories"
 import { v4 as uuidv4 } from "uuid"
 import { BloggersType } from "../types/BloggersType"
 
+
 export const bloggerService = {
     async allBloggers(pageSize: number, pageNumber: number, searchNameTerm?: string | null): Promise<object> {
         let skip = 0
@@ -44,6 +45,9 @@ export const bloggerService = {
         else {
             return "404"
         }
+    },
+    async deleteAllBlogger(): Promise<boolean> {
+        return await bloggerRepository.deleteAllBlogger()
     }
 
 }

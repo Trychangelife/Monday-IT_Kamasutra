@@ -1,13 +1,19 @@
 import { BloggersType } from "../types/BloggersType"
-import { bloggersCollection } from "./db"
+import { bloggerModel } from "./db"
 
+// const modelViewBloggers = {
+//     projection: {
+//         _id: 0,
+//         id: 1,
+//         name: 1,
+//         youtubeUrl: 1
+//     }
+// }
 const modelViewBloggers = {
-    projection: {
-        _id: 0,
-        id: 1,
-        name: 1,
-        youtubeUrl: 1
-    }
+    _id: 0,
+    id: 1,
+    name: 1,
+    youtubeUrl: 1
 }
 
 export const bloggerRepository = {
@@ -15,13 +21,13 @@ export const bloggerRepository = {
         
         
         if (page !== undefined && limit !== undefined) {
-            const cursor = await bloggersCollection.find({}, modelViewBloggers).skip(skip).limit(limit).toArray()
-            const totalCount = await bloggersCollection.count({}) //Возможно нужно изменить на COUNT (чтобы не вытягивать всю базу данных)
+            const cursor = await bloggerModel.find({}, modelViewBloggers).skip(skip).limit(limit)
+            const totalCount = await bloggerModel.count({}) //Возможно нужно изменить на COUNT (чтобы не вытягивать всю базу данных)
             const pagesCount = Math.ceil(totalCount / limit)
-            const fullData = await bloggersCollection.find({}, modelViewBloggers).toArray()
+            const fullData = await bloggerModel.find({}, modelViewBloggers)
             
             if (searchNameTerm !== null) {
-                const cursorWithRegEx = await bloggersCollection.find({name: {$regex: searchNameTerm, $options: 'i'}}, modelViewBloggers).skip(skip).limit(limit).toArray()
+                const cursorWithRegEx = await bloggerModel.find({name: {$regex: searchNameTerm, $options: 'i'}}, modelViewBloggers).skip(skip).limit(limit)
                 const totalCountWithRegex = cursorWithRegEx.length
                 const pagesCountWithRegex = Math.ceil(totalCountWithRegex / limit)
                 return { pagesCount: pagesCountWithRegex, page: page, pageSize: limit, totalCount: totalCountWithRegex, items: cursorWithRegEx }
@@ -32,14 +38,14 @@ export const bloggerRepository = {
             else return { pagesCount: 0, page: page, pageSize: limit, totalCount, items: fullData }
         }
         else {
-            return await bloggersCollection.find({}, modelViewBloggers).toArray()
+            return await bloggerModel.find({}, modelViewBloggers)
         } 
 
     },
 
     async targetBloggers(id: string): Promise<object | undefined> {
 
-        const blogger: BloggersType | null = await bloggersCollection.findOne({ id: id }, modelViewBloggers)
+        const blogger: BloggersType | null = await bloggerModel.findOne({ id: id }, modelViewBloggers)
         if (blogger !== null) {
             return blogger
         }
@@ -49,17 +55,21 @@ export const bloggerRepository = {
     },
 
     async createBlogger(newBlogger: BloggersType): Promise<BloggersType | null> {
-        await bloggersCollection.insertOne(newBlogger)
-        return await bloggersCollection.findOne({id: newBlogger.id}, modelViewBloggers)
+        await bloggerModel.create(newBlogger)
+        return await bloggerModel.findOne({id: newBlogger.id}, modelViewBloggers)
     },
 
     async changeBlogger(id: string, name: any, youtubeUrl: string): Promise<boolean> {
-        const result = await bloggersCollection.updateOne({ id: id }, { $set: { name: name, youtubeUrl: youtubeUrl } })
+        const result = await bloggerModel.updateOne({ id: id }, { $set: { name: name, youtubeUrl: youtubeUrl } })
         return result.matchedCount === 1
     },
     async deleteBlogger(id: string): Promise<boolean> {
-        const result = await bloggersCollection.deleteOne({ id: id })
+        const result = await bloggerModel.deleteOne({ id: id })
         return result.deletedCount === 1
+    },
+    async deleteAllBlogger(): Promise<boolean> {
+        const afterDelete = await bloggerModel.deleteMany({})
+        return afterDelete.acknowledged
     }
 
 }
@@ -69,8 +79,8 @@ export const bloggerRepository = {
 
 
 
-    // const totalCount = await (await bloggersCollection.find({}).toArray()).length
-        // const cursor =  bloggersCollection.find({
+    // const totalCount = await (await bloggerModel.find({}).toArray()).length
+        // const cursor =  bloggerModel.find({
         // })
         // if(skip) cursor.skip(skip)
         // if(limit) {cursor.limit(limit)
