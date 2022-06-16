@@ -1,4 +1,4 @@
-import { BloggersType } from "../types/BloggersType"
+import { BloggersType } from "../types/Types"
 import { bloggerModel } from "./db"
 
 // const modelViewBloggers = {

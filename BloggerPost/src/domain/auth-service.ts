@@ -1,5 +1,5 @@
 import { usersRepository } from "../repositories/users-repository"
-import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, UsersType } from "../types/UsersType"
+import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, UsersType } from "../types/Types"
 import { ModifyResult } from "mongodb"
 import { uuid } from "uuidv4"
 

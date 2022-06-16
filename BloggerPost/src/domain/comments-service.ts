@@ -1,5 +1,5 @@
 import { commentsRepository } from "../repositories/comments-repository";
-import { CommentsType } from "../types/CommentsType";
+import { CommentsType } from "../types/Types";
 
 export const commentsService = {
     async getCommentsById(id: string): Promise<CommentsType | null> {

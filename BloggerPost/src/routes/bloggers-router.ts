@@ -4,7 +4,7 @@ import { postsService } from "../domain/posts-service";
 import { bloggerModel } from "../repositories/db";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger, schemaPosts } from "../middlewares/input-validation-middleware";
-import { BloggersType } from "../types/BloggersType";
+import { BloggersType } from "../types/Types";
 
 export const bloggersRouter = Router({})
 export type ConstructorPaginationType = { pageNumber: number, pageSize: number };

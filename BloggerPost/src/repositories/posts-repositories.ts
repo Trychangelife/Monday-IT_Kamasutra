@@ -1,6 +1,6 @@
-import { CommentsType } from "../types/CommentsType";
+import { CommentsType } from "../types/Types";
 import { bloggerModel, commentsModel, postsModel } from "./db";
-import { PostsType } from "../types/PostsType";
+import { PostsType } from "../types/Types";
 
 
 export const postViewModel = {

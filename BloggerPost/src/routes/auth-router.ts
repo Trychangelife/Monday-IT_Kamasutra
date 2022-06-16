@@ -5,7 +5,7 @@ import { emailService } from "../domain/email-service";
 import { usersService } from "../domain/users-service";
 import { checkAvailabilityEmail, checkUniqueData, inputValidationMiddleware, LoginInputModel, userInputModel } from "../middlewares/input-validation-middleware";
 import { usersRepository } from "../repositories/users-repository";
-import { UsersType } from "../types/UsersType";
+import { UsersType } from "../types/Types";
 
 
 export const authRouter = Router({})

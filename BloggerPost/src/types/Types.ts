@@ -1,5 +1,30 @@
 import { ObjectId } from "mongodb";
 
+export type BloggersType = {
+    id: string;
+    name: string;
+    youtubeUrl: string;
+}
+
+export type CommentsType = {
+    commentId: string;
+    content: string;
+    userId: string;
+    userLogin: string;
+    addedAt: string;
+    postId: string;
+};
+
+
+export type PostsType = {
+    id: string;
+    title: string;
+    shortDescription: string;
+    content: string;
+    bloggerId: string;
+    bloggerName: string;
+};
+
 export type UsersType = {
     _id: ObjectId;
     id: string;

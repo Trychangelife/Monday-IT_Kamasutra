@@ -1,4 +1,4 @@
-import { CommentsType } from "../types/CommentsType"
+import { CommentsType } from "../types/Types"
 import { commentsModel } from "./db"
 import { commentsVievModel } from "./posts-repositories"
 

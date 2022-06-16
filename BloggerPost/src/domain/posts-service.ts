@@ -1,8 +1,8 @@
 import { bloggerModel, postsModel } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
-import { CommentsType } from "../types/CommentsType";
-import { PostsType } from "../types/PostsType";
+import { CommentsType } from "../types/Types";
+import { PostsType } from "../types/Types";
 
 export const postsService = {
     async allPosts(pageSize: number, pageNumber: number,): Promise<object> {

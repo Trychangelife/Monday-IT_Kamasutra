@@ -1,5 +1,5 @@
 import { emailAdapter } from "../adapters/email-adapter"
-import { UsersType } from "../types/UsersType"
+import { UsersType } from "../types/Types"
 
 
 

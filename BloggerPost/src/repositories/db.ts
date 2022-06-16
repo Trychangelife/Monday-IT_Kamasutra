@@ -1,10 +1,10 @@
 import dotenv from "dotenv"
 dotenv.config()
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
-import { BloggersType } from "../types/BloggersType";
-import { CommentsType } from "../types/CommentsType";
-import { PostsType } from "../types/PostsType";
-import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/UsersType";
+import { BloggersType } from "../types/Types";
+import { CommentsType } from "../types/Types";
+import { PostsType } from "../types/Types";
+import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/Types";
 import mongoose from "mongoose";
 
 

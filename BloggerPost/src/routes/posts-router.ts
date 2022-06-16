@@ -3,7 +3,7 @@ import { check, param, validationResult } from "express-validator";
 import { postsService } from "../domain/posts-service";
 import { postsModel } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories";
-import { PostsType } from "../types/PostsType";
+import { PostsType } from "../types/Types";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { commentInputModel, errorFormatter, inputValidationMiddleware, schemaPosts } from "../middlewares/input-validation-middleware";
 import { constructorPagination, ConstructorPaginationType } from "./bloggers-router";

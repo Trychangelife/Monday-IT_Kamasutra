@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb"
 import { usersRepository } from "../repositories/users-repository"
-import { RegistrationDataType, UsersType } from "../types/UsersType"
+import { RegistrationDataType, UsersType } from "../types/Types"
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
-import { emailService } from "./email-service"
+
 
 export const usersService = {
 

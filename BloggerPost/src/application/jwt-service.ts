@@ -1,4 +1,4 @@
-import { RefreshTokenStorageType, UsersType } from "../types/UsersType";
+import { RefreshTokenStorageType, UsersType } from "../types/Types";
 import jwt from "jsonwebtoken";
 import { settings } from "../settings";
 import { refreshTokenModel } from "../repositories/db";

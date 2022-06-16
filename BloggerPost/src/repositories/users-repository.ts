@@ -1,5 +1,5 @@
 import { authDataModel, codeConfirmModel, emailSendModel, refreshTokenModel, registrationDataModel, usersModel } from "./db"
-import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/UsersType"
+import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/Types"
 import { sub } from "date-fns"
 import { ModifyResult } from "mongodb"
 
