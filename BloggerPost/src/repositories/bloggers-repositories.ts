@@ -1,14 +1,7 @@
 import { BloggersType } from "../types/Types"
 import { bloggerModel } from "./db"
 
-// const modelViewBloggers = {
-//     projection: {
-//         _id: 0,
-//         id: 1,
-//         name: 1,
-//         youtubeUrl: 1
-//     }
-// }
+
 const modelViewBloggers = {
     _id: 0,
     id: 1,

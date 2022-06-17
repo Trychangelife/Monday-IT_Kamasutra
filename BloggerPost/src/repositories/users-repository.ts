@@ -1,16 +1,15 @@
 import { authDataModel, codeConfirmModel, emailSendModel, refreshTokenModel, registrationDataModel, usersModel } from "./db"
 import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/Types"
 import { sub } from "date-fns"
-import { ModifyResult } from "mongodb"
 
 const userViewModel = {
-    projection: {
         _id: 0,
+        id: 1,
         accountData: {
-            passwordHash: 0,
-            passwordSalt: 0
-        }
-    }
+            login: 1,
+            email: 1
+        },
+
 }
 
 export const usersRepository = {
