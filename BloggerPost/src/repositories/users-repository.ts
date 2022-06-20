@@ -18,8 +18,6 @@ export const usersRepository = {
         const fullData = await usersModel.find({}, userViewModel).skip(skip).limit(limit)
         const totalCount = await usersModel.count({})
         const pagesCount = Math.ceil(totalCount / limit)
-
-
         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: fullData }
     },
     async createUser(newUser: UsersType): Promise<UsersType | null | boolean> {

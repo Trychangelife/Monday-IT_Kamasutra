@@ -1,6 +1,6 @@
 import { bloggerRepository } from "../repositories/bloggers-repositories"
 import { v4 as uuidv4 } from "uuid"
-import { BloggersType } from "../types/Types"
+import { Blogger, BloggersType } from "../types/Types"
 
 
 export const bloggerService = {
@@ -19,11 +19,7 @@ export const bloggerService = {
     },
 
     async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType | null> {
-        const newBlogger = {
-            id: uuidv4(),
-            name: name,
-            youtubeUrl: youtubeUrl
-        }
+        const newBlogger = new Blogger(uuidv4(), name, youtubeUrl)
         const createdBlogger = await bloggerRepository.createBlogger(newBlogger)
         return createdBlogger
     },

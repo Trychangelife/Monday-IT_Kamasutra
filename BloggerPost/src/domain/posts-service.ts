@@ -1,7 +1,7 @@
 import { bloggerModel, postsModel } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
-import { CommentsType } from "../types/Types";
+import { CommentsType, Post } from "../types/Types";
 import { PostsType } from "../types/Types";
 
 export const postsService = {
@@ -30,26 +30,12 @@ export const postsService = {
         const foundBlogger = await bloggerModel.findOne({ id: bloggerId })
         const foundBloggerW = await bloggerModel.findOne({ id: bloggerIdUrl })
         if (bloggerIdUrl && foundBloggerW !== null) {
-            let newPosts: PostsType = {
-                id: uuidv4(),
-                title: title,
-                content: content,
-                shortDescription: shortDescription,
-                bloggerId: bloggerIdUrl,
-                bloggerName: foundBloggerW.name
-            }
-            return await postsRepository.releasePost(newPosts, bloggerIdUrl)
+            const newPost = new Post(uuidv4(), title, content, shortDescription, bloggerIdUrl, foundBloggerW.name)
+            return await postsRepository.releasePost(newPost, bloggerIdUrl)
         }
         else if (foundBlogger !== null && bloggerId) {
-            let newPosts: PostsType = {
-                id: uuidv4(),
-                title: title,
-                content: content,
-                shortDescription: shortDescription,
-                bloggerId: bloggerId,
-                bloggerName: foundBlogger.name
-            }
-            return await postsRepository.releasePost(newPosts, bloggerId, bloggerIdUrl)
+            const newPost = new Post(uuidv4(), title, content, shortDescription, bloggerId, foundBlogger.name)
+            return await postsRepository.releasePost(newPost, bloggerId, bloggerIdUrl)
         }
         else { return null }
     },
