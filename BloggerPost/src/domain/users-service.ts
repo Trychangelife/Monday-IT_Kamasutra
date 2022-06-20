@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { usersRepository } from "../repositories/users-repository"
-import { RegistrationDataType, UsersType } from "../types/Types"
+import { RegistrationDataType, User, UsersType } from "../types/Types"
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
 
@@ -18,20 +18,22 @@ export const usersService = {
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
-        const newUser: UsersType = {
-            _id: new ObjectId(),
-            id: uuidv4(),
-            accountData: {
-                login,
-                passwordHash,
-                passwordSalt,
-                email,
-            },
-            emailConfirmation: {
-                codeForActivated: uuidv4(),
-                activatedStatus: false,
-            }
-        }
+        // Построено на классе
+        const newUser = new User(new ObjectId(), uuidv4(), {login, passwordHash, passwordSalt, email}, {codeForActivated: uuidv4(), activatedStatus: false})
+        // const newUser: UsersType = {
+        //     _id: new ObjectId(),
+        //     id: uuidv4(),
+        //     accountData: {
+        //         login,
+        //         passwordHash,
+        //         passwordSalt,
+        //         email,
+        //     },
+        //     emailConfirmation: {
+        //         codeForActivated: uuidv4(),
+        //         activatedStatus: false,
+        //     }
+        // }
         const registrationData: RegistrationDataType = {
             ip,
             dateRegistation: new Date(),

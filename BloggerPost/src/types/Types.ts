@@ -10,6 +10,8 @@ export type BloggersType = {
     name: string;
     youtubeUrl: string;
 }
+
+
 export class Comments {
     constructor(public commentId: string, public content: string, public userId: string, public userLogin: string, public addedAt: string,public postId: string ) {
     }
@@ -24,6 +26,7 @@ export type CommentsType = {
     postId: string;
 };
 
+
 export class Post {
     constructor(public id: string, public title: string, public shortDescription: string, public content: string, public bloggerId: string,public bloggerName: string ) {
     }
@@ -37,6 +40,14 @@ export type PostsType = {
     bloggerName: string;
 };
 
+
+export class User { 
+    constructor(
+        public _id: ObjectId, 
+        public id: string, 
+        public accountData: {login: string, passwordHash: string, passwordSalt: string, email:string},
+        public emailConfirmation: {codeForActivated: string, activatedStatus: boolean}) {}
+}
 export type UsersType = {
     _id: ObjectId;
     id: string;
@@ -51,6 +62,8 @@ export type UsersType = {
         activatedStatus: boolean
     }
 };
+
+
 
 export type RegistrationDataType = {
     ip: string
