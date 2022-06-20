@@ -1,7 +1,7 @@
 import { bloggerModel, postsModel } from "../repositories/db";
 import { postsRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
-import { CommentsType, Post } from "../types/Types";
+import { Comments, CommentsType, Post } from "../types/Types";
 import { PostsType } from "../types/Types";
 
 export const postsService = {
@@ -30,10 +30,12 @@ export const postsService = {
         const foundBlogger = await bloggerModel.findOne({ id: bloggerId })
         const foundBloggerW = await bloggerModel.findOne({ id: bloggerIdUrl })
         if (bloggerIdUrl && foundBloggerW !== null) {
+            // Построено на классе
             const newPost = new Post(uuidv4(), title, content, shortDescription, bloggerIdUrl, foundBloggerW.name)
             return await postsRepository.releasePost(newPost, bloggerIdUrl)
         }
         else if (foundBlogger !== null && bloggerId) {
+            // Построено на классе
             const newPost = new Post(uuidv4(), title, content, shortDescription, bloggerId, foundBlogger.name)
             return await postsRepository.releasePost(newPost, bloggerId, bloggerIdUrl)
         }
@@ -51,14 +53,8 @@ export const postsService = {
     async createCommentForSpecificPost(postId: string, content: string, userId: string, userLogin: string): Promise<CommentsType | boolean> {
         const foundPost = await postsModel.findOne({ id: postId })
         if(foundPost) {
-        let createdComment: CommentsType = {
-            commentId: uuidv4(),
-            content: content,
-            userId: userId,
-            userLogin: userLogin,
-            addedAt: (new Date()).toString(),
-            postId: postId
-        }
+        // Построено на классе
+        const createdComment = new Comments(uuidv4(), content, userId, userLogin, (new Date()).toString(), postId)
         return postsRepository.createCommentForSpecificPost(createdComment)
     }
         if (foundPost == null) {

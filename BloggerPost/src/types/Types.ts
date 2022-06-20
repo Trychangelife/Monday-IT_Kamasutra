@@ -2,13 +2,17 @@ import { ObjectId } from "mongodb";
 import { uuid } from "uuidv4";
 
 export class Blogger {
-    constructor(public id = uuid(), public name: string, public youtubeUrl: string ) {
+    constructor(public id: string, public name: string, public youtubeUrl: string ) {
     }
 }
 export type BloggersType = {
     id: string;
     name: string;
     youtubeUrl: string;
+}
+export class Comments {
+    constructor(public commentId: string, public content: string, public userId: string, public userLogin: string, public addedAt: string,public postId: string ) {
+    }
 }
 
 export type CommentsType = {
@@ -21,7 +25,7 @@ export type CommentsType = {
 };
 
 export class Post {
-    constructor(public id = uuid(), public title: string, public shortDescription: string, public content: string, public bloggerId: string,public bloggerName: string ) {
+    constructor(public id: string, public title: string, public shortDescription: string, public content: string, public bloggerId: string,public bloggerName: string ) {
     }
 }
 export type PostsType = {

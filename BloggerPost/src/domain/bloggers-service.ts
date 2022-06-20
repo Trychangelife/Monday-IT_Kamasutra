@@ -19,6 +19,7 @@ export const bloggerService = {
     },
 
     async createBlogger(name: any, youtubeUrl: string): Promise<BloggersType | null> {
+        // Построено на классе
         const newBlogger = new Blogger(uuidv4(), name, youtubeUrl)
         const createdBlogger = await bloggerRepository.createBlogger(newBlogger)
         return createdBlogger
