@@ -4,8 +4,7 @@ import { commentsVievModel } from "./posts-repositories"
 
 
 
-export const commentsRepository = {
-
+export class CommentsRepository {
     async allCommentsByUserId(id: string): Promise<CommentsType | null> {
         const result = await commentsModel.findOne({ id: id }, commentsVievModel )
         if (result !== null) {
@@ -15,7 +14,7 @@ export const commentsRepository = {
             return null
         }
         
-    },
+    }
     async updateCommentByCommentId(commentId: string, content: string, userId: string): Promise<boolean | null> {
         const findTargetComment = await commentsModel.findOne({ commentId: commentId }, commentsVievModel)
         if (findTargetComment !== null && findTargetComment.userId === userId) {
@@ -28,7 +27,7 @@ export const commentsRepository = {
         else {
             return false
         }
-    },
+    }
     async deleteCommentByCommentId(commentId: string, userId: string): Promise<boolean | null> {
         const findTargetComment = await commentsModel.findOne({ id: commentId })
         if (findTargetComment !== null && findTargetComment.userId === userId) {
@@ -42,4 +41,6 @@ export const commentsRepository = {
             return false
         }
     }
-}   
+}
+
+export const commentsRepository = new CommentsRepository()

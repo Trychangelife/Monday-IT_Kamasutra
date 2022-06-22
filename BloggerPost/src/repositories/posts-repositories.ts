@@ -19,14 +19,13 @@ export const commentsVievModel = {
         __v: 0
 }
 
-export const postsRepository = {
+export class PostRepository {
     async allPosts(skip: number, limit: number, page?: number): Promise<object> {
         const totalCount = await postsModel.count({})
         const pagesCount = Math.ceil(totalCount / limit)
         const cursor = await postsModel.find({}, postViewModel).skip(skip).limit(limit)
         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: cursor }
-    },
- 
+    }
     async targetPosts(postId: string): Promise<object | undefined> {
         const targetPost: PostsType | null = await postsModel.findOne({ id: postId }, postViewModel)
         if (targetPost == null) {
@@ -35,7 +34,7 @@ export const postsRepository = {
         else {
             return targetPost; 
         }
-    },
+    }
     async allPostsSpecificBlogger(bloggerId: string, skip: number, pageSize?: number, page?: number): Promise<object | undefined> {
 
 
@@ -54,9 +53,7 @@ export const postsRepository = {
             }
 
         }
-    },
-
-
+    }
     async releasePost(newPosts: PostsType, bloggerId: string, bloggerIdUrl?: string): Promise<object | string> {
         const findBlogger = await bloggerModel.count({ id: bloggerId })
         if (findBlogger < 1) { return "400" }
@@ -64,8 +61,7 @@ export const postsRepository = {
         const result: PostsType | null = await postsModel.findOne({ id: newPosts.id }, postViewModel)
         if (result !== null) { return result }
         else { return "400" }
-    },
-
+    }
     async changePost(postId: string, title: string, shortDescription: string, content: string, bloggerId: string): Promise<string | object> {
 
         const foundPost = await postsModel.findOne({ id: postId }, postViewModel)
@@ -80,11 +76,11 @@ export const postsRepository = {
         else {
             return "404"
         }
-    },
+    }
     async deletePost(deleteId: string): Promise<boolean> {
         const result = await postsModel.deleteOne({ id: deleteId })
         return result.deletedCount === 1
-    },
+    }
     async createCommentForSpecificPost(createdComment: CommentsType): Promise<CommentsType | boolean> {
 
         await commentsModel.create(createdComment)
@@ -92,7 +88,7 @@ export const postsRepository = {
         if (foundNewPost !== null) {
         return foundNewPost}
         else {return false}
-    },
+    }
     async takeCommentByIdPost (postId: string, skip: number, limit: number, page: number): Promise<object | boolean> {
         const findPosts = await postsModel.findOne({id: postId})
         const totalCount = await commentsModel.count({postId: postId})
@@ -104,7 +100,4 @@ export const postsRepository = {
     }
 }
 
-// const totalCount = await postsModel.count({})
-//         const pagesCount = Math.ceil(totalCount / limit)
-//         const cursor = await postsModel.find({}, postViewModel).skip(skip).limit(limit).toArray()
-//         return { pagesCount: pagesCount, page: page, pageSize: limit, totalCount: totalCount, items: cursor }
+export const postsRepository = new PostRepository()

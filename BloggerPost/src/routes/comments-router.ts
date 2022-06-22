@@ -6,36 +6,45 @@ import { checkLaw, commentInputModel, inputValidationMiddleware } from "../middl
 
 export const commentsRouter = Router({}) 
 
-commentsRouter.get('/:id',async (req: Request, res: Response) => {
-    const result = await commentsService.getCommentsById(req.params.id)
-    if (result !== null) {
-    res.status(200).send(result)}
-    else {
-    res.send(404)
-    }
-})  
-// Желательно убрать отсюда middleware CheckLaw - он избыточный, для хардкода теста
-commentsRouter.put('/:commentId', authMiddlewareWithJWT, checkLaw, commentInputModel, inputValidationMiddleware ,async (req: Request, res: Response) => {
-    const result = await commentsService.updateCommentByCommentId(req.params.commentId, req.body.content, req.user!.id)
-    if (result) {
-        res.send(204)
-    }
-    else if (result == null){
+
+
+class CommentsController {
+    async getCommentById (req: Request, res: Response) {
+        const result = await commentsService.getCommentsById(req.params.id)
+        if (result !== null) {
+        res.status(200).send(result)}
+        else {
         res.send(404)
+        }
     }
-    else {
-        res.send(403)
+    async updateCommentByCommentId (req: Request, res: Response) {
+        const result = await commentsService.updateCommentByCommentId(req.params.commentId, req.body.content, req.user!.id)
+        if (result) {
+            res.send(204)
+        }
+        else if (result == null){
+            res.send(404)
+        }
+        else {
+            res.send(403)
+        }
     }
-}) 
-commentsRouter.delete('/:commentId', authMiddlewareWithJWT, async (req: Request, res: Response) => {
-    const resultDelete = await commentsService.deleteCommentByCommentId(req.params.commentId, req.user!.id)
-    if (resultDelete) {
-        res.send(204)
+    async deleteCommentById(req: Request, res: Response) {
+        const resultDelete = await commentsService.deleteCommentByCommentId(req.params.commentId, req.user!.id)
+        if (resultDelete) {
+            res.send(204)
+        }
+        else if (resultDelete == null){
+            res.send(404)
+        }
+        else {
+            res.send(403)
+        }
     }
-    else if (resultDelete == null){
-        res.send(404)
-    }
-    else {
-        res.send(403)
-    }
-}) 
+}
+
+const commentsController = new CommentsController()
+
+commentsRouter.get('/:id', commentsController.getCommentById)  
+commentsRouter.put('/:commentId', authMiddlewareWithJWT, checkLaw, commentInputModel, inputValidationMiddleware, commentsController.updateCommentByCommentId) 
+commentsRouter.delete('/:commentId', authMiddlewareWithJWT, commentsController.deleteCommentById) 

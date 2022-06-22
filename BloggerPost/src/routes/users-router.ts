@@ -9,55 +9,51 @@ import { constructorPagination } from "./bloggers-router";
 
 export const usersRouter = Router({})
 
-usersRouter.delete('/del', async (req: Request, res: Response) => {
-    const afterDelete = await usersModel.deleteMany({})
-    res.send(afterDelete)
-})
-usersRouter.get('/', async (req: Request, res: Response) => {
-    const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
-    const resultUsers = await usersService.allUsers(paginationData.pageSize, paginationData.pageNumber)
-    res.status(200).send(resultUsers)
-})
 
-usersRouter.post('/', authMiddleware, userInputModel, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email, req.ip)
-    if (result == false) {
-        res.status(400).send("Login or email already use")
+class UsersController {
+    async deleteAllUsers (req: Request, res: Response) {
+        const afterDelete = await usersModel.deleteMany({})
+        res.send(afterDelete)
     }
-    else {
-        res.status(204).send()
+    async getAllUsers (req: Request, res: Response) {
+        const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
+        const resultUsers = await usersService.allUsers(paginationData.pageSize, paginationData.pageNumber)
+        res.status(200).send(resultUsers)
     }
-})
+    async createUser (req: Request, res: Response) {
+        const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email, req.ip)
+        if (result == false) {
+            res.status(400).send("Login or email already use")
+        }
+        else {
+            res.status(204).send()
+        }
+    }
+    async deleteUserById (req: Request, res: Response) {
+        const afterDelete = await usersService.deleteUser(req.params.id as string)
+        if (afterDelete == true) {
+            res.send(204)
+        }
+        else {
+            res.send(404)
+        }
+    
+    }
+    async getUserById (req: Request, res: Response) {
+        const resultSearch = await usersService.findUserById(req.params.id)
+        if (resultSearch !== null) {
+            res.status(200).send(resultSearch)
+        }
+        else {
+            res.status(404).send('User not found')
+        }
+    }
+}
 
-usersRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
-    const afterDelete = await usersService.deleteUser(req.params.id as string)
-    if (afterDelete == true) {
-        res.send(204)
-    }
-    else {
-        res.send(404)
-    }
+const usersController = new UsersController()
 
-})
-
-usersRouter.get('/:id', async (req: Request, res: Response) => {
-    const resultSearch = await usersService.findUserById(req.params.id)
-    if (resultSearch !== null) {
-        res.status(200).send(resultSearch)
-    }
-    else {
-        res.status(404).send('User not found')
-    }
-})
-
-// usersRouter.get('/login', async (req: Request, res: Response) => {
-//     const user = await usersService.checkCredentials(req.body.login, req.body.password)
-//     const foundUser = await usersModel.findOne({login: req.body.login})
-//     if(foundUser && user) {
-//         const token = await jwtService.createJWT(foundUser)
-//         res.status(201).send(token)
-//     }
-//     else {
-//         res.sendStatus(401)
-//     }
-// })
+usersRouter.delete('/del', usersController.deleteAllUsers)
+usersRouter.get('/', usersController.getAllUsers)
+usersRouter.post('/', authMiddleware, userInputModel, inputValidationMiddleware, usersController.createUser)
+usersRouter.delete('/:id', authMiddleware, usersController.deleteUserById)
+usersRouter.get('/:id', usersController.getUserById)

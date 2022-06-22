@@ -5,15 +5,14 @@ import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
 
 
-export const usersService = {
-
+export class UsersController {
     async allUsers(pageSize: number, pageNumber: number): Promise<object> {
         let skip = 0
         if (pageNumber && pageSize) {
             skip = (pageNumber - 1) * pageSize
         }
         return await usersRepository.allUsers(skip, pageSize, pageNumber)
-    },
+    }
     async createUser(login: string, password: string, email: string, ip: string): Promise<UsersType | null | boolean> {
 
         const passwordSalt = await bcrypt.genSalt(10)
@@ -38,14 +37,14 @@ export const usersService = {
             }
         }
         return null
-    },
+    }
     async deleteUser(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id)
-    },
+    }
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash
-    },
+    }
     async checkCredentials(login: string, password: string,) {
         const user = await usersRepository.findUserByLogin(login)
         if (!user) return false
@@ -54,10 +53,10 @@ export const usersService = {
             return false
         }
         return true
-    },
+    }
     async findUserById(id: string): Promise<UsersType | null> {
         return await usersRepository.findUserById(id)
-    },
+    }
     async confirmationEmail(code: string): Promise<boolean> {
         let user = await usersRepository.findUserByConfirmationCode(code)
         if (user) {
@@ -67,5 +66,7 @@ export const usersService = {
             return false
         }
 
-    },
-} 
+    }
+}
+
+export const usersService = new UsersController()
