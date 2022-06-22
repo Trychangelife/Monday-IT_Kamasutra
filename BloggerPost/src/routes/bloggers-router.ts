@@ -9,8 +9,6 @@ import { BloggersType } from "../types/Types";
 export const bloggersRouter = Router({})
 export type ConstructorPaginationType = { pageNumber: number, pageSize: number };
 
-
-
 export function constructorPagination(pageSize: string | undefined, pageNumber: string | undefined): ConstructorPaginationType {
   let result: ConstructorPaginationType = { pageSize: 10, pageNumber: 1 }
   if (pageSize) result.pageSize = +pageSize
@@ -19,76 +17,75 @@ export function constructorPagination(pageSize: string | undefined, pageNumber: 
 }
 
 
-bloggersRouter.delete('/del', async (req: Request, res: Response) => {
-  const afterDelete = await bloggerService.deleteAllBlogger()
-  res.send(afterDelete)
-})
-
-bloggersRouter.get('/', async (req: Request, res: Response) => {
-  const searchNameTerm = typeof req.query.SearchNameTerm === 'string' ? req.query.SearchNameTerm : null
-  const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
-  const full: object = await bloggerService.allBloggers(paginationData.pageSize, paginationData.pageNumber, searchNameTerm)
-
-  res.status(200).send(full)
-})
-bloggersRouter.get('/:id', async (req: Request, res: Response) => {
-  const findBlogger: object | undefined = await bloggerService.targetBloggers(req.params.id)
-  if (findBlogger !== undefined) {
-    res.status(200).send(findBlogger)
+class BloggerController {
+  async deleteAllBlogger(req: Request, res: Response) {
+    const afterDelete = await bloggerService.deleteAllBlogger()
+    res.send(afterDelete)
   }
-  else {
-    res.send(404)
+  async getAllBloggers(req: Request, res: Response) {
+    const searchNameTerm = typeof req.query.SearchNameTerm === 'string' ? req.query.SearchNameTerm : null
+    const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
+    const full: object = await bloggerService.allBloggers(paginationData.pageSize, paginationData.pageNumber, searchNameTerm)
+
+    res.status(200).send(full)
   }
-})
-bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
-  console.log(req.body, req.params, req.query)
-  const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
-  const findBlogger: object | undefined = await postsService.allPostsSpecificBlogger(req.params.bloggerId, paginationData.pageNumber, paginationData.pageSize)
-  if (findBlogger !== undefined) {
-    res.status(200).send(findBlogger)
+  async getBloggerById(req: Request, res: Response) {
+    const findBlogger: object | undefined = await bloggerService.targetBloggers(req.params.id)
+    if (findBlogger !== undefined) {
+      res.status(200).send(findBlogger)
+    }
+    else {
+      res.send(404)
+    }
   }
-  else {
-    res.send(404)
+  async getPostByBloggerID(req: Request, res: Response) {
+    console.log(req.body, req.params, req.query)
+    const paginationData = constructorPagination(req.query.PageSize as string, req.query.PageNumber as string)
+    const findBlogger: object | undefined = await postsService.allPostsSpecificBlogger(req.params.bloggerId, paginationData.pageNumber, paginationData.pageSize)
+    if (findBlogger !== undefined) {
+      res.status(200).send(findBlogger)
+    }
+    else {
+      res.send(404)
+    }
   }
-})
+  async createBlogger(req: Request, res: Response) {
 
-bloggersRouter.post('/', authMiddleware, schemaPostBlogger, inputValidationMiddleware, async (req: Request, res: Response) => {
+    const createrPerson: BloggersType | null = await bloggerService.createBlogger(req.body.name, req.body.youtubeUrl)
+    res.status(201).send(createrPerson)
 
-  const createrPerson: BloggersType | null = await bloggerService.createBlogger(req.body.name, req.body.youtubeUrl)
-  res.status(201).send(createrPerson)
-
-})
-
-bloggersRouter.post('/:bloggerId/posts', authMiddleware, schemaPosts, inputValidationMiddleware, async (req: Request, res: Response) => {
-  const blogger = await bloggerModel.count({ id: req.params.bloggerId })
-  if (blogger < 1) { return res.send(404) }
-
-  const createPostForSpecificBlogger: string | object | null = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, req.body.bloggerId, req.params.bloggerId)
-  res.status(201).send(createPostForSpecificBlogger)
-
-})
-
-bloggersRouter.put('/:id', authMiddleware, schemaPostBlogger, inputValidationMiddleware, async (req: Request, res: Response) => {
-
-  const alreadyChanges: string = await bloggerService.changeBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
-
-  if (alreadyChanges === 'update') {
-    res.status(204).send(alreadyChanges)
-    return;
   }
-  else if (alreadyChanges === "404") {
-    res.send(404)
-  }
-})
+  async createPostByBloggerId(req: Request, res: Response) {
+    const blogger = await bloggerModel.count({ id: req.params.bloggerId })
+    if (blogger < 1) { return res.send(404) }
 
+    const createPostForSpecificBlogger: string | object | null = await postsService.releasePost(req.body.title, req.body.content, req.body.shortDescription, req.body.bloggerId, req.params.bloggerId)
+    res.status(201).send(createPostForSpecificBlogger)
 
+  }
+  async updateBlogger(req: Request, res: Response) {
+    const alreadyChanges: string = await bloggerService.changeBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
+    if (alreadyChanges === 'update') {
+      res.status(204).send(alreadyChanges)
+      return;
+    }
+    else if (alreadyChanges === "404") {
+      res.send(404)
+    }
+  }
+  async deleteOneBlogger(req: Request, res: Response) {
+    const afterDelete = await bloggerService.deleteBlogger(req.params.id)
+    res.send(afterDelete)
+  }
+}
 
-bloggersRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
-  const afterDelete: string = await bloggerService.deleteBlogger(req.params.id)
-  if (afterDelete === "404") {
-    res.send(404)
-  }
-  else {
-    res.send(204)
-  }
-})
+const bloggerController = new BloggerController()
+
+bloggersRouter.delete('/del', bloggerController.deleteAllBlogger)
+bloggersRouter.get('/', bloggerController.getAllBloggers)
+bloggersRouter.get('/:id', bloggerController.getBloggerById)
+bloggersRouter.get('/:bloggerId/posts', bloggerController.getPostByBloggerID)
+bloggersRouter.post('/', authMiddleware, schemaPostBlogger, inputValidationMiddleware, bloggerController.createBlogger)
+bloggersRouter.post('/:bloggerId/posts', authMiddleware, schemaPosts, inputValidationMiddleware, bloggerController.createPostByBloggerId)
+bloggersRouter.put('/:id', authMiddleware, schemaPostBlogger, inputValidationMiddleware, bloggerController.updateBlogger)
+bloggersRouter.delete('/:id', authMiddleware, inputValidationMiddleware, bloggerController.deleteOneBlogger)

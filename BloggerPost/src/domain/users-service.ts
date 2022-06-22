@@ -20,20 +20,6 @@ export const usersService = {
         const passwordHash = await this._generateHash(password, passwordSalt)
         // Построено на классе
         const newUser = new User(new ObjectId(), uuidv4(), {login, passwordHash, passwordSalt, email}, {codeForActivated: uuidv4(), activatedStatus: false})
-        // const newUser: UsersType = {
-        //     _id: new ObjectId(),
-        //     id: uuidv4(),
-        //     accountData: {
-        //         login,
-        //         passwordHash,
-        //         passwordSalt,
-        //         email,
-        //     },
-        //     emailConfirmation: {
-        //         codeForActivated: uuidv4(),
-        //         activatedStatus: false,
-        //     }
-        // }
         const registrationData: RegistrationDataType = {
             ip,
             dateRegistation: new Date(),

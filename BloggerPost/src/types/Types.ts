@@ -1,5 +1,4 @@
 import { ObjectId } from "mongodb";
-import { uuid } from "uuidv4";
 
 export class Blogger {
     constructor(public id: string, public name: string, public youtubeUrl: string ) {
