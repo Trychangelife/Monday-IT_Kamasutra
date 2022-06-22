@@ -3,7 +3,6 @@ import { authDataModel, bloggerModel, codeConfirmModel, commentsModel, emailSend
 
 export const testingRouter = Router({})
 
-
 testingRouter.delete('/all-data', async (req: Request, res: Response) => {
     await postsModel.deleteMany({})
     await bloggerModel.deleteMany({})
@@ -16,6 +15,3 @@ testingRouter.delete('/all-data', async (req: Request, res: Response) => {
     await refreshTokenModel.deleteMany({})
     res.status(204).send()
     }) 
-
-
-    // Вынеси логику в отдельный сервис

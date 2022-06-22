@@ -15,7 +15,6 @@ export class Comments {
     constructor(public commentId: string, public content: string, public userId: string, public userLogin: string, public addedAt: string,public postId: string ) {
     }
 }
-
 export type CommentsType = {
     commentId: string;
     content: string;
@@ -63,31 +62,26 @@ export type UsersType = {
 };
 
 
-
 export type RegistrationDataType = {
     ip: string
     dateRegistation: Date
     email: string
 }
-
 export type AuthDataType = {
     ip: string
     tryAuthDate: Date
     login: string
 }
-
 export type EmailSendDataType = {
     ip: string
     emailSendDate: Date
     email: string
 }
-
 export type ConfirmedAttemptDataType = {
     ip: string
     tryConfirmDate: Date
     code: string
 }
-
 export type RefreshTokenStorageType = {
     userId: string
     refreshToken: string

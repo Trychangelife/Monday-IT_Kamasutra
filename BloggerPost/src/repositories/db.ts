@@ -79,7 +79,6 @@ const refreshTokenSchema = new mongoose.Schema<RefreshTokenStorageType>({
 })
 
 
-
 export const bloggerModel = mongoose.model('bloggers', bloggerSchema)
 export const postsModel = mongoose.model('posts', postSchema)
 export const usersModel = mongoose.model('users', usersSchema)

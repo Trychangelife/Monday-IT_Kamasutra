@@ -1,7 +1,5 @@
 import nodemailer from "nodemailer"
 
-
-
 export const emailAdapter = {
     async sendEmailConfirmation (email: string, message: string, subject: string): Promise<object> {
         let transport = nodemailer.createTransport({
