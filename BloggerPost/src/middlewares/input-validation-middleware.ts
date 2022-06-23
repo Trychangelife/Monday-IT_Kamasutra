@@ -1,6 +1,5 @@
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
-import { usersService } from "../domain/users-service";
 import { commentsModel, usersModel } from "../repositories/db";
 import { usersRepository } from "../repositories/users-repository";
 

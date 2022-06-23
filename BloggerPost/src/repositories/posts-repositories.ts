@@ -100,4 +100,4 @@ export class PostRepository {
     }
 }
 
-export const postsRepository = new PostRepository()
+// export const postsRepository = new PostRepository()

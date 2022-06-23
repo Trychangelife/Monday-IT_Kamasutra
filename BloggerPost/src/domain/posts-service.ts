@@ -1,18 +1,24 @@
 import { bloggerModel, postsModel } from "../repositories/db";
-import { postsRepository } from "../repositories/posts-repositories"
+import { PostRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
 import { Comments, CommentsType, Post } from "../types/Types";
 
 export class PostsService {
+
+    postsRepository: PostRepository
+    constructor () {
+        this.postsRepository = new PostRepository()
+    }
+
     async allPosts(pageSize: number, pageNumber: number,): Promise<object> {
         let skip = 0
         if (pageNumber && pageSize) {
             skip = (pageNumber - 1) * pageSize
         }
-        return postsRepository.allPosts(skip, pageSize, pageNumber)
+        return this.postsRepository.allPosts(skip, pageSize, pageNumber)
     }
     async targetPosts(postId: string): Promise<object | undefined> {
-        return await postsRepository.targetPosts(postId)
+        return await this.postsRepository.targetPosts(postId)
     }
     async allPostsSpecificBlogger(bloggerId: string, page?: number, pageSize?: number): Promise<object | undefined> {
         let skip = 0
@@ -20,7 +26,7 @@ export class PostsService {
             skip = (page - 1) * pageSize
         }
 
-        return await postsRepository.allPostsSpecificBlogger(bloggerId, skip, pageSize, page)
+        return await this.postsRepository.allPostsSpecificBlogger(bloggerId, skip, pageSize, page)
     }
     async releasePost(title: string, content: string, shortDescription: string, bloggerId?: string, bloggerIdUrl?: string): Promise<object | string | null> {
         const foundBlogger = await bloggerModel.findOne({ id: bloggerId })
@@ -28,21 +34,21 @@ export class PostsService {
         if (bloggerIdUrl && foundBloggerW !== null) {
             // Построено на классе
             const newPost = new Post(uuidv4(), title, content, shortDescription, bloggerIdUrl, foundBloggerW.name)
-            return await postsRepository.releasePost(newPost, bloggerIdUrl)
+            return await this.postsRepository.releasePost(newPost, bloggerIdUrl)
         }
         else if (foundBlogger !== null && bloggerId) {
             // Построено на классе
             const newPost = new Post(uuidv4(), title, content, shortDescription, bloggerId, foundBlogger.name)
-            return await postsRepository.releasePost(newPost, bloggerId, bloggerIdUrl)
+            return await this.postsRepository.releasePost(newPost, bloggerId, bloggerIdUrl)
         }
         else { return null }
     }
     async changePost(postId: string, title: string, shortDescription: string, content: string, bloggerId: string): Promise<string | object> {
 
-        return await postsRepository.changePost(postId, title, shortDescription, content, bloggerId)
+        return await this.postsRepository.changePost(postId, title, shortDescription, content, bloggerId)
     }
     async deletePost(deleteId: string): Promise<boolean> {
-        return await postsRepository.deletePost(deleteId)
+        return await this.postsRepository.deletePost(deleteId)
 
     }
     async createCommentForSpecificPost(postId: string, content: string, userId: string, userLogin: string): Promise<CommentsType | boolean> {
@@ -50,7 +56,7 @@ export class PostsService {
         if(foundPost) {
         // Построено на классе
         const createdComment = new Comments(uuidv4(), content, userId, userLogin, (new Date()).toString(), postId)
-        return postsRepository.createCommentForSpecificPost(createdComment)
+        return this.postsRepository.createCommentForSpecificPost(createdComment)
     }
         if (foundPost == null) {
             return false}
@@ -63,8 +69,8 @@ export class PostsService {
         if (page && pageSize) {
             skip = (page - 1) * pageSize
         }
-        return await postsRepository.takeCommentByIdPost(postId, skip, pageSize, page,)
+        return await this.postsRepository.takeCommentByIdPost(postId, skip, pageSize, page,)
     }
 }
 
-export const postsService = new PostsService()
+// export const postsService = new PostsService()

@@ -60,4 +60,4 @@ export class BloggerRepository {
     }
 }
 
-export const bloggerRepository = new BloggerRepository()
+// export const bloggerRepository = new BloggerRepository()
