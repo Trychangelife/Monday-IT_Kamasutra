@@ -5,9 +5,8 @@ import { Blogger, BloggersType } from "../types/Types"
 
 export class BloggerService { 
 
-    bloggerRepository: BloggerRepository
-    constructor () {
-        this.bloggerRepository = new BloggerRepository()
+    
+    constructor (protected bloggerRepository: BloggerRepository) {
     }
 
     async allBloggers(pageSize: number, pageNumber: number, searchNameTerm?: string | null): Promise<object> {

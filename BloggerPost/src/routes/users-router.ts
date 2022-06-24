@@ -15,6 +15,7 @@ class UsersController {
     constructor (private usersService = new UsersService()) {
     }
 
+
     async deleteAllUsers (req: Request, res: Response) {
         const afterDelete = await usersModel.deleteMany({})
         res.send(afterDelete)

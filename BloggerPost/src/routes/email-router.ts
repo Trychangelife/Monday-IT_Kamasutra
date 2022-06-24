@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import { emailAdapter } from "../adapters/email-adapter";
-import { emailService } from "../domain/email-service";
 
 export const emailRouter = Router({})
 

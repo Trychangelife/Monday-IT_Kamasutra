@@ -13,7 +13,7 @@ export class BloggerRepository {
     async allBloggers(skip: number, limit?: number, searchNameTerm?: string | null, page?: number): Promise<object> {
         if (page !== undefined && limit !== undefined) {
             const cursor = await bloggerModel.find({}, modelViewBloggers).skip(skip).limit(limit)
-            const totalCount = await bloggerModel.count({}) //Возможно нужно изменить на COUNT (чтобы не вытягивать всю базу данных)
+            const totalCount = await bloggerModel.count({})
             const pagesCount = Math.ceil(totalCount / limit)
             const fullData = await bloggerModel.find({}, modelViewBloggers)
 

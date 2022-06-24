@@ -38,7 +38,7 @@ export class UsersService {
             }
             else {
                 await this.usersRepository.createUser(newUser)
-                this.emailService.emailConfirmation(newUser.accountData.email)
+                // this.emailService.emailConfirmation(newUser.accountData.email)
                 return newUser
             }
         }
