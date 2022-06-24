@@ -1,17 +1,23 @@
 import { ObjectId } from "mongodb"
-import { usersRepository } from "../repositories/users-repository"
+import { UsersRepository} from "../repositories/users-repository"
 import { RegistrationDataType, User, UsersType } from "../types/Types"
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
+import { EmailService } from "./email-service"
 
 
-export class UsersController {
+export class UsersService {
+
+    constructor(private usersRepository = new UsersRepository(), public emailService = new EmailService()){
+
+    }
+
     async allUsers(pageSize: number, pageNumber: number): Promise<object> {
         let skip = 0
         if (pageNumber && pageSize) {
             skip = (pageNumber - 1) * pageSize
         }
-        return await usersRepository.allUsers(skip, pageSize, pageNumber)
+        return await this.usersRepository.allUsers(skip, pageSize, pageNumber)
     }
     async createUser(login: string, password: string, email: string, ip: string): Promise<UsersType | null | boolean> {
 
@@ -24,29 +30,29 @@ export class UsersController {
             dateRegistation: new Date(),
             email
         }
-        await usersRepository.informationAboutRegistration(registrationData)
-        const checkScam = await usersRepository.ipAddressIsScam(ip)
+        await this.usersRepository.informationAboutRegistration(registrationData)
+        const checkScam = await this.usersRepository.ipAddressIsScam(ip)
         if (checkScam == true) {
-            if (await usersRepository.findUserByLogin(login) !== null || await usersRepository.findUserByEmail(email) !== null ) {
+            if (await this.usersRepository.findUserByLogin(login) !== null || await this.usersRepository.findUserByEmail(email) !== null ) {
                 return false
             }
             else {
-                await usersRepository.createUser(newUser)
-                // emailService.emailConfirmation(newUser.accountData.email)
+                await this.usersRepository.createUser(newUser)
+                this.emailService.emailConfirmation(newUser.accountData.email)
                 return newUser
             }
         }
         return null
     }
     async deleteUser(id: string): Promise<boolean> {
-        return await usersRepository.deleteUser(id)
+        return await this.usersRepository.deleteUser(id)
     }
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash
     }
     async checkCredentials(login: string, password: string,) {
-        const user = await usersRepository.findUserByLogin(login)
+        const user = await this.usersRepository.findUserByLogin(login)
         if (!user) return false
         const passwordHash = await this._generateHash(password, user.accountData.passwordSalt)
         if (user.accountData.passwordHash !== passwordHash) {
@@ -55,12 +61,12 @@ export class UsersController {
         return true
     }
     async findUserById(id: string): Promise<UsersType | null> {
-        return await usersRepository.findUserById(id)
+        return await this.usersRepository.findUserById(id)
     }
     async confirmationEmail(code: string): Promise<boolean> {
-        let user = await usersRepository.findUserByConfirmationCode(code)
+        let user = await this.usersRepository.findUserByConfirmationCode(code)
         if (user) {
-            return await usersRepository.confirmationEmail(user)
+            return await this.usersRepository.confirmationEmail(user)
         }
         else {
             return false
@@ -69,4 +75,4 @@ export class UsersController {
     }
 }
 
-export const usersService = new UsersController()
+export const usersService = new UsersService()

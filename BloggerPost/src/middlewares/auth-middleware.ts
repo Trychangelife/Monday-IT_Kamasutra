@@ -8,6 +8,8 @@ export interface IGetUserAuthInfoRequest extends Request {
 }
 
 
+
+
 export const authMiddlewareWithJWT = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
         res.send(401)

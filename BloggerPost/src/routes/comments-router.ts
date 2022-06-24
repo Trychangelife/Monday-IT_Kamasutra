@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { commentsService } from "../domain/comments-service";
+import { CommentsService } from "../domain/comments-service";
 import { authMiddlewareWithJWT } from "../middlewares/auth-middleware";
 import { checkLaw, commentInputModel, inputValidationMiddleware } from "../middlewares/input-validation-middleware";
 
@@ -9,8 +9,13 @@ export const commentsRouter = Router({})
 
 
 class CommentsController {
+
+    constructor (private commentsService = new CommentsService()) {
+
+    }
+
     async getCommentById (req: Request, res: Response) {
-        const result = await commentsService.getCommentsById(req.params.id)
+        const result = await this.commentsService.getCommentsById(req.params.id)
         if (result !== null) {
         res.status(200).send(result)}
         else {
@@ -18,7 +23,7 @@ class CommentsController {
         }
     }
     async updateCommentByCommentId (req: Request, res: Response) {
-        const result = await commentsService.updateCommentByCommentId(req.params.commentId, req.body.content, req.user!.id)
+        const result = await this.commentsService.updateCommentByCommentId(req.params.commentId, req.body.content, req.user!.id)
         if (result) {
             res.send(204)
         }
@@ -30,7 +35,7 @@ class CommentsController {
         }
     }
     async deleteCommentById(req: Request, res: Response) {
-        const resultDelete = await commentsService.deleteCommentByCommentId(req.params.commentId, req.user!.id)
+        const resultDelete = await this.commentsService.deleteCommentByCommentId(req.params.commentId, req.user!.id)
         if (resultDelete) {
             res.send(204)
         }
@@ -45,6 +50,6 @@ class CommentsController {
 
 const commentsController = new CommentsController()
 
-commentsRouter.get('/:id', commentsController.getCommentById)  
-commentsRouter.put('/:commentId', authMiddlewareWithJWT, checkLaw, commentInputModel, inputValidationMiddleware, commentsController.updateCommentByCommentId) 
-commentsRouter.delete('/:commentId', authMiddlewareWithJWT, commentsController.deleteCommentById) 
+commentsRouter.get('/:id', commentsController.getCommentById.bind(commentsController))  
+commentsRouter.put('/:commentId', authMiddlewareWithJWT, checkLaw, commentInputModel, inputValidationMiddleware, commentsController.updateCommentByCommentId.bind(commentsController)) 
+commentsRouter.delete('/:commentId', authMiddlewareWithJWT, commentsController.deleteCommentById.bind(commentsController)) 

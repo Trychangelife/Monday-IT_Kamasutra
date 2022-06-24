@@ -1,17 +1,21 @@
-import { commentsRepository } from "../repositories/comments-repository";
+import { CommentsRepository } from "../repositories/comments-repository";
 import { CommentsType } from "../types/Types";
 
 
 export class CommentsService {
+
+    constructor(private commentsRepository = new CommentsRepository()) {
+    }
+
     async getCommentsById(id: string): Promise<CommentsType | null> {
-        return await commentsRepository.allCommentsByUserId(id)
+        return await this.commentsRepository.allCommentsByUserId(id)
     }
     async updateCommentByCommentId(commentId: string, content: string, userId: string): Promise<boolean | null> {
-        return await commentsRepository.updateCommentByCommentId(commentId, content, userId)
+        return await this.commentsRepository.updateCommentByCommentId(commentId, content, userId)
     }
     async deleteCommentByCommentId(commentId: string, userId: string): Promise<boolean | null> {
-        return await commentsRepository.deleteCommentByCommentId(commentId, userId)
+        return await this.commentsRepository.deleteCommentByCommentId(commentId, userId)
     }
 }
 
-export const commentsService = new CommentsService()
+// export const commentsService = new CommentsService()

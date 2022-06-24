@@ -20,8 +20,6 @@ export function constructorPagination(pageSize: string | undefined, pageNumber: 
 
 
 class BloggerController {
-  // bloggerService: BloggerService
-  // postsService: PostsService
   constructor (private bloggerService = new BloggerService(), private postsService = new PostsService()) {
     
   }
@@ -87,7 +85,6 @@ class BloggerController {
 }
 
 const bloggerController = new BloggerController()
-const postsController = new PostController()
 
 bloggersRouter.delete('/del', bloggerController.deleteAllBlogger.bind(bloggerController))
 bloggersRouter.get('/', bloggerController.getAllBloggers.bind(bloggerController))

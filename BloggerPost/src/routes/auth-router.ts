@@ -1,22 +1,25 @@
 import { Request, Response, Router } from "express";
 import { jwtService } from "../application/jwt-service";
-import { authService } from "../domain/auth-service";
-import { emailService } from "../domain/email-service";
-import { usersService } from "../domain/users-service";
+import { AuthService } from "../domain/auth-service";
+import { EmailService } from "../domain/email-service";
+import { UsersService } from "../domain/users-service";
 import { checkAvailabilityEmail, checkUniqueData, inputValidationMiddleware, LoginInputModel, userInputModel } from "../middlewares/input-validation-middleware";
-import { usersRepository } from "../repositories/users-repository";
+import { UsersRepository } from "../repositories/users-repository";
 import { UsersType } from "../types/Types";
 
 
 export const authRouter = Router({})
 
-class AuthController {
+export class AuthController {
+
+    constructor (public usersRepository = new UsersRepository(), private usersService = new UsersService(), private authService = new AuthService(), public emailService = new EmailService()) {
+    }
     async authrozation (req: Request, res: Response) {
-        await authService.informationAboutAuth(req.ip, req.body.login)
-        const checkIP = await authService.counterAttemptAuth(req.ip, req.body.login)
+        await this.authService.informationAboutAuth(req.ip, req.body.login)
+        const checkIP = await this.authService.counterAttemptAuth(req.ip, req.body.login)
         if (checkIP) {
-            const user = await usersService.checkCredentials(req.body.login, req.body.password)
-            const foundUser = await usersRepository.findUserByLogin(req.body.login)
+            const user = await this.usersService.checkCredentials(req.body.login, req.body.password)
+            const foundUser = await this.usersRepository.findUserByLogin(req.body.login)
             if (!user) {
                 res.send(401)
             }
@@ -51,7 +54,7 @@ class AuthController {
         }
     }
     async registration (req: Request, res: Response) {
-        const result: UsersType | null | boolean = await usersService.createUser(req.body.login, req.body.password, req.body.email, req.ip)
+        const result: UsersType | null | boolean = await this.usersService.createUser(req.body.login, req.body.password, req.body.email, req.ip)
         if (result == false) {
             res.status(400).send("Oops something wrong")
         }
@@ -63,10 +66,10 @@ class AuthController {
         }
     }
     async registrationConfirmation (req: Request, res: Response) {
-        await authService.informationAboutConfirmed(req.ip, req.body.code)
-        const checkInputCode = await authService.counterAttemptConfirm(req.ip, req.body.code)
+        await this.authService.informationAboutConfirmed(req.ip, req.body.code)
+        const checkInputCode = await this.authService.counterAttemptConfirm(req.ip, req.body.code)
         if (checkInputCode) {
-            const activationResult = await usersService.confirmationEmail(req.body.code)
+            const activationResult = await this.usersService.confirmationEmail(req.body.code)
             if (activationResult) {
                 res.sendStatus(204)
             }
@@ -79,11 +82,11 @@ class AuthController {
         }
     }
     async registrationEmailResending (req: Request, res: Response) {
-        await authService.informationAboutEmailSend(req.ip, req.body.email)
-        const checkAttemptEmail = await authService.counterAttemptEmail(req.ip, req.body.email)
+        await this.authService.informationAboutEmailSend(req.ip, req.body.email)
+        const checkAttemptEmail = await this.authService.counterAttemptEmail(req.ip, req.body.email)
         if (checkAttemptEmail) {
-            await authService.refreshActivationCode(req.body.email)
-            const emailResending = await emailService.emailConfirmation(req.body.email)
+            await this.authService.refreshActivationCode(req.body.email)
+            const emailResending = await this.emailService.emailConfirmation(req.body.email)
             if (emailResending) {
                 res.sendStatus(204)
             }
@@ -96,38 +99,38 @@ class AuthController {
         }
     }
     async getRegistrationDate (req: Request, res: Response) {
-        const registrationData = await usersRepository.getRegistrationDate()
+        const registrationData = await this.usersRepository.getRegistrationDate()
         res.send(registrationData)
     }
     async getAuthDate (req: Request, res: Response) {
-        const authData = await usersRepository.getAuthDate()
+        const authData = await this.usersRepository.getAuthDate()
         res.send(authData)
     }
     async getConfirmDate (req: Request, res: Response) {
-        const confrimData = await usersRepository.getConfirmAttemptDate()
+        const confrimData = await this.usersRepository.getConfirmAttemptDate()
         res.send(confrimData)
     }
     async getEmailDate (req: Request, res: Response) {
-        const emailSendData = await usersRepository.getEmailSendDate()
+        const emailSendData = await this.usersRepository.getEmailSendDate()
         res.send(emailSendData)
     }
     async getTokenDate (req: Request, res: Response) {
-        const TokenData = await usersRepository.getTokenDate()
+        const TokenData = await this.usersRepository.getTokenDate()
         res.send(TokenData)
     }
 }
 
 const authController = new AuthController()
 
-authRouter.post('/login', LoginInputModel, inputValidationMiddleware, authController.authrozation)
-authRouter.post('/update-access-token', LoginInputModel, inputValidationMiddleware, authController.updateAccessToken)
-authRouter.post('/registration', checkUniqueData, userInputModel, inputValidationMiddleware, authController.registration)
-authRouter.post('/registration-confirmation', authController.registrationConfirmation)
-authRouter.post('/registration-email-resending', userInputModel[2], checkAvailabilityEmail, inputValidationMiddleware, authController.registrationEmailResending)
+authRouter.post('/login', LoginInputModel, inputValidationMiddleware, authController.authrozation.bind(authController))
+authRouter.post('/update-access-token', LoginInputModel, inputValidationMiddleware, authController.updateAccessToken.bind(authController))
+authRouter.post('/registration', checkUniqueData, userInputModel, inputValidationMiddleware, authController.registration.bind(authController))
+authRouter.post('/registration-confirmation', authController.registrationConfirmation.bind(authController))
+authRouter.post('/registration-email-resending', userInputModel[2], checkAvailabilityEmail, inputValidationMiddleware, authController.registrationEmailResending.bind(authController))
 
 // Роуты обращаются напрямую в репозиторий, потому что прослойка исключительно для разработки, чтобы визуализировать логи
-authRouter.get('/get-registration-date', authController.getRegistrationDate)
-authRouter.get('/get-auth-date', authController.getAuthDate)
-authRouter.get('/get-confirm-date', authController.getConfirmDate)
-authRouter.get('/get-email-date', authController.getEmailDate)
-authRouter.get('/get-token-date', authController.getTokenDate)
+authRouter.get('/get-registration-date', authController.getRegistrationDate.bind(authController))
+authRouter.get('/get-auth-date', authController.getAuthDate.bind(authController))
+authRouter.get('/get-confirm-date', authController.getConfirmDate.bind(authController))
+authRouter.get('/get-email-date', authController.getEmailDate.bind(authController))
+authRouter.get('/get-token-date', authController.getTokenDate.bind(authController))

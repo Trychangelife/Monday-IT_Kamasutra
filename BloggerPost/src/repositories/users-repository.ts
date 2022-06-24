@@ -8,10 +8,13 @@ const userViewModel = {
         accountData: {
             login: 1,
             email: 1
+        },
+        emailConfirmation: {
+            activatedStatus: 1
         }
 }
 
-export class Usersrepository {
+export class UsersRepository {
     async allUsers(skip: number, limit: number, page?: number): Promise<object> {
         const fullData = await usersModel.find({}, userViewModel).skip(skip).limit(limit)
         const totalCount = await usersModel.count({})
@@ -149,4 +152,4 @@ export class Usersrepository {
     }
 }
 
-export const usersRepository = new Usersrepository()
+export const usersRepository = new UsersRepository()

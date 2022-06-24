@@ -1,24 +1,29 @@
-import { usersRepository } from "../repositories/users-repository"
+import { UsersRepository } from "../repositories/users-repository"
 import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, UsersType } from "../types/Types"
 import { uuid } from "uuidv4"
 
 
 export class AuthService {
+
+    constructor (private usersRepository = new UsersRepository()) {
+
+    }
+
     async ipAddressIsScam (ip: string, login: string): Promise <boolean> {
-        return await usersRepository.ipAddressIsScam(ip, login)
+        return await this.usersRepository.ipAddressIsScam(ip, login)
     }
     async refreshActivationCode (email: string): Promise <UsersType | null> {
         const refreshCode = uuid()
-        return await usersRepository.refreshActivationCode(email, refreshCode)
+        return await this.usersRepository.refreshActivationCode(email, refreshCode)
     }
     async counterAttemptAuth (ip: string, login: string): Promise <boolean> {
-        return await usersRepository.counterAttemptAuth(ip, login)
+        return await this.usersRepository.counterAttemptAuth(ip, login)
     }
     async counterAttemptConfirm (ip: string, code: string): Promise <boolean> {
-        return await usersRepository.counterAttemptConfirm(ip, code)
+        return await this.usersRepository.counterAttemptConfirm(ip, code)
     }
     async counterAttemptEmail (ip: string, email: string): Promise <boolean> {
-        return await usersRepository.counterAttemptEmail(ip, email)
+        return await this.usersRepository.counterAttemptEmail(ip, email)
     }
     async informationAboutAuth (ip: string, login: string): Promise <boolean> {
         const authData: AuthDataType = {
@@ -26,7 +31,7 @@ export class AuthService {
             tryAuthDate: new Date(),
             login
         }
-        return await usersRepository.informationAboutAuth(authData)
+        return await this.usersRepository.informationAboutAuth(authData)
     }
     async informationAboutConfirmed (ip: string, code: string): Promise <boolean> {
         const confirmationData: ConfirmedAttemptDataType = {
@@ -34,7 +39,7 @@ export class AuthService {
             tryConfirmDate: new Date(),
             code
         }
-        return await usersRepository.informationAboutConfirmed(confirmationData)
+        return await this.usersRepository.informationAboutConfirmed(confirmationData)
     }
     async informationAboutEmailSend (ip: string, email: string): Promise <boolean> {
         const emailSendData: EmailSendDataType = {
@@ -42,9 +47,9 @@ export class AuthService {
             emailSendDate: new Date(),
             email
         }
-        return await usersRepository.informationAboutEmailSend(emailSendData)
+        return await this.usersRepository.informationAboutEmailSend(emailSendData)
     }
 }
 
-export const authService = new AuthService()
+// export const authService = new AuthService()
 
