@@ -17,8 +17,6 @@ export const schemaPosts = [
     body('shortDescription').isLength({ min: 3, max: 100 }),
 ]
 
-
-
 export const userInputModel = [
     body('login').exists().withMessage('login is required').isLength({min: 3, max: 10}).trim().withMessage('wrong login length'),
     body('password').exists().withMessage('password is required').isLength({min: 6, max: 20}).trim().withMessage('wrong password length'),
