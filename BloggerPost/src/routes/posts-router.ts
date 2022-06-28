@@ -2,7 +2,10 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { commentInputModel, inputValidationMiddleware, schemaPosts } from "../middlewares/input-validation-middleware";
 import { authMiddlewareWithJWT } from "../middlewares/auth-middleware";
-import { postsController } from "../composition-root";
+import { container } from "../composition-root";
+import { PostController } from "./PostController";
+
+const postsController = container.resolve(PostController)
 
 export const postRouter = Router({})
 

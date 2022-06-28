@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger, schemaPosts } from "../middlewares/input-validation-middleware";
-import { bloggerController } from "../composition-root";
+import { container } from "../composition-root";
+import { BloggerController } from "./BloggerController";
+
+const bloggerController = container.resolve(BloggerController)
 
 export const bloggersRouter = Router({})
 

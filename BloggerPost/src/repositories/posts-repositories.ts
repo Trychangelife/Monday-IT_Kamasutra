@@ -1,6 +1,7 @@
 import { CommentsType } from "../types/Types";
 import { bloggerModel, commentsModel, postsModel } from "./db";
 import { PostsType } from "../types/Types";
+import { injectable } from "inversify";
 
 
 export const postViewModel = {
@@ -19,6 +20,7 @@ export const commentsVievModel = {
         __v: 0
 }
 
+@injectable()
 export class PostRepository {
     async allPosts(skip: number, limit: number, page?: number): Promise<object> {
         const totalCount = await postsModel.count({})

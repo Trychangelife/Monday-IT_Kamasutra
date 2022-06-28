@@ -1,3 +1,4 @@
+import { injectable } from "inversify"
 import { BloggersType } from "../types/Types"
 import { bloggerModel } from "./db"
 
@@ -9,6 +10,8 @@ const modelViewBloggers = {
     youtubeUrl: 1
 }
 
+
+@injectable()
 export class BloggerRepository {
     async allBloggers(skip: number, limit?: number, searchNameTerm?: string | null, page?: number): Promise<object> {
         if (page !== undefined && limit !== undefined) {

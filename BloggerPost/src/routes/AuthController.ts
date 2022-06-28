@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { injectable } from "inversify";
 import { jwtService } from "../application/jwt-service";
 import { AuthService } from "../domain/auth-service";
 import { EmailService } from "../domain/email-service";
@@ -6,7 +7,7 @@ import { UsersService } from "../domain/users-service";
 import { UsersRepository } from "../repositories/users-repository";
 import { UsersType } from "../types/Types";
 
-
+@injectable()
 export class AuthController {
 
     constructor(public usersRepository: UsersRepository, private usersService: UsersService, private authService: AuthService, public emailService: EmailService) {

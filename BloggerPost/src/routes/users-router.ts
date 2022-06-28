@@ -1,9 +1,10 @@
 import { NextFunction, Router } from "express";
-import { usersController } from "../composition-root";
+import { container } from "../composition-root";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, userInputModel } from "../middlewares/input-validation-middleware";
+import { UsersController } from "./UsersController";
 
-
+const usersController = container.resolve(UsersController)
 export const usersRouter = Router({})
 
 usersRouter.delete('/del', usersController.deleteAllUsers.bind(usersController))

@@ -1,8 +1,9 @@
 import { UsersRepository } from "../repositories/users-repository"
 import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, UsersType } from "../types/Types"
 import { uuid } from "uuidv4"
+import { injectable } from "inversify"
 
-
+@injectable()
 export class AuthService {
 
     constructor (private usersRepository: UsersRepository) {

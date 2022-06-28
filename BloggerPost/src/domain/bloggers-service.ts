@@ -1,8 +1,9 @@
 import { BloggerRepository } from "../repositories/bloggers-repositories"
 import { v4 as uuidv4 } from "uuid"
 import { Blogger, BloggersType } from "../types/Types"
+import { injectable } from "inversify"
 
-
+@injectable()
 export class BloggerService { 
 
     

@@ -1,7 +1,8 @@
+import { injectable } from "inversify"
 import { emailManager } from "../managers/email-manager"
 import { usersModel } from "../repositories/db"
 
-
+@injectable()
 export class EmailService {
 
     async emailConfirmation(email: string): Promise<object | boolean> {

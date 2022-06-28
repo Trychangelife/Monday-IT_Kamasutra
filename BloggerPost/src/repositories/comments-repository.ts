@@ -1,9 +1,10 @@
+import { injectable } from "inversify"
 import { CommentsType } from "../types/Types"
 import { commentsModel } from "./db"
 import { commentsVievModel } from "./posts-repositories"
 
 
-
+@injectable()
 export class CommentsRepository {
     async allCommentsByUserId(id: string): Promise<CommentsType | null> {
         const result = await commentsModel.findOne({ id: id }, commentsVievModel )

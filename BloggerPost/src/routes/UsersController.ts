@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
+import { injectable } from "inversify";
 import { UsersService } from "../domain/users-service";
 import { usersModel } from "../repositories/db";
 import { UsersType } from "../types/Types";
 import { constructorPagination } from "./bloggers-router";
 
 
-
+@injectable()
 export class UsersController {
 
     constructor(private usersService: UsersService) {

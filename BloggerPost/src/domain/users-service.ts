@@ -4,8 +4,9 @@ import { RegistrationDataType, User, UsersType } from "../types/Types"
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
 import { EmailService } from "./email-service"
+import { injectable } from "inversify"
 
-
+@injectable()
 export class UsersService {
 
     constructor(private usersRepository: UsersRepository, public emailService: EmailService){

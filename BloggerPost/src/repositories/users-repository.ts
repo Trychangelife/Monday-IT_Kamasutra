@@ -1,6 +1,7 @@
 import { authDataModel, codeConfirmModel, emailSendModel, refreshTokenModel, registrationDataModel, usersModel } from "./db"
 import { AuthDataType, ConfirmedAttemptDataType, EmailSendDataType, RefreshTokenStorageType, RegistrationDataType, UsersType } from "../types/Types"
 import { sub } from "date-fns"
+import { injectable } from "inversify"
 
 const userViewModel = {
         _id: 0,
@@ -14,6 +15,7 @@ const userViewModel = {
         }
 }
 
+@injectable()
 export class UsersRepository {
     async allUsers(skip: number, limit: number, page?: number): Promise<object> {
         const fullData = await usersModel.find({}, userViewModel).skip(skip).limit(limit)

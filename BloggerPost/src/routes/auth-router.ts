@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { authController } from "../composition-root";
+import { container } from "../composition-root";
 import { checkAvailabilityEmail, checkUniqueData, inputValidationMiddleware, LoginInputModel, userInputModel } from "../middlewares/input-validation-middleware";
+import { AuthController } from "./AuthController";
 
 
+const authController = container.resolve(AuthController)
 export const authRouter = Router({})
 
 authRouter.post('/login', LoginInputModel, inputValidationMiddleware, authController.authrozation.bind(authController))

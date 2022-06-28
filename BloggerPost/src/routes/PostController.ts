@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
+import { injectable } from "inversify";
 import { PostsService } from "../domain/posts-service";
 import { postsModel } from "../repositories/db";
 import { constructorPagination } from "./bloggers-router";
 
 
-
+@injectable()
 export class PostController {
 
     constructor(protected postsService: PostsService) {

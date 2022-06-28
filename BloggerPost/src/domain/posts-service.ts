@@ -2,7 +2,9 @@ import { bloggerModel, postsModel } from "../repositories/db";
 import { PostRepository } from "../repositories/posts-repositories"
 import { v4 as uuidv4 } from "uuid"
 import { Comments, CommentsType, Post } from "../types/Types";
+import { injectable } from "inversify";
 
+@injectable()
 export class PostsService {
 
     constructor (protected postsRepository: PostRepository) {}

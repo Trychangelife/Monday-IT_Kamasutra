@@ -1,7 +1,8 @@
+import { injectable } from "inversify";
 import { CommentsRepository } from "../repositories/comments-repository";
 import { CommentsType } from "../types/Types";
 
-
+@injectable()
 export class CommentsService {
 
     constructor(private commentsRepository: CommentsRepository) {

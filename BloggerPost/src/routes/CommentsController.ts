@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
+import { injectable } from "inversify";
 import { CommentsService } from "../domain/comments-service";
 
 
 
-
+@injectable()
 export class CommentsController {
 
     constructor(private commentsService: CommentsService) {

@@ -4,9 +4,9 @@ import { bloggerModel } from "../repositories/db";
 import { BloggersType } from "../types/Types";
 import { PostsService } from "../domain/posts-service";
 import { constructorPagination } from "./bloggers-router";
+import { injectable } from 'inversify'
 
-
-
+@injectable()
 export class BloggerController {
   constructor(protected bloggerService: BloggerService, protected postsService: PostsService) {
   }
