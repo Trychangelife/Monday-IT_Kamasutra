@@ -1,12 +1,11 @@
 import { Router } from "express";
-// import { postsService } from "../domain/posts-service";
 import { authMiddleware } from "../middlewares/authorization-middlewear";
 import { inputValidationMiddleware, schemaPostBlogger, schemaPosts } from "../middlewares/input-validation-middleware";
 import { bloggerController } from "../composition-root";
 
 export const bloggersRouter = Router({})
-export type ConstructorPaginationType = { pageNumber: number, pageSize: number };
 
+export type ConstructorPaginationType = { pageNumber: number, pageSize: number };
 export function constructorPagination(pageSize: string | undefined, pageNumber: string | undefined): ConstructorPaginationType {
   let result: ConstructorPaginationType = { pageSize: 10, pageNumber: 1 }
   if (pageSize) result.pageSize = +pageSize
@@ -15,7 +14,6 @@ export function constructorPagination(pageSize: string | undefined, pageNumber: 
 }
 
 
-// const bloggerController = new BloggerController()
 bloggersRouter.delete('/del', bloggerController.deleteAllBlogger.bind(bloggerController))
 bloggersRouter.get('/', bloggerController.getAllBloggers.bind(bloggerController))
 bloggersRouter.get('/:id', bloggerController.getBloggerById.bind(bloggerController))

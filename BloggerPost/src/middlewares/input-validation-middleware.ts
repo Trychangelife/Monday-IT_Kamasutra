@@ -1,7 +1,7 @@
 import { NextFunction, request, Request, Response } from "express";
 import { body, param, validationResult, ValidationError } from "express-validator";
+import { usersRepository } from "../composition-root";
 import { commentsModel, usersModel } from "../repositories/db";
-import { usersRepository } from "../repositories/users-repository";
 
 
 

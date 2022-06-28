@@ -5,7 +5,7 @@ import { uuid } from "uuidv4"
 
 export class AuthService {
 
-    constructor (private usersRepository = new UsersRepository()) {
+    constructor (private usersRepository: UsersRepository) {
 
     }
 
@@ -51,5 +51,4 @@ export class AuthService {
     }
 }
 
-// export const authService = new AuthService()
 

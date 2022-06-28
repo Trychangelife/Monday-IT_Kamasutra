@@ -4,7 +4,7 @@ import { CommentsType } from "../types/Types";
 
 export class CommentsService {
 
-    constructor(private commentsRepository = new CommentsRepository()) {
+    constructor(private commentsRepository: CommentsRepository) {
     }
 
     async getCommentsById(id: string): Promise<CommentsType | null> {

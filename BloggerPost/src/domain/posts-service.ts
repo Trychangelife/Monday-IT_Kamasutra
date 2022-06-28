@@ -5,7 +5,6 @@ import { Comments, CommentsType, Post } from "../types/Types";
 
 export class PostsService {
 
-    
     constructor (protected postsRepository: PostRepository) {}
 
     async allPosts(pageSize: number, pageNumber: number,): Promise<object> {

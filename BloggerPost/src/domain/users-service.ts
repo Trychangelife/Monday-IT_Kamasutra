@@ -8,7 +8,7 @@ import { EmailService } from "./email-service"
 
 export class UsersService {
 
-    constructor(private usersRepository = new UsersRepository(), public emailService = new EmailService()){
+    constructor(private usersRepository: UsersRepository, public emailService: EmailService){
 
     }
 
@@ -75,4 +75,4 @@ export class UsersService {
     }
 }
 
-export const usersService = new UsersService()
+// export const usersService = new UsersService()

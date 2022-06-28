@@ -6,9 +6,6 @@ import { postsController } from "../composition-root";
 
 export const postRouter = Router({})
 
-
-// export const postsController = new PostController()
-
 postRouter.delete('/del', postsController.deleteAllPosts.bind(postsController))
 postRouter.get('/', postsController.getAllPosts.bind(postsController))
 postRouter.get('/:id', postsController.getPostByID.bind(postsController))
