@@ -10,9 +10,7 @@ import { injectable } from "inversify"
 export class UsersService {
 
     constructor(private usersRepository: UsersRepository, public emailService: EmailService){
-
     }
-
     async allUsers(pageSize: number, pageNumber: number): Promise<object> {
         let skip = 0
         if (pageNumber && pageSize) {
@@ -75,5 +73,3 @@ export class UsersService {
 
     }
 }
-
-// export const usersService = new UsersService()
