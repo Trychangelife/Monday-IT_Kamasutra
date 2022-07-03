@@ -51,7 +51,7 @@ describe("integration tests for AuthService", () => {
             const result: UsersType | null | boolean = await usersService.createUser(login, password, email, ip)
             if (typeof result == "object") {
                 expect(result?.login).toBe(login)
-                expect(result?.accountData.email).toBe(email)
+                expect(result?.email).toBe(email)
                 expect(result?.emailConfirmation.activatedStatus).toBe(false)
 
             }

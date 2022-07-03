@@ -6,11 +6,11 @@ import { refreshTokenModel } from "../repositories/db";
 
 export const jwtService = {
     async accessToken(user: UsersType) {
-        const accessToken = jwt.sign({ id: user.id }, settings.JWT_SECRET, { expiresIn: '1h' })
+        const accessToken = jwt.sign({ id: user.id }, settings.JWT_SECRET, { expiresIn: '10 sec' })
         return accessToken
     },
     async refreshToken(user: UsersType): Promise<string> {
-        const refreshToken = jwt.sign({ id: user.id }, settings.JWT_REFRESH_SECRET, { expiresIn: '3h' })
+        const refreshToken = jwt.sign({ id: user.id }, settings.JWT_REFRESH_SECRET, { expiresIn: '20sec' })
         const newRefreshToken: RefreshTokenStorageType = {
             userId: user.id,
             refreshToken: refreshToken
@@ -21,7 +21,8 @@ export const jwtService = {
             return refreshToken
         }
         else {
-            await refreshTokenModel.updateOne({userId: user.id}, {$set: {refreshToken: newRefreshToken.refreshToken}})
+            await refreshTokenModel.updateOne({ userId: user.id }, { $set: { refreshToken: newRefreshToken.refreshToken } })
+            //await refreshTokenModel.findOneAndDelete({refreshToken: refreshToken})
             return refreshToken
         }
     },
@@ -38,7 +39,9 @@ export const jwtService = {
         if (checkToken !== null) {
             try {
                 const result: any = jwt.verify(rToken, settings.JWT_REFRESH_SECRET)
-                return { newAccessToken: await this.accessToken(result), newRefreshToken: await this.refreshToken(result) }
+                const newAccessToken = await this.accessToken(result)
+                const newRefreshToken =  await this.refreshToken(result)
+                return { newAccessToken, newRefreshToken }
             } catch (error) {
                 return null
             }
@@ -48,4 +51,12 @@ export const jwtService = {
         }
 
     },
+    async checkRefreshToken(refreshToken: string): Promise<boolean | object> {
+        try {
+            const result = jwt.verify(refreshToken, settings.JWT_REFRESH_SECRET)
+            return {token: result}
+        } catch (error) {
+            return false
+        }
+    }
 }

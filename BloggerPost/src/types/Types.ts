@@ -44,17 +44,18 @@ export class User {
         public _id: ObjectId, 
         public id: string, 
         public login: string,
-        public accountData: { passwordHash: string, passwordSalt: string, email:string},
+        public email: string,
+        public accountData: { passwordHash: string, passwordSalt: string},
         public emailConfirmation: {codeForActivated: string, activatedStatus: boolean}) {}
 }
 export type UsersType = {
     _id: ObjectId;
     id: string;
     login: string;
+    email: string
     accountData: {
         passwordHash: string;
         passwordSalt: string;
-        email: string
     }
     emailConfirmation: {
         codeForActivated: string

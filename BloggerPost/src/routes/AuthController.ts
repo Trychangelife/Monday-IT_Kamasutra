@@ -4,8 +4,10 @@ import { jwtService } from "../application/jwt-service";
 import { AuthService } from "../domain/auth-service";
 import { EmailService } from "../domain/email-service";
 import { UsersService } from "../domain/users-service";
+import { refreshTokenModel } from "../repositories/db";
 import { UsersRepository } from "../repositories/users-repository";
 import { UsersType } from "../types/Types";
+
 
 @injectable()
 export class AuthController {
@@ -24,7 +26,13 @@ export class AuthController {
             else if (foundUser && user) {
                 const accessToken = await jwtService.accessToken(foundUser);
                 const refreshToken = await jwtService.refreshToken(foundUser);
-                res.status(200).send({ accessToken, refreshToken });
+                res
+                .cookie("refreshToken", refreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production"
+                })
+                .status(200)
+                .send({ accessToken });
             }
             else {
                 res.sendStatus(400);
@@ -35,19 +43,25 @@ export class AuthController {
         }
     }
     async updateAccessToken(req: Request, res: Response) {
-        const refreshToken = req.header("x-auth-token");
+        const refreshToken = req.cookies["refreshToken"];
         if (!refreshToken) {
-            res.status(401).send('Refresh token not found, where you header?');
+            res.status(401).send('Refresh token not found, where you cookie?');
         }
         else if (refreshToken) {
-            const newAccessToken = await jwtService.getNewAccessToken(refreshToken);
+            const newAccessToken: any = await jwtService.getNewAccessToken(refreshToken);
             if (newAccessToken !== null) {
-                res.status(200).send(newAccessToken);
+                res
+                 .cookie("refreshToken", newAccessToken.newRefreshToken, {
+                     httpOnly: true,
+                     secure: process.env.NODE_ENV === "production"
+                 })
+                .status(200)
+                .send({accessToken: newAccessToken.newAccessToken});
             }
             else {
                 res.status(401).send('Refresh Token already not valid, repeat authorization');
             }
-        }
+        } 
         else {
             res.sendStatus(400);
         }
@@ -96,6 +110,27 @@ export class AuthController {
         else {
             res.sendStatus(429);
         }
+    }
+    async logout(req: Request, res: Response) {
+        const refreshTokenInCookie = req.cookies.refreshToken
+        const checkRefreshToken = await jwtService.checkRefreshToken(refreshTokenInCookie)
+        // тут нехватает проверки на валидность токена, нужно как-то сделать его инактивным
+        if (refreshTokenInCookie && checkRefreshToken !== false) {
+            //await refreshTokenModel.findOneAndDelete({refreshToken: refreshTokenInCookie})
+            return res
+                //.clearCookie('refreshToken')
+                .status(204)
+                .send({ message: "Successfully logged out 😏 🍀" })
+        }
+        else {
+            return res.send(401)
+        }
+    }
+    async aboutMe(req: Request, res: Response) {
+        const foundUser = await this.usersRepository.findUserByLoginForMe(req.user!.login);
+        res.status(200).send(foundUser)
+
+
     }
     async getRegistrationDate(req: Request, res: Response) {
         const registrationData = await this.usersRepository.getRegistrationDate();

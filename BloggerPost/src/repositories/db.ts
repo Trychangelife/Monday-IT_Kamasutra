@@ -1,6 +1,6 @@
 import dotenv from "dotenv"
 dotenv.config()
-import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
+import { ObjectId, ServerApiVersion } from "mongodb";
 import { BloggersType } from "../types/Types";
 import { CommentsType } from "../types/Types";
 import { PostsType } from "../types/Types";
@@ -43,10 +43,11 @@ const usersSchema = new mongoose.Schema<UsersType>({
     _id: {type: ObjectId, required: true},
     id: {type: String, required: true},
     login: {type: String, required: true},
+    email: {type: String, required: true},
     accountData: {
         passwordHash: {type: String, required: true},
         passwordSalt: {type: String, required: true},
-        email: {type: String, required: true}
+        
     },
     emailConfirmation: {
         codeForActivated: {type: String, required: true},

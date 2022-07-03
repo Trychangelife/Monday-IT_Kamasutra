@@ -8,6 +8,12 @@ const userViewModel = {
         id: 1,
         login: 1 
 }
+const userViewModelForMe = {
+    _id: 0,
+    id: 1,
+    login: 1,
+    email: 1
+}
 
 @injectable()
 export class UsersRepository {
@@ -20,7 +26,7 @@ export class UsersRepository {
     async createUser(newUser: UsersType): Promise<UsersType | null | boolean> {
         await usersModel.create(newUser)
         const checkUniqueLogin = await usersModel.count({ login: newUser.login })
-        const checkUniqueEmail = await usersModel.count({ "accountData.email": newUser.accountData.email })
+        const checkUniqueEmail = await usersModel.count({ email: newUser.email })
         if (checkUniqueLogin > 1 || checkUniqueEmail > 1) {
             return false
         }
@@ -92,7 +98,7 @@ export class UsersRepository {
 
     // Эндпоинты для поиска по определенным условиям
     async findUserByEmail(email: string): Promise<UsersType | null> {
-        const foundUser = await usersModel.findOne({ "accountData.email": email })
+        const foundUser = await usersModel.findOne({ email: email })
         return foundUser
     }
     async findUserById(id: string): Promise<UsersType | null> {
@@ -103,12 +109,18 @@ export class UsersRepository {
         const foundUser = await usersModel.findOne({ login: login })
         return foundUser
     }
+
+
+    async findUserByLoginForMe(login: string): Promise<UsersType | null> {
+        const foundUser = await usersModel.findOne({ login: login}, userViewModelForMe)
+        return foundUser
+    }
     async findUserByConfirmationCode(code: string): Promise<UsersType | null> {
         const foundUser = await usersModel.findOne({ "emailConfirmation.codeForActivated": code })
         return foundUser
     }
     async refreshActivationCode(email: string, code: string): Promise <UsersType | null> {
-        const updateCode = await usersModel.findOneAndUpdate({ "accountData.email": email }, { $set: { "emailConfirmation.codeForActivated": code } }, { new: true })
+        const updateCode = await usersModel.findOneAndUpdate({ email: email }, { $set: { "emailConfirmation.codeForActivated": code } }, { new: true })
         return updateCode
     }
 

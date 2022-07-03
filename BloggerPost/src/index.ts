@@ -11,12 +11,16 @@ import { authRouter } from "./routes/auth-router"
 import { commentsRouter } from "./routes/comments-router"
 import { emailRouter } from "./routes/email-router"
 import { testingRouter } from "./routes/testing-router"
+import cookieParser from "cookie-parser"
+
+
 
 const app = express()
 const port = process.env.PORT
 
 app.use(cors())
 app.use(bodyParser.json())
+app.use(cookieParser()) 
 app.set('trust proxy', true)
 app.use('/bloggers', bloggersRouter)
 app.use('/posts', postRouter)
