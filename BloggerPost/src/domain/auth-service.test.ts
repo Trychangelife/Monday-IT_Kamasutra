@@ -18,22 +18,61 @@ import { UsersController } from "../routes/UsersController"
 import { UsersType } from "../types/Types"
 import { MongoMemoryServer } from "mongodb-memory-server"
 import mongoose from "mongoose"
+import { usersModel } from "../repositories/db"
 
 describe("integration tests for AuthService", () => {
 
     let mongoServer: MongoMemoryServer;
-beforeAll( async () => {
-    mongoServer = await MongoMemoryServer.create()
-    const mongoUri = mongoServer.getUri()
-    await mongoose.connect(mongoUri)
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create()
+        const mongoUri = mongoServer.getUri()
+        await mongoose.connect(mongoUri)
+    })
+    afterAll(async () => {
+        await mongoose.disconnect()
+        await mongoServer.stop()
+    })
+
+    const usersRepository = new UsersRepository()
+    const emailService = new EmailService()
+    const usersService = new UsersService(usersRepository, emailService)
+
+    describe("create user", () => {
+        const login = "LoginForTest"
+            const password = "6length"
+            const email = "zkonstantinov1@bk.ru"
+            const ip = "172.168.202.232"
+        afterAll(async () => {
+            await mongoose.connection.db.dropDatabase()
+        })
+
+
+        it('Should return', async () => {
+            const result: UsersType | null | boolean = await usersService.createUser(login, password, email, ip)
+            if (typeof result == "object") {
+                expect(result?.accountData.login).toBe(login)
+                expect(result?.accountData.email).toBe(email)
+                expect(result?.emailConfirmation.activatedStatus).toBe(false)
+
+            }
+        })
+        it('Should return error becouse email and login already use', async () => {
+            const result: UsersType | null | boolean = await usersService.createUser(login, password, email, ip)
+            expect(result).toBeFalsy()
+        })
+    })
 })
-afterAll (async () => {
-    await mongoose.disconnect()
-    await mongoServer.stop()
-})
-const usersRepository = new UsersRepository()
-const emailService = new EmailService()
-const usersService = new UsersService(usersRepository, emailService)
+
+
+
+
+
+
+
+
+
+
+
 // const container = new Container()
 
 // container.bind(BloggerController).to(BloggerController)
@@ -56,20 +95,3 @@ const usersService = new UsersService(usersRepository, emailService)
 // container.bind<UsersController>(UsersController).to(UsersController)
 // container.bind<UsersService>(UsersService).to(UsersService)
 // container.bind<UsersRepository>(UsersRepository).to(UsersRepository)
-
-    describe("create user", () => {
-        it('Should return', async () => {
-            const login = "LoginForTest"
-            const password = "6length"
-            const email = "zkonstantinov1@bk.ru"
-            const ip = "172.168.202.232"
-            const result: UsersType | null | boolean = await usersService.createUser(login, password, email, ip)
-            if (typeof result == "object") {
-                expect(result?.accountData.login).toBe("LoginForTest")
-                expect(result?.accountData.email).toBe("zkonstantinov1@bk.ru")
-                expect(result?.emailConfirmation.activatedStatus).toBe(false)
-
-            }
-        })
-    })
-})
