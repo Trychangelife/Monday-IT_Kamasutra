@@ -6,13 +6,7 @@ import { injectable } from "inversify"
 const userViewModel = {
         _id: 0,
         id: 1,
-        accountData: {
-            login: 1,
-            email: 1
-        },
-        emailConfirmation: {
-            activatedStatus: 1
-        }
+        login: 1 
 }
 
 @injectable()
@@ -25,7 +19,7 @@ export class UsersRepository {
     }
     async createUser(newUser: UsersType): Promise<UsersType | null | boolean> {
         await usersModel.create(newUser)
-        const checkUniqueLogin = await usersModel.count({ "accountData.login": newUser.accountData.login })
+        const checkUniqueLogin = await usersModel.count({ login: newUser.login })
         const checkUniqueEmail = await usersModel.count({ "accountData.email": newUser.accountData.email })
         if (checkUniqueLogin > 1 || checkUniqueEmail > 1) {
             return false
@@ -106,7 +100,7 @@ export class UsersRepository {
         return result
     }
     async findUserByLogin(login: string): Promise<UsersType | null> {
-        const foundUser = await usersModel.findOne({ "accountData.login": login })
+        const foundUser = await usersModel.findOne({ login: login })
         return foundUser
     }
     async findUserByConfirmationCode(code: string): Promise<UsersType | null> {

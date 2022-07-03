@@ -7,8 +7,8 @@ import { AuthController } from "./AuthController";
 const authController = container.resolve(AuthController)
 export const authRouter = Router({})
 
-authRouter.post('/login', LoginInputModel, inputValidationMiddleware, authController.authrozation.bind(authController))
-authRouter.post('/update-access-token', LoginInputModel, inputValidationMiddleware, authController.updateAccessToken.bind(authController))
+authRouter.post('/login', LoginInputModel, inputValidationMiddleware, authController.authorization.bind(authController))
+authRouter.post('/refresh-token', LoginInputModel, inputValidationMiddleware, authController.updateAccessToken.bind(authController))
 authRouter.post('/registration', checkUniqueData, userInputModel, inputValidationMiddleware, authController.registration.bind(authController))
 authRouter.post('/registration-confirmation', authController.registrationConfirmation.bind(authController))
 authRouter.post('/registration-email-resending', userInputModel[2], checkAvailabilityEmail, inputValidationMiddleware, authController.registrationEmailResending.bind(authController))

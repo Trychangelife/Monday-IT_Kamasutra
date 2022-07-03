@@ -28,7 +28,7 @@ export class UsersController {
             res.status(400).send("Login or email already use");
         }
         else {
-            res.status(204).send();
+            res.status(201).send(result);
         }
     }
     async deleteUserById(req: Request, res: Response) {

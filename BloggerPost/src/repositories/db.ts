@@ -42,8 +42,8 @@ const commentsSchema = new mongoose.Schema<CommentsType>({
 const usersSchema = new mongoose.Schema<UsersType>({
     _id: {type: ObjectId, required: true},
     id: {type: String, required: true},
+    login: {type: String, required: true},
     accountData: {
-        login: {type: String, required: true},
         passwordHash: {type: String, required: true},
         passwordSalt: {type: String, required: true},
         email: {type: String, required: true}

@@ -63,7 +63,7 @@ export class PostController {
         }
     }
     async createCommentForPost(req: Request, res: Response) {
-        const newComment = await this.postsService.createCommentForSpecificPost(req.params.postId, req.body.content, req.user!.id, req.user!.accountData.login);
+        const newComment = await this.postsService.createCommentForSpecificPost(req.params.postId, req.body.content, req.user!.id, req.user!.login);
         if (newComment) {
             res.status(201).send(newComment);
         }

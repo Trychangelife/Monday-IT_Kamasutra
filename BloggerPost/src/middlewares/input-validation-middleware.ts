@@ -48,7 +48,7 @@ export const checkLaw = async (req: Request, res: Response, next: NextFunction) 
 
 export const checkUniqueData = async (req: Request, res: Response, next: NextFunction) => {
     const findTargetEmail = await usersModel.findOne({"accountData.email": req.body.email})
-    const findTargetLogin = await usersModel.findOne({"accountData.login": req.body.login})
+    const findTargetLogin = await usersModel.findOne({login: req.body.login})
         if (findTargetEmail !== null) {
             res.status(400).send({ errorsMessages: [{ message: "email already use", field: "email" }]})
         }

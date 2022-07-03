@@ -12,7 +12,7 @@ export class AuthController {
 
     constructor(public usersRepository: UsersRepository, private usersService: UsersService, private authService: AuthService, public emailService: EmailService) {
     }
-    async authrozation(req: Request, res: Response) {
+    async authorization(req: Request, res: Response) {
         await this.authService.informationAboutAuth(req.ip, req.body.login);
         const checkIP = await this.authService.counterAttemptAuth(req.ip, req.body.login);
         if (checkIP) {
@@ -61,7 +61,7 @@ export class AuthController {
             res.sendStatus(429);
         }
         else {
-            res.status(204).send();
+            res.status(201).send(result);
         }
     }
     async registrationConfirmation(req: Request, res: Response) {

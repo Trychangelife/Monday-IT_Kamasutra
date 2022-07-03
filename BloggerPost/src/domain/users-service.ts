@@ -23,7 +23,7 @@ export class UsersService {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
         // Построено на классе
-        const newUser = new User(new ObjectId(), uuidv4(), {login, passwordHash, passwordSalt, email}, {codeForActivated: uuidv4(), activatedStatus: false})
+        const newUser = new User(new ObjectId(), uuidv4(),login,{ passwordHash, passwordSalt, email}, {codeForActivated: uuidv4(), activatedStatus: false})
         const registrationData: RegistrationDataType = {
             ip,
             dateRegistation: new Date(),
@@ -36,9 +36,9 @@ export class UsersService {
                 return false
             }
             else {
-                await this.usersRepository.createUser(newUser)
-                // this.emailService.emailConfirmation(newUser.accountData.email)
-                return newUser
+                const createdUser = await this.usersRepository.createUser(newUser)
+                this.emailService.emailConfirmation(newUser.accountData.email)
+                return createdUser
             }
         }
         return null
