@@ -10,7 +10,7 @@ export const jwtService = {
         return accessToken
     },
     async refreshToken(user: UsersType): Promise<string> {
-        const refreshToken = jwt.sign({ id: user.id }, settings.JWT_REFRESH_SECRET, { expiresIn: '20sec' })
+        const refreshToken = jwt.sign({ id: user.id }, settings.JWT_REFRESH_SECRET, { expiresIn: '20 sec' })
         const newRefreshToken: RefreshTokenStorageType = {
             userId: user.id,
             refreshToken: refreshToken

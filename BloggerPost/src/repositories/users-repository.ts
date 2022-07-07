@@ -15,6 +15,12 @@ const userViewModelForMe = {
     email: 1
 }
 
+const aggregate = usersModel.aggregate([
+    {
+        "$project": {"_id": 0, "userId": "$id", "login": 1, "email": 1}
+    }
+])
+
 @injectable()
 export class UsersRepository {
     async allUsers(skip: number, limit: number, page?: number): Promise<object> {
@@ -111,9 +117,13 @@ export class UsersRepository {
     }
 
 
-    async findUserByLoginForMe(login: string): Promise<UsersType | null> {
+    async findUserByLoginForMe(login: string): Promise<UsersType | null | any[]> {
         const foundUser = await usersModel.findOne({ login: login}, userViewModelForMe)
-        return foundUser
+        const foundUser2 = await usersModel.aggregate([
+            {$match: {}},
+            {$project: {_id: 0, userId: "$id", email: 1, login: 1}}
+        ])
+        return foundUser2[0]
     }
     async findUserByConfirmationCode(code: string): Promise<UsersType | null> {
         const foundUser = await usersModel.findOne({ "emailConfirmation.codeForActivated": code })

@@ -114,13 +114,10 @@ export class AuthController {
     async logout(req: Request, res: Response) {
         const refreshTokenInCookie = req.cookies.refreshToken
         const checkRefreshToken = await jwtService.checkRefreshToken(refreshTokenInCookie)
-        // тут нехватает проверки на валидность токена, нужно как-то сделать его инактивным
-        if (refreshTokenInCookie && checkRefreshToken !== false) {
-            //await refreshTokenModel.findOneAndDelete({refreshToken: refreshTokenInCookie})
-            return res
-                //.clearCookie('refreshToken')
-                .status(204)
-                .send({ message: "Successfully logged out 😏 🍀" })
+        const findTokenInData = await refreshTokenModel.findOne({refreshToken: refreshTokenInCookie})
+        if (refreshTokenInCookie && checkRefreshToken !== false && findTokenInData !== null) {
+            await refreshTokenModel.findOneAndDelete({refreshToken: refreshTokenInCookie})
+            return res.send(204)
         }
         else {
             return res.send(401)
