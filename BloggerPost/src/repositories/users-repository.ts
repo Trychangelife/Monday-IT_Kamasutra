@@ -117,8 +117,7 @@ export class UsersRepository {
     }
 
 
-    async findUserByLoginForMe(login: string): Promise<UsersType | null | any[]> {
-        const foundUser = await usersModel.findOne({ login: login}, userViewModelForMe)
+    async findUserByLoginForMe(login: string): Promise<any[]> {
         const foundUser2 = await usersModel.aggregate([
             {$match: {}},
             {$project: {_id: 0, userId: "$id", email: 1, login: 1}}
